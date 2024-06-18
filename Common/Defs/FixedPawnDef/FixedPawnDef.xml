@@ -22,7 +22,7 @@
 
     <beard>Anchor</beard>
     <hair>Mop</hair>
-    <hairColor>(237, 202, 156)</hairColor>
+    <hairColor>(237, 202, 156)</hairColor> <!--R,G,B-->
 
     <headType>Female_AverageWide</headType>
     <faceTatoo>Face_Pantheon</faceTatoo>

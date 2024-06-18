@@ -21,6 +21,14 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <OutputPath>..\Common\Assemblies\</OutputPath>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <DefineConstants>DEBUG</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>..\..\..\..\..\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
@@ -40,8 +48,6 @@
       <Private>False</Private>
     </Reference>
     <None Include="..\About\**" />
-    <None Include="..\Common\Languages\Languages\Keyed\Fixed_Pawn_Generate.xml" />
-    <None Include="..\Common\Patches\**" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FixedPawnDef.cs" />

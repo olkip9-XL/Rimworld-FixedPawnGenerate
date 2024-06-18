@@ -17,6 +17,23 @@ namespace Fixed_Pawn_Generate
     {
         public static readonly List<string> callerWhiteList = new List<string>();
 
+        public static readonly List<string> callerBlackList = new List<string>();
+
+        static FixedPawnUtility()
+        {
+
+            callerWhiteList.Add("StartingPawnUtility.NewGeneratedStartingPawn");
+            callerWhiteList.Add("WildAnimalSpawner.SpawnRandomWildAnimalAt");
+            callerWhiteList.Add("ThingSetMaker_MapGen_AncientPodContents.GenerateAngryAncient");
+            callerWhiteList.Add("SymbolResolver_SinglePawn.Resolve");
+            callerWhiteList.Add("PawnGroupKindWorker_Normal.GeneratePawns");
+
+            callerBlackList.Add("Faction.TryGenerateNewLeader");
+            callerBlackList.Add("<PlayerStartingThings>d__17.MoveNext");
+            callerBlackList.Add("GenStep_Monolith.GenerateMonolith");
+        }
+
+
         public static List<FixedPawnDef> GetFixedPawnDefsByCRequest(ref PawnGenerationRequest request)
         {
             FactionDef factionDef = null;
@@ -33,7 +50,7 @@ namespace Fixed_Pawn_Generate
 
                 race = request.KindDef.race;
             }
-            //return DefDatabase<FixedPawnDef>.AllDefsListForReading.FindAll(x => (factionDef==null?true:x.faction == factionDef) && (pawnKindDef==null?true:x.pawnKind == pawnKindDef));
+
             return DefDatabase<FixedPawnDef>.AllDefsListForReading.FindAll(x => (factionDef == null || x.faction == factionDef) && (race == null || x.race == race)&& (pawnKindDef!=null || x.pawnKind==pawnKindDef) );
         }
 
@@ -232,10 +249,6 @@ namespace Fixed_Pawn_Generate
                 string callerClassName = callerMethod.ReflectedType.Name;
                 string callerMethodName = callerMethod.Name;
 
-#if Debug
-                Log.Warning($"调用者类名：{callerClassName}");
-                Log.Warning($"调用者方法名：{callerMethodName}");
-#endif
                 if(callerClassName == "PawnGenerator" && callerMethodName == "GeneratePawn")
                 {
                     callerFrame = stackFrames[index+1];

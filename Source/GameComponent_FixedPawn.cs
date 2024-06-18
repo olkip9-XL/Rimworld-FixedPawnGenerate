@@ -23,8 +23,9 @@ namespace FixedPawnGenerate
             base.StartedNewGame();
 
             uniqePawns.AddRange(DefDatabase<FixedPawnDef>.AllDefsListForReading.FindAll(x => x.isUnique));
-
+#if DEBUG
             Log.Warning($"StartedNewGame,unniqePawns count{uniqePawns.Count}");
+#endif
         }
 
         public override void ExposeData()

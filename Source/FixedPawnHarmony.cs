@@ -28,11 +28,15 @@ namespace FixedPawnGenerate
 
                 String caller = FixedPawnUtility.GetCallerMethodName(5);
 
-
-                //if (caller != "StartingPawnUtility.NewGeneratedStartingPawn")
+                //if(!FixedPawnUtility.Manager.callerWhiteList.Contains(caller))
                 //{
                 //    return;
                 //}
+
+                if (FixedPawnUtility.callerBlackList.Contains(caller))
+                {
+                    return;
+                }
 
                 float randValue = Rand.Value;
 
@@ -76,8 +80,9 @@ namespace FixedPawnGenerate
 
                     FixedPawnUtility.ModifyPawn(pawn, fixedPawnDef);
                 }
-
-                Log.Warning($"调用者:{caller}, 生成:{__state}");
+#if DEBUG
+                Log.Warning($"[Debug]调用者:{caller}, 生成:{__state}");
+#endif
 
             }
         }
