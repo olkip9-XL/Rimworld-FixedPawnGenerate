@@ -1,0 +1,9 @@
+<ModMetaData>
+	<name>Fixed_Pawn_Generate</name>
+	<author>Lotus</author>
+    <packageId>Lotus.FixedPawnGenerate</packageId>
+	<supportedVersions>
+		<li>1.5</li>
+	</supportedVersions>
+	<description>Generate a Fixed Pawn</description>
+</ModMetaData>

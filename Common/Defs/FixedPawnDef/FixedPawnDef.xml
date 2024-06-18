@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <FixedPawnGenerate.FixedPawnDef>
+    <defName>TestPawn</defName>
+
+    <generateWeight>1</generateWeight>
+    <generateRate>0.6</generateRate>
+    <isUnique>true</isUnique>
+
+    <faction>PlayerColony</faction>
+    <race>Human</race>
+    <pawnKind>Colonist</pawnKind>
+
+    <age>13.5</age>
+    <chronologicalAge>200</chronologicalAge>
+    <!--1 for Male, 2 for Female-->
+    <gender>2</gender>
+    
+    <firstName>TestFirstName</firstName>
+    <nickName>TestNickName</nickName>
+    <lastName>TestLastName</lastName>
+
+    <beard>Anchor</beard>
+    <hair>Mop</hair>
+    <hairColor>(237, 202, 156)</hairColor>
+
+    <headType>Female_AverageWide</headType>
+    <faceTatoo>Face_Pantheon</faceTatoo>
+
+    <bodyType>Male</bodyType>
+    <bodyTatoo>Body_Tiger</bodyTatoo>
+    <skinColor>(155,155,155)</skinColor>
+
+    <childHood>FallenProdigy40</childHood>
+    <adultHood>Archaeologist85</adultHood>
+
+    <favoriteColor>(237, 202, 156)</favoriteColor>
+
+    <equipment>
+      <li>Gun_BoltActionRifle</li>
+    </equipment>
+
+    <inventory>
+      <li>MealSurvivalPack</li>
+    </inventory>
+
+    <apparel>
+      <li>Apparel_Pants</li>
+      <li>Apparel_BasicShirt</li>
+    </apparel>
+
+    <skills>
+      <li>
+        <skill>Shooting</skill>
+        <level>10</level>
+        <passion>0</passion>
+      </li>
+      <li>
+        <skill>Cooking</skill>
+        <level>5</level>
+        <passion>1</passion>
+      </li>
+    </skills>
+
+    <hediffs>
+      <li>
+        <hediff>Gunshot</hediff>
+        <severity>0.5</severity>
+        <bodyPart>Head</bodyPart>
+      </li>
+    </hediffs>
+
+    <traits>
+      <li>Kind</li>
+      <li>Psychopath</li>
+    </traits>
+  </FixedPawnGenerate.FixedPawnDef>
+
+  <FixedPawnGenerate.FixedPawnDef>
+    <defName>TestPawn2</defName>
+
+    <generateWeight>1</generateWeight>
+    <generateRate>0.8</generateRate>
+    <isUnique>false</isUnique>
+
+    <faction>PirateWaster</faction>
+    <race>Human</race>
+
+    <skills>
+      <li>
+        <skill>Shooting</skill>
+        <level>0</level>
+        <passion>0</passion>
+      </li>
+    </skills>
+
+    <equipment>
+      <li>Gun_BoltActionRifle</li>
+    </equipment>
+    
+  </FixedPawnGenerate.FixedPawnDef>
+  
+
+</Defs>
