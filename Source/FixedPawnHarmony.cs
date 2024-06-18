@@ -44,7 +44,7 @@ namespace FixedPawnGenerate
 
                 if (list.Count > 0)
                 {
-                    FixedPawnDef def = FixedPawnUtility.GetRandomFixedPawnDef(list);
+                    FixedPawnDef def = FixedPawnUtility.GetRandomFixedPawnDefByWeight(list);
 
                     if (def == null)
                         return;
@@ -53,6 +53,8 @@ namespace FixedPawnGenerate
                     {
                         FixedPawnUtility.Manager.uniqePawns.Remove(def);
                     }
+                    
+                    
 
                     __state = def.defName;
 
@@ -72,8 +74,6 @@ namespace FixedPawnGenerate
             {
                 Pawn pawn = __result;
 
-                String caller = FixedPawnUtility.GetCallerMethodName(5);
-
                 if (pawn != null && __state != "None")
                 {
                     FixedPawnDef fixedPawnDef = DefDatabase<FixedPawnDef>.GetNamed(__state);
@@ -81,6 +81,7 @@ namespace FixedPawnGenerate
                     FixedPawnUtility.ModifyPawn(pawn, fixedPawnDef);
                 }
 #if DEBUG
+                String caller = FixedPawnUtility.GetCallerMethodName(5);
                 Log.Warning($"[Debug]调用者:{caller}, 生成:{__state}");
 #endif
 

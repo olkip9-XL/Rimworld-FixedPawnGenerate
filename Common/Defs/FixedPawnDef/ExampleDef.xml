@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
+  
+  <!--不填的字段会按照原版的生成逻辑-->
+  <!--Params that didn't filled will generate as the orignal logic-->
+  
   <FixedPawnGenerate.FixedPawnDef>
     <defName>TestPawn</defName>
 
     <generateWeight>1</generateWeight>
-    <generateRate>0.6</generateRate>
+    <generateRate>0.6</generateRate><!--0 - 1-->
     <isUnique>true</isUnique>
 
     <faction>PlayerColony</faction>
@@ -14,6 +18,7 @@
     <age>13.5</age>
     <chronologicalAge>200</chronologicalAge>
     <!--1 for Male, 2 for Female-->
+    <!--1 是男，2是女-->
     <gender>2</gender>
     
     <firstName>TestFirstName</firstName>
@@ -76,6 +81,7 @@
     </traits>
   </FixedPawnGenerate.FixedPawnDef>
 
+ 
   <FixedPawnGenerate.FixedPawnDef>
     <defName>TestPawn2</defName>
 
@@ -98,6 +104,83 @@
       <li>Gun_BoltActionRifle</li>
     </equipment>
     
+  </FixedPawnGenerate.FixedPawnDef>
+
+  <FixedPawnGenerate.FixedPawnDef>
+    <defName>TestPawn</defName>
+
+    <generateWeight>1</generateWeight>
+    <generateRate>0.6</generateRate>
+    <!--0 - 1-->
+    <isUnique>true</isUnique>
+
+    <faction>PlayerColony</faction>
+    <race>Human</race>
+    <pawnKind>Colonist</pawnKind>
+
+    <age>13.5</age>
+    <chronologicalAge>200</chronologicalAge>
+    <gender>2</gender>
+
+    <firstName>TestFirstName</firstName>
+    <nickName>TestNickName</nickName>
+    <lastName>TestLastName</lastName>
+
+    <beard>Anchor</beard>
+    <hair>Mop</hair>
+    <hairColor>(237, 202, 156)</hairColor>
+
+    <headType>Female_AverageWide</headType>
+    <faceTatoo>Face_Pantheon</faceTatoo>
+
+    <bodyType>Male</bodyType>
+    <bodyTatoo>Body_Tiger</bodyTatoo>
+    <skinColor>(155,155,155)</skinColor>
+
+    <childHood>FallenProdigy40</childHood>
+    <adultHood>Archaeologist85</adultHood>
+
+    <favoriteColor>(237, 202, 156)</favoriteColor>
+
+    <equipment>
+      <li>Gun_BoltActionRifle</li>
+    </equipment>
+
+    <inventory>
+      <li>MealSurvivalPack</li>
+    </inventory>
+
+    <apparel>
+      <li>Apparel_Pants</li>
+      <li>Apparel_BasicShirt</li>
+    </apparel>
+
+    <skills>
+      <li>
+        <skill>Shooting</skill>
+        <level>10</level>
+        <passion>0</passion>
+      </li>
+      <li>
+        <skill>Cooking</skill>
+        <level>5</level>
+        <passion>1</passion>
+      </li>
+    </skills>
+
+    <hediffs>
+      <li>
+        <hediff>Gunshot</hediff>
+        <severity>0.5</severity>
+        <bodyPart>Head</bodyPart>
+      </li>
+    </hediffs>
+
+    <traits>
+      <li>Kind</li>
+      <li>Psychopath</li>
+    </traits>
+
   </FixedPawnGenerate.FixedPawnDef>
   
 

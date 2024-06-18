@@ -50,6 +50,7 @@
     <None Include="..\About\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Example.cs" />
     <Compile Include="FixedPawnDef.cs" />
     <Compile Include="FixedPawnDefOf.cs" />
     <Compile Include="FixedPawnHarmony.cs" />

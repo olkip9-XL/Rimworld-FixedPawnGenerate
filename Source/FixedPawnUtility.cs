@@ -210,7 +210,7 @@ namespace Fixed_Pawn_Generate
         }
 
         // Generate a random defName based on weights
-        public static FixedPawnDef GetRandomFixedPawnDef(List<FixedPawnDef> list)
+        public static FixedPawnDef GetRandomFixedPawnDefByWeight(List<FixedPawnDef> list)
         {
             double totalWeight = 0;
 
@@ -270,6 +270,27 @@ namespace Fixed_Pawn_Generate
                 return Current.Game.GetComponent<GameComponent_FixedPawn>();
             }
         }
+
+        public static Pawn GenerateFixedPawnWithDef(FixedPawnDef def)
+        {
+            if (def == null || def.pawnKind == null)
+            {
+                return null;
+            }
+
+            Faction faction = null;
+            if(def.faction!=null)
+                faction = Find.FactionManager.FirstFactionOfDef(def.faction);
+
+            Pawn result = PawnGenerator.GeneratePawn(def.pawnKind, faction);
+
+            ModifyPawn(result, def);
+
+            return result;
+        }
+
+        
+
     }
 
 
