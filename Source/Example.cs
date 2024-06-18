@@ -8,7 +8,7 @@ using Verse;
 
 namespace FixedPawnGenerate
 {
-    static class Example
+    public static class Example
     {
         /*
          * 这是一个手动生成固定角色的例子。

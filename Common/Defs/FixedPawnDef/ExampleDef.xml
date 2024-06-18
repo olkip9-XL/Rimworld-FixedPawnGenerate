@@ -5,10 +5,10 @@
   <!--Params that didn't filled will generate as the orignal logic-->
   
   <FixedPawnGenerate.FixedPawnDef>
-    <defName>TestPawn</defName>
+    <defName>TestPawn1</defName>
 
     <generateWeight>1</generateWeight>
-    <generateRate>0.6</generateRate><!--0 - 1-->
+    <generateRate>0.0</generateRate><!--0 - 1-->
     <isUnique>true</isUnique>
 
     <faction>PlayerColony</faction>
@@ -30,10 +30,10 @@
     <hairColor>(237, 202, 156)</hairColor> <!--R,G,B-->
 
     <headType>Female_AverageWide</headType>
-    <faceTatoo>Face_Pantheon</faceTatoo>
+    <faceTatoo MayRequire="ludeon.rimworld.royalty">Face_Pantheon</faceTatoo>
 
     <bodyType>Male</bodyType>
-    <bodyTatoo>Body_Tiger</bodyTatoo>
+    <bodyTatoo MayRequire="ludeon.rimworld.royalty">Body_Tiger</bodyTatoo>
     <skinColor>(155,155,155)</skinColor>
 
     <childHood>FallenProdigy40</childHood>
@@ -81,15 +81,15 @@
     </traits>
   </FixedPawnGenerate.FixedPawnDef>
 
- 
+ <!--=======================================-->
   <FixedPawnGenerate.FixedPawnDef>
     <defName>TestPawn2</defName>
 
     <generateWeight>1</generateWeight>
-    <generateRate>0.8</generateRate>
+    <generateRate>0.0</generateRate>
     <isUnique>false</isUnique>
 
-    <faction>PirateWaster</faction>
+    <faction MayRequire="Ludeon.RimWorld.Biotech">PirateWaster</faction>
     <race>Human</race>
 
     <skills>
@@ -106,82 +106,84 @@
     
   </FixedPawnGenerate.FixedPawnDef>
 
-  <FixedPawnGenerate.FixedPawnDef>
-    <defName>TestPawn</defName>
+  <!--======================Cosplay mod Example=================================-->
+  <FixedPawnGenerate.FixedPawnDef Name="BlueArchiveFixedPawnBase" Abstract="true">
 
     <generateWeight>1</generateWeight>
     <generateRate>0.6</generateRate>
-    <!--0 - 1-->
-    <isUnique>true</isUnique>
+    <isUnique>false</isUnique>
 
-    <faction>PlayerColony</faction>
+    <faction>OutlanderRough</faction>
     <race>Human</race>
-    <pawnKind>Colonist</pawnKind>
 
-    <age>13.5</age>
-    <chronologicalAge>200</chronologicalAge>
-    <gender>2</gender>
+    <age>18</age>
+    <chronologicalAge>2000</chronologicalAge>
+    <!--<gender>2</gender>-->
+    
+    <beard>NoBeard</beard>
 
-    <firstName>TestFirstName</firstName>
-    <nickName>TestNickName</nickName>
-    <lastName>TestLastName</lastName>
+    <headType>Female_AverageNormal</headType>
 
-    <beard>Anchor</beard>
-    <hair>Mop</hair>
-    <hairColor>(237, 202, 156)</hairColor>
-
-    <headType>Female_AverageWide</headType>
-    <faceTatoo>Face_Pantheon</faceTatoo>
-
-    <bodyType>Male</bodyType>
-    <bodyTatoo>Body_Tiger</bodyTatoo>
-    <skinColor>(155,155,155)</skinColor>
-
-    <childHood>FallenProdigy40</childHood>
-    <adultHood>Archaeologist85</adultHood>
-
-    <favoriteColor>(237, 202, 156)</favoriteColor>
-
-    <equipment>
-      <li>Gun_BoltActionRifle</li>
-    </equipment>
-
-    <inventory>
-      <li>MealSurvivalPack</li>
-    </inventory>
-
-    <apparel>
-      <li>Apparel_Pants</li>
-      <li>Apparel_BasicShirt</li>
-    </apparel>
+    <bodyType>Female</bodyType>
 
     <skills>
       <li>
         <skill>Shooting</skill>
-        <level>10</level>
-        <passion>0</passion>
-      </li>
-      <li>
-        <skill>Cooking</skill>
-        <level>5</level>
-        <passion>1</passion>
+        <level>12</level>
+        <passion>2</passion>
       </li>
     </skills>
 
-    <hediffs>
-      <li>
-        <hediff>Gunshot</hediff>
-        <severity>0.5</severity>
-        <bodyPart>Head</bodyPart>
-      </li>
-    </hediffs>
-
     <traits>
       <li>Kind</li>
-      <li>Psychopath</li>
     </traits>
 
   </FixedPawnGenerate.FixedPawnDef>
-  
 
+  <FixedPawnGenerate.FixedPawnDef MayRequire="mlmlmlm.cosplayequipmentbluearchive" ParentName="BlueArchiveFixedPawnBase">
+    <defName>FixedPawn_Yuuka</defName>
+    <hair>Yuuka</hair>
+    <hairColor>(98, 93, 152)</hairColor>
+    <skinColor>(253, 239, 234)</skinColor>
+    
+    <equipment>
+      <li>Logic_reason</li>
+    </equipment>
+    <apparel>
+      <li>Yuuka_headgear</li>
+      <li>Yuuka_uniform</li>
+    </apparel>
+  </FixedPawnGenerate.FixedPawnDef>
+
+  <FixedPawnGenerate.FixedPawnDef MayRequire="mlmlmlm.cosplayequipmentbluearchive" ParentName="BlueArchiveFixedPawnBase">
+    <defName>FixedPawn_Sirocco</defName>
+    <hair>Sirocco</hair>
+    <hairColor>(189, 186, 190)</hairColor>
+    <skinColor>(254, 240, 230)</skinColor>
+    
+    <equipment>
+      <li>Superningu</li>
+    </equipment>
+    <apparel>
+      <li>Sirocco_headgear</li>
+      <li>Sirocco_uniform</li>
+    </apparel>
+  </FixedPawnGenerate.FixedPawnDef>
+
+  <FixedPawnGenerate.FixedPawnDef MayRequire="mlmlmlm.cosplayequipmentbluearchive" ParentName="BlueArchiveFixedPawnBase">
+    <defName>FixedPawn_Aru</defName>
+    <hair>Aru</hair>
+    <hairColor>(211, 136, 145)</hairColor>
+    <skinColor>(255, 251, 245)</skinColor>
+
+    <equipment>
+      <li>White_fang</li>
+    </equipment>
+    <apparel>
+      <li>Aru_headgear</li>
+      <li>Aru_uniform</li>
+    </apparel>
+  </FixedPawnGenerate.FixedPawnDef>
+  
+  
 </Defs>
