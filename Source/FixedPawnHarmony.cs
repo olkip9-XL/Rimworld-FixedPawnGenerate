@@ -27,11 +27,6 @@ namespace FixedPawnGenerate
 
                 String caller = FixedPawnUtility.GetCallerMethodName(5);
 
-                //if(!FixedPawnUtility.Manager.callerWhiteList.Contains(caller))
-                //{
-                //    return;
-                //}
-
                 if (FixedPawnUtility.callerBlackList.Contains(caller))
                 {
                     return;
@@ -39,7 +34,9 @@ namespace FixedPawnGenerate
 
                 float randValue = Rand.Value;
 
-                List<FixedPawnDef> list = FixedPawnUtility.GetFixedPawnDefsByCRequest(ref request).FindAll(x => randValue < x.generateRate);
+                float maxRate = caller == "StartingPawnUtility.NewGeneratedStartingPawn" ? 0.125f : 1f;
+
+                List<FixedPawnDef> list = FixedPawnUtility.GetFixedPawnDefsByCRequest(ref request).FindAll(x => randValue < x.generateRate && randValue<maxRate);
 
                 if (list.Count > 0)
                 {
@@ -48,13 +45,10 @@ namespace FixedPawnGenerate
                     if (def == null)
                         return;
 
-                    if (def.isUnique)
+                    if (def.isUnique && caller != "StartingPawnUtility.NewGeneratedStartingPawn")
                     {
                         FixedPawnUtility.Manager.uniqePawns.Remove(def);
                     }
-                    
-                    
-
                     __state = def.defName;
 
                     request.CanGeneratePawnRelations = false;

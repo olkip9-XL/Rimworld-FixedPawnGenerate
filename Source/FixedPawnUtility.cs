@@ -19,6 +19,8 @@ namespace FixedPawnGenerate
 
         public static readonly List<string> callerBlackList = new List<string>();
 
+        public static int startingPawnCount = 0;
+
         static FixedPawnUtility()
         {
 
@@ -31,6 +33,7 @@ namespace FixedPawnGenerate
             callerBlackList.Add("Faction.TryGenerateNewLeader");
             callerBlackList.Add("<PlayerStartingThings>d__17.MoveNext");
             callerBlackList.Add("GenStep_Monolith.GenerateMonolith");
+            callerBlackList.Add("PawnRelationWorker_Sibling.GenerateParent");
         }
 
 

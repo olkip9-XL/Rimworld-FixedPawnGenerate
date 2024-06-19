@@ -12,17 +12,29 @@ namespace FixedPawnGenerate
 
         public Game game;
 
+        private bool isNewGame = true;
+
         public List<FixedPawnDef> uniqePawns = new List<FixedPawnDef>();
         public GameComponent_FixedPawn(Game game) : base()
         {
             this.game = game;
+
+            if(isNewGame)
+            {
+                uniqePawns.AddRange(DefDatabase<FixedPawnDef>.AllDefsListForReading.FindAll(x => x.isUnique));
+                isNewGame = false;
+            }
+
+#if DEBUG          
+            Log.Warning("GameComponent_FixedPawn Constructor called");
+#endif
         }
 
         public override void StartedNewGame()
         {
             base.StartedNewGame();
 
-            uniqePawns.AddRange(DefDatabase<FixedPawnDef>.AllDefsListForReading.FindAll(x => x.isUnique));
+            //uniqePawns.AddRange(DefDatabase<FixedPawnDef>.AllDefsListForReading.FindAll(x => x.isUnique));
 #if DEBUG
             Log.Warning($"StartedNewGame,unniqePawns count{uniqePawns.Count}");
 #endif
@@ -32,7 +44,12 @@ namespace FixedPawnGenerate
         {
             base.ExposeData();
 
-            Scribe_Collections.Look(ref uniqePawns, "uniqePawns", LookMode.Deep);
+#if DEBUG
+               Log.Warning($"GameComponent_FixedPawn ExposeData: uniqePawns:{uniqePawns.Count}");
+#endif
+
+            if(uniqePawns.Count>0)
+                Scribe_Collections.Look(ref uniqePawns, "uniqePawns", LookMode.Def);
         }
     }
 

@@ -8,7 +8,7 @@
     <defName>TestPawn1</defName>
 
     <generateWeight>1</generateWeight>
-    <generateRate>0.0</generateRate><!--0 - 1-->
+    <generateRate>0.8</generateRate><!--0 - 1-->
     <isUnique>true</isUnique>
 
     <faction>PlayerColony</faction>
@@ -149,7 +149,7 @@
 
     <age>18</age>
     <chronologicalAge>2000</chronologicalAge>
-    <!--<gender>2</gender>-->
+    <gender>2</gender>
     
     <beard>NoBeard</beard>
 
