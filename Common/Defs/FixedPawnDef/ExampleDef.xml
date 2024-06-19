@@ -42,16 +42,25 @@
     <favoriteColor>(237, 202, 156)</favoriteColor>
 
     <equipment>
-      <li>Gun_BoltActionRifle</li>
+      <li>
+        <thing>Gun_BoltActionRifle</thing>
+      </li>
     </equipment>
 
     <inventory>
-      <li>MealSurvivalPack</li>
+      <li>
+        <thing>MealSurvivalPack</thing>
+        <count>5</count>
+      </li>
     </inventory>
 
     <apparel>
-      <li>Apparel_Pants</li>
-      <li>Apparel_BasicShirt</li>
+      <li>
+        <thing>Apparel_Pants</thing>
+      </li>
+      <li>
+        <thing>Apparel_BasicShirt</thing>
+      </li>
     </apparel>
 
     <skills>
@@ -86,10 +95,11 @@
     <defName>TestPawn2</defName>
 
     <generateWeight>1</generateWeight>
-    <generateRate>0.0</generateRate>
+    <generateRate>0.6</generateRate>
     <isUnique>false</isUnique>
 
-    <faction MayRequire="Ludeon.RimWorld.Biotech">PirateWaster</faction>
+    <!--<faction MayRequire="Ludeon.RimWorld.Biotech">PirateWaster</faction>-->
+    <faction>OutlanderRough</faction>
     <race>Human</race>
 
     <skills>
@@ -101,8 +111,29 @@
     </skills>
 
     <equipment>
-      <li>Gun_BoltActionRifle</li>
+      <li>
+        <thing>Gun_BoltActionRifle</thing>
+      </li>
     </equipment>
+
+    <apparel>
+      <li>
+        <thing>Apparel_ShieldBelt</thing>
+      </li>
+      <li>
+        <thing>Apparel_Pants</thing>
+      </li>
+      <li>
+        <thing>Apparel_BasicShirt</thing>
+      </li>
+    </apparel>
+
+    <inventory>
+      <li>
+        <thing>MealSurvivalPack</thing>
+        <count>5</count>
+      </li>
+    </inventory>
     
   </FixedPawnGenerate.FixedPawnDef>
 
@@ -126,6 +157,13 @@
 
     <bodyType>Female</bodyType>
 
+    <inventory>
+      <li>
+        <thing>MealSurvivalPack</thing>
+        <count>5</count>
+      </li>
+    </inventory>
+
     <skills>
       <li>
         <skill>Shooting</skill>
@@ -147,11 +185,17 @@
     <skinColor>(253, 239, 234)</skinColor>
     
     <equipment>
-      <li>Logic_reason</li>
+      <li>
+        <thing>Logic_reason</thing>
+      </li>
     </equipment>
     <apparel>
-      <li>Yuuka_headgear</li>
-      <li>Yuuka_uniform</li>
+      <li>
+        <thing>Yuuka_headgear</thing>
+      </li>
+      <li>
+        <thing>Yuuka_uniform</thing>
+      </li>
     </apparel>
   </FixedPawnGenerate.FixedPawnDef>
 
@@ -162,11 +206,17 @@
     <skinColor>(254, 240, 230)</skinColor>
     
     <equipment>
-      <li>Superningu</li>
+      <li>
+        <thing>Superningu</thing>
+      </li>
     </equipment>
     <apparel>
-      <li>Sirocco_headgear</li>
-      <li>Sirocco_uniform</li>
+      <li>
+        <thing>Sirocco_headgear</thing>
+      </li>
+      <li>
+        <thing>Sirocco_uniform</thing>
+      </li>
     </apparel>
   </FixedPawnGenerate.FixedPawnDef>
 
@@ -177,11 +227,17 @@
     <skinColor>(255, 251, 245)</skinColor>
 
     <equipment>
-      <li>White_fang</li>
+      <li>
+        <thing>White_fang</thing>
+      </li>
     </equipment>
     <apparel>
-      <li>Aru_headgear</li>
-      <li>Aru_uniform</li>
+      <li>
+        <thing>Aru_headgear</thing>
+      </li>
+      <li>
+        <thing>Aru_uniform</thing>
+      </li>
     </apparel>
   </FixedPawnGenerate.FixedPawnDef>
   

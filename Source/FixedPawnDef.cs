@@ -88,11 +88,18 @@ namespace FixedPawnGenerate
 
         public Color skinColor;
 
-        public List<ThingDef> equipment = new List<ThingDef>();
+        public class ThingData
+        {
+            public ThingDef thing = null;
+            public int count = 1;
+            public ThingDef stuff = null;
+        }
 
-        public List<ThingDef> inventory = new List<ThingDef>();
+        public List<ThingData> equipment = new List<ThingData>();
 
-        public List<ThingDef> apparel = new List<ThingDef>();
+        public List<ThingData> inventory = new List<ThingData>();
+
+        public List<ThingData> apparel = new List<ThingData>();
 
         public class SkillData
         {

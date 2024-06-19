@@ -11,7 +11,7 @@ using Verse;
 
 using UnityEngine;
 
-namespace Fixed_Pawn_Generate
+namespace FixedPawnGenerate
 {
     public static class FixedPawnUtility
     {
@@ -51,7 +51,9 @@ namespace Fixed_Pawn_Generate
                 race = request.KindDef.race;
             }
 
-            return DefDatabase<FixedPawnDef>.AllDefsListForReading.FindAll(x => (factionDef == null || x.faction == factionDef) && (race == null || x.race == race)&& (pawnKindDef!=null || x.pawnKind==pawnKindDef) );
+            return DefDatabase<FixedPawnDef>.AllDefsListForReading.FindAll(x => (factionDef == null || x.faction == null || x.faction == factionDef) &&
+                                                                            (race == null || x.race == null || x.race == race) &&
+                                                                            (pawnKindDef != null || x.pawnKind == null || x.pawnKind == pawnKindDef));
         }
 
         public static T GetTargetDef<T>(string defName) where T : Def
@@ -60,7 +62,7 @@ namespace Fixed_Pawn_Generate
             return DefDatabase<T>.GetNamed(defName);
         }
 
-        public static bool ReplaceInnercontainer(ThingOwner innercontainer, List<ThingDef> list)
+        public static bool ReplaceInnercontainer(ThingOwner innercontainer, List<FixedPawnDef.ThingData> list)
         {
             if (list.Count == 0)
             {
@@ -77,16 +79,20 @@ namespace Fixed_Pawn_Generate
 
             foreach (var def in list)
             {
-                ThingDef stuff = GenStuff.RandomStuffFor(def);
+                if (def.thing == null)
+                    continue;
 
-                Thing thing = ThingMaker.MakeThing(def, stuff);
+                ThingDef stuff= def.stuff==null? GenStuff.DefaultStuffFor(def.thing) : def.stuff;
+
+                Thing thing = ThingMaker.MakeThing(def.thing, stuff);
+
                 if (thing == null)
                 {
-                    Log.Warning("Try add " + def.defName + "with" + stuff.defName + " Failed");
+                    Log.Warning($"Try add {def.thing.defName} with {stuff.defName} Failed");
                     continue;
                 }
-                //thing.stackCount = 1;
-                innercontainer.TryAdd(thing);
+                thing.stackCount = def.count;
+                innercontainer.TryAdd(thing, thing.stackCount);
             }
 
             return true;
