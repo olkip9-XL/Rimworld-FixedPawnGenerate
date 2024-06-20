@@ -27,6 +27,10 @@ namespace FixedPawnGenerate
 
         public bool isUnique = false;
 
+        public XenotypeDef xenotype = null;
+
+        public string customXenotype = null;
+
         public FactionDef faction = null;
 
         public PawnKindDef pawnKind = null;

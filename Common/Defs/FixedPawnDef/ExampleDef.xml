@@ -15,6 +15,9 @@
     <race>Human</race>
     <pawnKind>Colonist</pawnKind>
 
+    <xenotype MayRequire="ludeon.rimworld.biotech">Pigskin</xenotype>
+    <customXenotype>testCustomXenotype</customXenotype>
+
     <age>13.5</age>
     <chronologicalAge>200</chronologicalAge>
     <!--1 for Male, 2 for Female-->
@@ -30,10 +33,10 @@
     <hairColor>(237, 202, 156)</hairColor> <!--R,G,B-->
 
     <headType>Female_AverageWide</headType>
-    <faceTatoo MayRequire="ludeon.rimworld.royalty">Face_Pantheon</faceTatoo>
+    <faceTatoo MayRequire="ludeon.rimworld.ideology">Face_Pantheon</faceTatoo>
 
     <bodyType>Male</bodyType>
-    <bodyTatoo MayRequire="ludeon.rimworld.royalty">Body_Tiger</bodyTatoo>
+    <bodyTatoo MayRequire="ludeon.rimworld.ideology">Body_Tiger</bodyTatoo>
     <skinColor>(155,155,155)</skinColor>
 
     <childHood>FallenProdigy40</childHood>
@@ -74,6 +77,11 @@
         <level>5</level>
         <passion>1</passion>
       </li>
+      <li>
+        <skill>Mining</skill>
+        <level>12</level>
+        <passion>1</passion>
+      </li>
     </skills>
 
     <hediffs>
@@ -101,6 +109,8 @@
     <!--<faction MayRequire="Ludeon.RimWorld.Biotech">PirateWaster</faction>-->
     <faction>OutlanderRough</faction>
     <race>Human</race>
+
+    <xenotype>Baseliner</xenotype>
 
     <skills>
       <li>
@@ -144,8 +154,13 @@
     <generateRate>0.6</generateRate>
     <isUnique>false</isUnique>
 
-    <faction>OutlanderRough</faction>
+    <!--<faction>OutlanderRough</faction>-->
+    <faction>OutlanderRoughPig</faction>
     <race>Human</race>
+
+    <xenotype>Baseliner</xenotype>
+    <customXenotype>testCustomXenotype</customXenotype>
+
 
     <age>18</age>
     <chronologicalAge>2000</chronologicalAge>

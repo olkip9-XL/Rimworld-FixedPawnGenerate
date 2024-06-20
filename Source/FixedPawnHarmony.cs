@@ -36,7 +36,7 @@ namespace FixedPawnGenerate
 
                 float maxRate = caller == "StartingPawnUtility.NewGeneratedStartingPawn" ? 0.125f : 1f;
 
-                List<FixedPawnDef> list = FixedPawnUtility.GetFixedPawnDefsByCRequest(ref request).FindAll(x => randValue < x.generateRate && randValue<maxRate);
+                List<FixedPawnDef> list = FixedPawnUtility.GetFixedPawnDefsByRequest(ref request).FindAll(x => randValue < x.generateRate && randValue<maxRate);
 
                 if (list.Count > 0)
                 {
@@ -53,8 +53,37 @@ namespace FixedPawnGenerate
 
                     request.CanGeneratePawnRelations = false;
 
-                    if(def.fileName!=null)
-                        request.SetFixedBirthName(def.fileName);
+                    //request.ForcedXenotype= DefDatabase<XenotypeDef>.GetNamed("Highmate");
+ 
+                    if(def.xenotype!=null)
+                        request.ForcedXenotype = def.xenotype;
+
+                    if (def.customXenotype!=null)
+                    {
+                        CustomXenotype customXenotype= CharacterCardUtility.CustomXenotypesForReading.Find(x => x.name == def.customXenotype);
+#if DEBUG
+                        foreach (var item in CharacterCardUtility.CustomXenotypesForReading)
+                        {
+                            Log.Warning($"customXenotype:{item.name}");
+                        }
+#endif
+
+                        if (customXenotype != null)
+                        {
+                            request.ForcedXenotype = null;
+                            request.ForcedCustomXenotype = customXenotype;
+                        }
+                        else
+                        {
+                            Log.Warning($"customXenotype:{def.customXenotype} not found");
+                        }
+                    }
+
+                    if(def.gender!= Gender.None)
+                        request.FixedGender = def.gender;
+
+                    if(def.firstName!=null)
+                        request.SetFixedBirthName(def.firstName);
                     if(def.lastName != null)
                         request.SetFixedLastName(def.lastName);
                     if(def.bodyType!=null)

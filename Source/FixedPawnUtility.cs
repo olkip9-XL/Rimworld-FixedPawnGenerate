@@ -37,12 +37,11 @@ namespace FixedPawnGenerate
         }
 
 
-        public static List<FixedPawnDef> GetFixedPawnDefsByCRequest(ref PawnGenerationRequest request)
+        public static List<FixedPawnDef> GetFixedPawnDefsByRequest(ref PawnGenerationRequest request)
         {
             FactionDef factionDef = null;
             PawnKindDef pawnKindDef = null;
             ThingDef race = null;
-
 
             if (request.Faction != null)
                 factionDef = request.Faction.def;
@@ -54,9 +53,9 @@ namespace FixedPawnGenerate
                 race = request.KindDef.race;
             }
 
-            return DefDatabase<FixedPawnDef>.AllDefsListForReading.FindAll(x => (factionDef == null || x.faction == null || x.faction == factionDef) &&
-                                                                            (race == null || x.race == null || x.race == race) &&
-                                                                            (pawnKindDef != null || x.pawnKind == null || x.pawnKind == pawnKindDef));
+            return DefDatabase<FixedPawnDef>.AllDefsListForReading.FindAll(x => (x.faction == null || x.faction == factionDef) &&
+                                                                            (x.race == null || x.race == race) &&
+                                                                            (x.pawnKind == null || x.pawnKind == pawnKindDef));
         }
 
         public static T GetTargetDef<T>(string defName) where T : Def
@@ -153,9 +152,6 @@ namespace FixedPawnGenerate
                 pawn.story.HairColor = def.hairColor;
 
             //head
-            if (def.faceTatoo != null)
-                pawn.style.FaceTattoo = def.faceTatoo;
-
             if (def.headType != null)
                 pawn.story.headType = def.headType;
 
@@ -166,13 +162,22 @@ namespace FixedPawnGenerate
             if (def.bodyType != null)
                 pawn.story.bodyType = def.bodyType;
 
-            if (def.bodyTatoo != null)
-                pawn.style.BodyTattoo = def.bodyTatoo;
+            //Ideology
+            if (ModsConfig.IdeologyActive)
+            {
+                if (def.bodyTatoo != null)
+                    pawn.style.BodyTattoo = def.bodyTatoo;
 
-            //misc
+                if (def.faceTatoo != null)
+                    pawn.style.FaceTattoo = def.faceTatoo;
+            }
 
-            if (def.favoriteColor.a != 0f)
-                pawn.story.favoriteColor = def.favoriteColor;
+            //royalty
+            if (ModsConfig.RoyaltyActive)
+            {
+                if (def.favoriteColor.a != 0f)
+                    pawn.story.favoriteColor = def.favoriteColor;
+            }
 
             //skills
             foreach (var skillData in def.skills)
@@ -188,7 +193,7 @@ namespace FixedPawnGenerate
             //traits
             if (def.traits.Count > 0)
             {
-                pawn.story.traits.allTraits.Clear();
+                pawn.story.traits.allTraits.RemoveAll(x => x.sourceGene == null);
                 foreach (var trait in def.traits)
                 {
                     pawn.story.traits.GainTrait(new Trait(trait, 0));
@@ -211,7 +216,7 @@ namespace FixedPawnGenerate
                     hediff.Severity = hediffData.severity;
                     pawn.health.AddHediff(hediff);
                 }
-            }
+            }                
 
             //relation Todo
             //pawn.relations.everSeenByPlayer = true;
