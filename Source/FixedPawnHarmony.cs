@@ -34,7 +34,7 @@ namespace FixedPawnGenerate
 
                 float randValue = Rand.Value;
 
-                float maxRate = caller == "StartingPawnUtility.NewGeneratedStartingPawn" ? 0.125f : 1f;
+                float maxRate = (caller == "StartingPawnUtility.NewGeneratedStartingPawn" ? 0.125f : 1f);
 
                 List<FixedPawnDef> list = FixedPawnUtility.GetFixedPawnDefsByRequest(ref request).FindAll(x => randValue < x.generateRate && randValue<maxRate);
 

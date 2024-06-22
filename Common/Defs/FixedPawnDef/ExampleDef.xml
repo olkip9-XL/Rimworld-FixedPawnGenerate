@@ -39,7 +39,7 @@
     <bodyTatoo MayRequire="ludeon.rimworld.ideology">Body_Tiger</bodyTatoo>
     <skinColor>(155,155,155)</skinColor>
 
-    <childHood>FallenProdigy40</childHood>
+    <childHood>ToxicChild96</childHood>
     <adultHood>Archaeologist85</adultHood>
 
     <favoriteColor>(237, 202, 156)</favoriteColor>
@@ -93,8 +93,21 @@
     </hediffs>
 
     <traits>
-      <li>Kind</li>
-      <li>Psychopath</li>
+      <li>
+        <trait>Kind</trait>
+      </li>
+      <li>
+        <trait>Psychopath</trait>
+        <degree>0</degree>
+      </li>
+      <li>
+        <trait>Nerves</trait>
+        <degree>-1</degree>
+      </li>
+      <li>
+      <trait>NaturalMood</trait>
+      <degree>1</degree>
+    </li>
     </traits>
 
     <comps>

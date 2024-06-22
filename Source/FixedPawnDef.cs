@@ -123,8 +123,13 @@ namespace FixedPawnGenerate
 
         public List<HediffData> hediffs = new List<HediffData>();
         
+        public class TraitData
+        {
+            public TraitDef trait;
+            public int degree = 0;
+        }
 
-        public List<TraitDef> traits = new List<TraitDef>();
+        public List<TraitData> traits = new List<TraitData>();
 
         public List<CompProperties> comps = new List<CompProperties>();
 

@@ -194,11 +194,48 @@ namespace FixedPawnGenerate
             if (def.traits.Count > 0)
             {
                 pawn.story.traits.allTraits.RemoveAll(x => x.sourceGene == null);
-                foreach (var trait in def.traits)
+                foreach (var traitData in def.traits)
                 {
-                    pawn.story.traits.GainTrait(new Trait(trait, 0));
+                    int traitDegree;
+
+                    if(traitData.trait.degreeDatas.Count == 1)
+                    {
+                        traitDegree = 0;
+                    }
+                    else
+                    {
+                        if(traitData.trait.degreeDatas.Find(x=>x.degree== traitData.degree) != null)
+                        {
+                            traitDegree = traitData.degree;
+                        }
+                        else
+                        {
+                            Log.Warning($"Trait {traitData.trait.defName} does not have degree {traitData.degree}, use First defined degree");
+                            traitDegree = traitData.trait.degreeDatas[0].degree;
+                        }
+                    }
+
+                    pawn.story.traits.GainTrait(new Trait(traitData.trait, degree:traitDegree));
                 }
             }
+
+            //backstory traits and items ??
+
+            //if (def.childHood != null)
+            //{
+            //    foreach (var trait in def.childHood.forcedTraits)
+            //    {
+            //        pawn.story.traits.GainTrait(new Trait(trait.def, trait.degree));
+            //    }
+            //}
+            //if(def.adultHood != null && def.age>=13)
+            //{
+            //    foreach (var trait in def.adultHood.forcedTraits)
+            //    {
+            //        pawn.story.traits.GainTrait(new Trait(trait.def, trait.degree));
+            //    }
+            //}
+            
 
             //health
             if (def.hediffs.Count > 0)
