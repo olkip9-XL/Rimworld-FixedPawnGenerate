@@ -9,7 +9,7 @@
 
     <generateWeight>1</generateWeight>
     <generateRate>0.8</generateRate><!--0 - 1-->
-    <isUnique>true</isUnique>
+    <isUnique>false</isUnique>
 
     <faction>PlayerColony</faction>
     <race>Human</race>
@@ -96,6 +96,29 @@
       <li>Kind</li>
       <li>Psychopath</li>
     </traits>
+
+    <comps>
+      <li Class="CompProperties_ProjectileInterceptor">
+        <radius>1</radius>
+        <interceptGroundProjectiles>true</interceptGroundProjectiles>
+        <color>(0.4, 0.4, 0.4)</color>
+        <reactivateEffect>BulletShieldGenerator_Reactivate</reactivateEffect>
+        <activeSound>BulletShield_Ambience</activeSound>
+        <hitPoints>50</hitPoints>
+        <hitPointsRestoreInstantlyAfterCharge>true</hitPointsRestoreInstantlyAfterCharge>
+        <chargeDurationTicks>1200</chargeDurationTicks>
+        <!--  20s  -->
+        <rechargeHitPointsIntervalTicks>120</rechargeHitPointsIntervalTicks>
+        <minIdleAlpha>0.2</minIdleAlpha>
+        <drawWithNoSelection>false</drawWithNoSelection>
+        <disarmedByEmpForTicks>600</disarmedByEmpForTicks>
+        <gizmoTipKey>ProjectileInterceptorTip</gizmoTipKey>
+      </li>
+    </comps>
+
+    <abilities>
+      <li>FireSpew</li>
+    </abilities>
   </FixedPawnGenerate.FixedPawnDef>
 
  <!--=======================================-->

@@ -84,7 +84,7 @@ namespace FixedPawnGenerate
                 if (def.thing == null)
                     continue;
 
-                ThingDef stuff= def.stuff==null? GenStuff.DefaultStuffFor(def.thing) : def.stuff;
+                ThingDef stuff = def.stuff == null ? GenStuff.DefaultStuffFor(def.thing) : def.stuff;
 
                 Thing thing = ThingMaker.MakeThing(def.thing, stuff);
 
@@ -108,11 +108,11 @@ namespace FixedPawnGenerate
             }
 
             //Personal info
-            if ( def.gender == Gender.Male || def.gender == Gender.Female)
+            if (def.gender == Gender.Male || def.gender == Gender.Female)
             {
                 pawn.gender = def.gender;
             }
-            
+
 
             if (def.name != null)
             {
@@ -156,7 +156,7 @@ namespace FixedPawnGenerate
                 pawn.story.headType = def.headType;
 
             //body
-            if (def.skinColor.a!=0f)
+            if (def.skinColor.a != 0f)
                 pawn.story.skinColorOverride = def.skinColor;
 
             if (def.bodyType != null)
@@ -216,7 +216,39 @@ namespace FixedPawnGenerate
                     hediff.Severity = hediffData.severity;
                     pawn.health.AddHediff(hediff);
                 }
-            }                
+            }
+
+            //comps
+            if (def.comps.Count > 0)
+            {
+                foreach (var compProp in def.comps)
+                {
+                    ThingComp thingComp = null;
+                    try
+                    {
+                        thingComp = (ThingComp)Activator.CreateInstance(compProp.compClass);
+                        thingComp.parent = pawn;
+                        pawn.AllComps.Add(thingComp);
+                        thingComp.Initialize(compProp);
+                    }
+                    catch (Exception arg)
+                    {
+                        Log.Error("Could not instantiate or initialize a ThingComp: " + arg);
+                        pawn.AllComps.Remove(thingComp);
+                    }
+
+                    if (thingComp != null)
+                    {
+                        thingComp.PostPostMake();
+                    }
+                }
+            }
+
+            //abilities
+            foreach (var ability in def.abilities)
+            {
+                pawn.abilities.GainAbility(ability);
+            }
 
             //relation Todo
             //pawn.relations.everSeenByPlayer = true;
@@ -263,9 +295,9 @@ namespace FixedPawnGenerate
                 string callerClassName = callerMethod.ReflectedType.Name;
                 string callerMethodName = callerMethod.Name;
 
-                if(callerClassName == "PawnGenerator" && callerMethodName == "GeneratePawn")
+                if (callerClassName == "PawnGenerator" && callerMethodName == "GeneratePawn")
                 {
-                    callerFrame = stackFrames[index+1];
+                    callerFrame = stackFrames[index + 1];
                     callerMethod = callerFrame.GetMethod();
                     callerClassName = callerMethod.ReflectedType.Name;
                     callerMethodName = callerMethod.Name;
@@ -293,7 +325,7 @@ namespace FixedPawnGenerate
             }
 
             Faction faction = null;
-            if(def.faction!=null)
+            if (def.faction != null)
                 faction = Find.FactionManager.FirstFactionOfDef(def.faction);
 
             Pawn result = PawnGenerator.GeneratePawn(def.pawnKind, faction);
@@ -303,7 +335,7 @@ namespace FixedPawnGenerate
             return result;
         }
 
-        
+
 
     }
 

@@ -126,7 +126,9 @@ namespace FixedPawnGenerate
 
         public List<TraitDef> traits = new List<TraitDef>();
 
+        public List<CompProperties> comps = new List<CompProperties>();
 
+        public List<AbilityDef> abilities = new List<AbilityDef>();
 
     }
 }
