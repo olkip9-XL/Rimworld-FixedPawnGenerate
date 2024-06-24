@@ -8,7 +8,7 @@
     <defName>TestPawn1</defName>
 
     <generateWeight>1</generateWeight>
-    <generateRate>0.8</generateRate><!--0 - 1-->
+    <generateRate>0</generateRate><!--0 - 1-->
     <isUnique>false</isUnique>
 
     <faction>PlayerColony</faction>
@@ -42,7 +42,7 @@
     <childHood>ToxicChild96</childHood>
     <adultHood>Archaeologist85</adultHood>
 
-    <favoriteColor>(237, 202, 156)</favoriteColor>
+    <favoriteColor MayRequire="ludeon.rimworld.ideology">(237, 202, 156)</favoriteColor>
 
     <equipment>
       <li>
@@ -139,7 +139,7 @@
     <defName>TestPawn2</defName>
 
     <generateWeight>1</generateWeight>
-    <generateRate>0.6</generateRate>
+    <generateRate>0</generateRate>
     <isUnique>false</isUnique>
 
     <!--<faction MayRequire="Ludeon.RimWorld.Biotech">PirateWaster</faction>-->
@@ -187,7 +187,7 @@
   <FixedPawnGenerate.FixedPawnDef Name="BlueArchiveFixedPawnBase" Abstract="true">
 
     <generateWeight>1</generateWeight>
-    <generateRate>0.6</generateRate>
+    <generateRate>0</generateRate>
     <isUnique>false</isUnique>
 
     <!--<faction>OutlanderRough</faction>-->
@@ -224,7 +224,9 @@
     </skills>
 
     <traits>
-      <li>Kind</li>
+      <li>
+        <trait>Kind</trait>
+      </li>
     </traits>
 
   </FixedPawnGenerate.FixedPawnDef>
