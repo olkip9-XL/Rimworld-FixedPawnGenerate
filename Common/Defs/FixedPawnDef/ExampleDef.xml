@@ -20,9 +20,7 @@
 
     <age>13.5</age>
     <chronologicalAge>200</chronologicalAge>
-    <!--1 for Male, 2 for Female-->
-    <!--1 是男，2是女-->
-    <gender>2</gender>
+    <gender>Female</gender>
     
     <firstName>TestFirstName</firstName>
     <nickName>TestNickName</nickName>
@@ -63,6 +61,7 @@
       </li>
       <li>
         <thing>Apparel_BasicShirt</thing>
+        <stuff>Leather_Thrumbo</stuff>
       </li>
     </apparel>
 
@@ -143,7 +142,8 @@
     <isUnique>false</isUnique>
 
     <!--<faction MayRequire="Ludeon.RimWorld.Biotech">PirateWaster</faction>-->
-    <faction>OutlanderRough</faction>
+    <!--<faction>OutlanderRough</faction>-->
+    <faction>OutlanderRoughPig</faction>
     <race>Human</race>
 
     <xenotype>Baseliner</xenotype>
@@ -180,7 +180,19 @@
         <count>5</count>
       </li>
     </inventory>
-    
+
+    <!--[NL] Facial Animation support-->
+    <facialAnimationProps MayRequire="Nals.FacialAnimation">
+      <head>HeadNormal</head>
+      <brow>BrowNormal</brow>
+      <lid>LidNormal</lid>
+      <eye>EyeWide</eye>
+      <leftEyeColor>(216, 59, 1)</leftEyeColor>
+      <rightEyeColor>(92, 115, 55)</rightEyeColor>
+      <mouth>MouthNormal</mouth>
+      <skin>SkinNormal</skin>
+    </facialAnimationProps>
+
   </FixedPawnGenerate.FixedPawnDef>
 
   <!--======================Cosplay mod Example=================================-->

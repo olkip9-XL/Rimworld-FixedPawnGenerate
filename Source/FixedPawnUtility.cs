@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Verse;
 
 using UnityEngine;
+using FacialAnimation;
 
 namespace FixedPawnGenerate
 {
@@ -34,6 +35,7 @@ namespace FixedPawnGenerate
             callerBlackList.Add("<PlayerStartingThings>d__17.MoveNext");
             callerBlackList.Add("GenStep_Monolith.GenerateMonolith");
             callerBlackList.Add("PawnRelationWorker_Sibling.GenerateParent");
+            callerBlackList.Add("FixedPawnUtility.GenerateFixedPawnWithDef");
         }
 
 
@@ -64,7 +66,7 @@ namespace FixedPawnGenerate
             return DefDatabase<T>.GetNamed(defName);
         }
 
-        public static bool ReplaceInnercontainer(ThingOwner innercontainer, List<FixedPawnDef.ThingData> list)
+        private static bool ReplaceInnercontainer(ThingOwner innercontainer, List<FixedPawnDef.ThingData> list)
         {
             if (list.Count == 0)
             {
@@ -287,6 +289,49 @@ namespace FixedPawnGenerate
                 pawn.abilities.GainAbility(ability);
             }
 
+            //FacialAnimation
+            if (ModLister.HasActiveModWithName("[NL] Facial Animation - WIP"))
+            {
+                if(def.facialAnimationProps.head != null)
+                {
+                    pawn.GetComp<HeadControllerComp>().FaceType = def.facialAnimationProps.head;
+                }
+
+                if(def.facialAnimationProps.brow != null)
+                {
+                    pawn.GetComp<BrowControllerComp>().FaceType = def.facialAnimationProps.brow;
+                }
+
+                if(def.facialAnimationProps.lid != null)
+                {
+                    pawn.GetComp<LidControllerComp>().FaceType = def.facialAnimationProps.lid;
+                }
+
+                if(def.facialAnimationProps.eye != null)
+                {
+                    pawn.GetComp<EyeballControllerComp>().FaceType = def.facialAnimationProps.eye;
+                }
+                if(def.facialAnimationProps.leftEyeColor.a != 0f)
+                {
+                    pawn.GetComp<EyeballControllerComp>().FaceSecondColor = def.facialAnimationProps.leftEyeColor;
+                }
+                if(def.facialAnimationProps.rightEyeColor.a != 0f)
+                {
+                    pawn.GetComp<EyeballControllerComp>().FaceColor = def.facialAnimationProps.rightEyeColor;
+                }
+
+                if(def.facialAnimationProps.mouth != null)
+                {
+                    pawn.GetComp<MouthControllerComp>().FaceType = def.facialAnimationProps.mouth;
+                }
+
+                if(def.facialAnimationProps.skin != null)
+                {
+                    pawn.GetComp<SkinControllerComp>().FaceType = def.facialAnimationProps.skin;
+                }
+            }
+
+
             //relation Todo
             //pawn.relations.everSeenByPlayer = true;
 
@@ -354,6 +399,53 @@ namespace FixedPawnGenerate
             }
         }
 
+        public static void ModifyRequest(ref PawnGenerationRequest request, FixedPawnDef def)
+        {
+            if (def == null)
+            {
+                return;
+            }
+
+            if (def.age > 0)
+            {
+                request.FixedBiologicalAge = def.age;
+            }
+
+            if (def.xenotype != null)
+            {
+                request.ForcedXenotype = def.xenotype;
+            }
+
+            if (def.customXenotype != null)
+            {
+                CustomXenotype customXenotype = CharacterCardUtility.CustomXenotypesForReading.Find(x => x.name == def.customXenotype);
+#if DEBUG
+                        foreach (var item in CharacterCardUtility.CustomXenotypesForReading)
+                        {
+                            Log.Warning($"customXenotype:{item.name}");
+                        }
+#endif
+                if (customXenotype != null)
+                {
+                    request.ForcedXenotype = null;
+                    request.ForcedCustomXenotype = customXenotype;
+                }
+                else
+                {
+                    Log.Warning($"customXenotype:{def.customXenotype} not found");
+                }
+            }
+
+            if (def.gender != Gender.None)
+                request.FixedGender = def.gender;
+            if (def.firstName != null)
+                request.SetFixedBirthName(def.firstName);
+            if (def.lastName != null)
+                request.SetFixedLastName(def.lastName);
+            if (def.bodyType != null)
+                request.ForceBodyType = def.bodyType;
+        }
+
         public static Pawn GenerateFixedPawnWithDef(FixedPawnDef def)
         {
             if (def == null || def.pawnKind == null)
@@ -365,14 +457,14 @@ namespace FixedPawnGenerate
             if (def.faction != null)
                 faction = Find.FactionManager.FirstFactionOfDef(def.faction);
 
-            Pawn result = PawnGenerator.GeneratePawn(def.pawnKind, faction);
+            PawnGenerationRequest request = new PawnGenerationRequest(def.pawnKind, faction);
+            ModifyRequest(ref request, def);
 
+            Pawn result = PawnGenerator.GeneratePawn(request);
             ModifyPawn(result, def);
 
             return result;
         }
-
-
 
     }
 

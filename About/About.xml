@@ -5,7 +5,6 @@
   <author>LotusLand</author>
   <supportedVersions>
     <li>1.5</li>
-    <li>1.4</li>
   </supportedVersions>
   <packageId>LotusLand.FixedPawnGenerate</packageId>
   <description>
@@ -20,6 +19,12 @@
     <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
   </li>
   </modDependencies>
+
+  <loadAfter>
+    <li>Ludeon.RimWorld</li>
+    <li>Nals.FacialAnimation</li>
+    <li>Nals.FacialAnimationExperimentals</li>
+  </loadAfter>
 
   <url>https://github.com/olkip9-XL/Rimworld-FixedPawnGenerate</url>
 

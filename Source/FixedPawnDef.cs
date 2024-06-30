@@ -135,5 +135,21 @@ namespace FixedPawnGenerate
 
         public List<AbilityDef> abilities = new List<AbilityDef>();
 
+
+        //Facial Animation
+
+        public class FacialAnimationProps
+        {
+            public FacialAnimation.HeadTypeDef head;
+            public FacialAnimation.BrowTypeDef brow;
+            public FacialAnimation.LidTypeDef lid;
+            public FacialAnimation.EyeballTypeDef eye;
+            public Color leftEyeColor;
+            public Color rightEyeColor;
+            public FacialAnimation.MouthTypeDef mouth;
+            public FacialAnimation.SkinTypeDef skin;
+        } 
+
+        public FacialAnimationProps facialAnimationProps;
     }
 }
