@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  
+  <FixedPawnGenerate.FixedPawnDef MayRequire="Solaris.RatkinRaceMod">
+    <defName>TestAlianPawn1</defName>
+
+    <generateWeight>1</generateWeight>
+    <generateRate>0</generateRate><!--0 - 1-->
+    <isUnique>false</isUnique>
+
+    <faction>PlayerColony</faction>
+    <race>Ratkin</race>
+    <pawnKind>RatkinColonist</pawnKind>
+
+    <!--生成外星人框架内的角色时，xenotype不会生效-->
+    <!-- xenotype will not take effect when generating pawns with Alian Race. -->
+    <xenotype MayRequire="ludeon.rimworld.biotech">Pigskin</xenotype>
+    <!--<customXenotype>testCustomXenotype</customXenotype>-->
+
+    <age>13.5</age>
+    <chronologicalAge>200</chronologicalAge>
+    <gender>Female</gender>
+    
+    <firstName>TestFirstName</firstName>
+    <nickName>TestAlian</nickName>
+    <lastName>TestLastName</lastName>
+
+    <beard>NoBeard</beard>
+    <hair>RK_twin2</hair>
+    <hairColor>(231, 210, 149)</hairColor>
+
+    <headType>Female_AverageWide</headType>
+    <faceTattoo MayRequire="ludeon.rimworld.ideology">NoTattoo_Face</faceTattoo>
+
+    <bodyType>Thin</bodyType>
+    <bodyTattoo MayRequire="ludeon.rimworld.ideology">NoTattoo_Body</bodyTattoo>
+    <skinColor>(246, 231, 210)</skinColor>
+
+    <childHood>Ratkin_GuardenerStudent</childHood>
+    <adultHood>Ratkin_Ambassador</adultHood>
+
+    <favoriteColor MayRequire="ludeon.rimworld.ideology">(231, 210, 149)</favoriteColor>
+
+    <equipment>
+      <li>
+        <thing>RK_FlechetteRifle</thing>
+      </li>
+    </equipment>
+
+    <inventory>
+      <li>
+        <thing>MealSurvivalPack</thing>
+        <count>5</count>
+      </li>
+    </inventory>
+
+    <apparel>
+      <li>
+        <thing>RK_SummerDress</thing>
+      </li>
+    </apparel>
+
+    <skills>
+      <li>
+        <skill>Shooting</skill>
+        <level>10</level>
+        <passion>0</passion>
+      </li>
+      <li>
+        <skill>Cooking</skill>
+        <level>5</level>
+        <passion>1</passion>
+      </li>
+      <li>
+        <skill>Mining</skill>
+        <level>12</level>
+        <passion>1</passion>
+      </li>
+    </skills>
+
+    <!--<hediffs>
+      <li>
+        <hediff>Gunshot</hediff>
+        <severity>0.5</severity>
+        <bodyPart>Head</bodyPart>
+      </li>
+    </hediffs>-->
+
+    <traits>
+      <li>
+        <trait>Kind</trait>
+      </li>
+      <li>
+      <trait>NaturalMood</trait>
+      <degree>1</degree>
+    </li>
+    </traits>
+
+    <!--<comps>
+      <li Class="CompProperties_ProjectileInterceptor">
+        <radius>1</radius>
+        <interceptGroundProjectiles>true</interceptGroundProjectiles>
+        <color>(0.4, 0.4, 0.4)</color>
+        <reactivateEffect>BulletShieldGenerator_Reactivate</reactivateEffect>
+        <activeSound>BulletShield_Ambience</activeSound>
+        <hitPoints>50</hitPoints>
+        <hitPointsRestoreInstantlyAfterCharge>true</hitPointsRestoreInstantlyAfterCharge>
+        <chargeDurationTicks>1200</chargeDurationTicks>
+          --><!--20s--><!--  
+        <rechargeHitPointsIntervalTicks>120</rechargeHitPointsIntervalTicks>
+        <minIdleAlpha>0.2</minIdleAlpha>
+        <drawWithNoSelection>false</drawWithNoSelection>
+        <disarmedByEmpForTicks>600</disarmedByEmpForTicks>
+        <gizmoTipKey>ProjectileInterceptorTip</gizmoTipKey>
+      </li>
+    </comps>-->
+
+    <!--<abilities>
+      <li>FireSpew</li>
+    </abilities>-->
+  </FixedPawnGenerate.FixedPawnDef>
+  
+</Defs>

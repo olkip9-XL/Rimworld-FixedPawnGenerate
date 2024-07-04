@@ -31,10 +31,10 @@
     <hairColor>(237, 202, 156)</hairColor> <!--R,G,B-->
 
     <headType>Female_AverageWide</headType>
-    <faceTatoo MayRequire="ludeon.rimworld.ideology">Face_Pantheon</faceTatoo>
+    <faceTattoo MayRequire="ludeon.rimworld.ideology">Face_Pantheon</faceTattoo>
 
     <bodyType>Male</bodyType>
-    <bodyTatoo MayRequire="ludeon.rimworld.ideology">Body_Tiger</bodyTatoo>
+    <bodyTattoo MayRequire="ludeon.rimworld.ideology">Body_Tiger</bodyTattoo>
     <skinColor>(155,155,155)</skinColor>
 
     <childHood>ToxicChild96</childHood>
@@ -131,6 +131,18 @@
     <abilities>
       <li>FireSpew</li>
     </abilities>
+
+    <facialAnimationProps MayRequire="Nals.FacialAnimation">
+      <head>HeadNormal</head>
+      <brow>BrowNormal</brow>
+      <!--<lid>LidNormal</lid>-->
+      <!--<eye>EyeWide</eye>-->
+      <leftEyeColor>(216, 59, 1)</leftEyeColor>
+      <rightEyeColor>(92, 115, 55)</rightEyeColor>
+      <mouth>MouthNormal</mouth>
+      <skin>SkinNormal</skin>
+    </facialAnimationProps>
+    
   </FixedPawnGenerate.FixedPawnDef>
 
  <!--=======================================-->

@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Verse;
 
 using UnityEngine;
-using FacialAnimation;
 
 namespace FixedPawnGenerate
 {
@@ -102,19 +101,12 @@ namespace FixedPawnGenerate
             return true;
         }
 
-        public static void ModifyPawn(Pawn pawn, FixedPawnDef def)
+        private static void SetPawnPersonalInfo(Pawn pawn, FixedPawnDef def)
         {
-            if (def == null)
-            {
-                return;
-            }
-
-            //Personal info
             if (def.gender == Gender.Male || def.gender == Gender.Female)
             {
                 pawn.gender = def.gender;
             }
-
 
             if (def.name != null)
             {
@@ -124,15 +116,10 @@ namespace FixedPawnGenerate
             {
                 pawn.story.birthLastName = (pawn.Name as NameTriple).Last;
             }
+        }
 
-            //inventory
-            ReplaceInnercontainer(pawn.equipment.GetDirectlyHeldThings(), def.equipment);
-
-            ReplaceInnercontainer(pawn.inventory.GetDirectlyHeldThings(), def.inventory);
-
-            ReplaceInnercontainer(pawn.apparel.GetDirectlyHeldThings(), def.apparel);
-
-            //story
+        private static void SetPawnStory(Pawn pawn, FixedPawnDef def)
+        {
             if (def.childHood != null && def.childHood.slot == BackstorySlot.Childhood)
             {
                 pawn.story.Childhood = def.childHood;
@@ -142,7 +129,10 @@ namespace FixedPawnGenerate
             {
                 pawn.story.Adulthood = def.adultHood;
             }
+        }
 
+        private static void SetPawnApparence(Pawn pawn, FixedPawnDef def)
+        {
             //hair
             if (def.beard != null)
                 pawn.style.beardDef = def.beard;
@@ -167,11 +157,11 @@ namespace FixedPawnGenerate
             //Ideology
             if (ModsConfig.IdeologyActive)
             {
-                if (def.bodyTatoo != null)
-                    pawn.style.BodyTattoo = def.bodyTatoo;
+                if (def.bodyTattoo != null)
+                    pawn.style.BodyTattoo = def.bodyTattoo;
 
-                if (def.faceTatoo != null)
-                    pawn.style.FaceTattoo = def.faceTatoo;
+                if (def.faceTattoo != null)
+                    pawn.style.FaceTattoo = def.faceTattoo;
             }
 
             //royalty
@@ -180,6 +170,31 @@ namespace FixedPawnGenerate
                 if (def.favoriteColor.a != 0f)
                     pawn.story.favoriteColor = def.favoriteColor;
             }
+        }
+
+        public static void ModifyPawn(Pawn pawn, FixedPawnDef def)
+        {
+            if (def == null || pawn == null)
+            {
+                return;
+            }
+
+            //Personal info
+            SetPawnPersonalInfo(pawn, def);
+
+            //inventory
+            ReplaceInnercontainer(pawn.equipment.GetDirectlyHeldThings(), def.equipment);
+
+            ReplaceInnercontainer(pawn.inventory.GetDirectlyHeldThings(), def.inventory);
+
+            ReplaceInnercontainer(pawn.apparel.GetDirectlyHeldThings(), def.apparel);
+
+            //story
+            SetPawnStory(pawn, def);
+
+            //apparence
+            SetPawnApparence(pawn, def);
+
 
             //skills
             foreach (var skillData in def.skills)
@@ -200,13 +215,13 @@ namespace FixedPawnGenerate
                 {
                     int traitDegree;
 
-                    if(traitData.trait.degreeDatas.Count == 1)
+                    if (traitData.trait.degreeDatas.Count == 1)
                     {
                         traitDegree = 0;
                     }
                     else
                     {
-                        if(traitData.trait.degreeDatas.Find(x=>x.degree== traitData.degree) != null)
+                        if (traitData.trait.degreeDatas.Find(x => x.degree == traitData.degree) != null)
                         {
                             traitDegree = traitData.degree;
                         }
@@ -217,27 +232,9 @@ namespace FixedPawnGenerate
                         }
                     }
 
-                    pawn.story.traits.GainTrait(new Trait(traitData.trait, degree:traitDegree));
+                    pawn.story.traits.GainTrait(new Trait(traitData.trait, degree: traitDegree));
                 }
             }
-
-            //backstory traits and items ??
-
-            //if (def.childHood != null)
-            //{
-            //    foreach (var trait in def.childHood.forcedTraits)
-            //    {
-            //        pawn.story.traits.GainTrait(new Trait(trait.def, trait.degree));
-            //    }
-            //}
-            //if(def.adultHood != null && def.age>=13)
-            //{
-            //    foreach (var trait in def.adultHood.forcedTraits)
-            //    {
-            //        pawn.story.traits.GainTrait(new Trait(trait.def, trait.degree));
-            //    }
-            //}
-            
 
             //health
             if (def.hediffs.Count > 0)
@@ -290,45 +287,9 @@ namespace FixedPawnGenerate
             }
 
             //FacialAnimation
-            if (ModLister.HasActiveModWithName("[NL] Facial Animation - WIP"))
+            if (ModLister.HasActiveModWithName("[NL] Facial Animation - WIP") && def.facialAnimationProps!=null)
             {
-                if(def.facialAnimationProps.head != null)
-                {
-                    pawn.GetComp<HeadControllerComp>().FaceType = def.facialAnimationProps.head;
-                }
-
-                if(def.facialAnimationProps.brow != null)
-                {
-                    pawn.GetComp<BrowControllerComp>().FaceType = def.facialAnimationProps.brow;
-                }
-
-                if(def.facialAnimationProps.lid != null)
-                {
-                    pawn.GetComp<LidControllerComp>().FaceType = def.facialAnimationProps.lid;
-                }
-
-                if(def.facialAnimationProps.eye != null)
-                {
-                    pawn.GetComp<EyeballControllerComp>().FaceType = def.facialAnimationProps.eye;
-                }
-                if(def.facialAnimationProps.leftEyeColor.a != 0f)
-                {
-                    pawn.GetComp<EyeballControllerComp>().FaceSecondColor = def.facialAnimationProps.leftEyeColor;
-                }
-                if(def.facialAnimationProps.rightEyeColor.a != 0f)
-                {
-                    pawn.GetComp<EyeballControllerComp>().FaceColor = def.facialAnimationProps.rightEyeColor;
-                }
-
-                if(def.facialAnimationProps.mouth != null)
-                {
-                    pawn.GetComp<MouthControllerComp>().FaceType = def.facialAnimationProps.mouth;
-                }
-
-                if(def.facialAnimationProps.skin != null)
-                {
-                    pawn.GetComp<SkinControllerComp>().FaceType = def.facialAnimationProps.skin;
-                }
+                def.facialAnimationProps.SetPawn(pawn);
             }
 
 

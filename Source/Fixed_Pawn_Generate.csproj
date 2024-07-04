@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>..\..\..\..\..\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
@@ -39,6 +40,7 @@
     </Reference>
     <Reference Include="FacialAnimation">
       <HintPath>..\..\..\..\..\workshop\content\294100\1635901197\1.5\Assemblies\FacialAnimation.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -54,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Example.cs" />
+    <Compile Include="FPG_FacialAnimationProps.cs" />
     <Compile Include="FixedPawnDef.cs" />
     <Compile Include="FixedPawnDefOf.cs" />
     <Compile Include="FixedPawnHarmony.cs" />

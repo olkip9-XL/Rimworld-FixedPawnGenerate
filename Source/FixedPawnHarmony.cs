@@ -63,16 +63,18 @@ namespace FixedPawnGenerate
             {
                 Pawn pawn = __result;
 
+#if DEBUG
+                String caller = FixedPawnUtility.GetCallerMethodName(5);
+                Log.Warning($"[Debug]调用者:{caller}, 生成:{__state}");
+#endif
+
                 if (pawn != null && __state != "None")
                 {
                     FixedPawnDef fixedPawnDef = DefDatabase<FixedPawnDef>.GetNamed(__state);
 
                     FixedPawnUtility.ModifyPawn(pawn, fixedPawnDef);
                 }
-#if DEBUG
-                String caller = FixedPawnUtility.GetCallerMethodName(5);
-                Log.Warning($"[Debug]调用者:{caller}, 生成:{__state}");
-#endif
+
 
             }
         }
