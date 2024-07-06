@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  
+  <!--<FixedPawnGenerate.FixedPawnDef MayRequire="Solaris.RatkinRaceMod">-->
+  <FixedPawnGenerate.FixedPawnDef MayRequire="WarshipGirlR.AlienRaces">
+    <defName>WSGR_Lexingtontest</defName>
+
+    <generateWeight>1</generateWeight>
+    <!--想用的话把generateRate调高即可-->
+    <generateRate>0</generateRate>
+    <isUnique>false</isUnique>
+
+    <faction>WSGR_PlayerFaction</faction>
+    <!--<faction>PlayerColony</faction>-->
+    <race>WarshipGirl</race>
+    <pawnKind>WSGR_Colonist</pawnKind>
+
+    <firstName>航母</firstName>
+    <nickName>列克星敦</nickName>
+    <lastName>舰娘</lastName>
+
+    <beard>NoBeard</beard>
+    <hair>WSGR_Lexington</hair>
+    <hairColor>(255, 255, 255)</hairColor>
+
+    <headType>RHead_A</headType>
+    <faceTattoo MayRequire="ludeon.rimworld.ideology">NoTattoo_Face</faceTattoo>
+
+    <bodyType>Thin</bodyType>
+    <bodyTattoo MayRequire="ludeon.rimworld.ideology">NoTattoo_Body</bodyTattoo>
+    <skinColor>(255, 255, 255)</skinColor>
+
+    <!--添加了服装-->
+    <apparel>
+      <li>
+        <thing>WSGR_Lexington_Hat</thing>
+      </li>
+      <li>
+        <thing>WSGR_Lexington_Uniform</thing>
+      </li>
+      <li>
+        <thing>WSGR_Lexington_Shorts</thing>
+      </li>
+    </apparel>
+
+  </FixedPawnGenerate.FixedPawnDef>
+
+</Defs>

@@ -54,6 +54,12 @@ namespace FixedPawnGenerate
                 race = request.KindDef.race;
             }
 
+#if DEBUG
+
+            Log.Warning($"factionDef:{factionDef?.defName} pawnKindDef:{pawnKindDef.defName}, {race.defName}");
+#endif
+
+
             return DefDatabase<FixedPawnDef>.AllDefsListForReading.FindAll(x => (x.faction == null || x.faction == factionDef) &&
                                                                             (x.race == null || x.race == race) &&
                                                                             (x.pawnKind == null || x.pawnKind == pawnKindDef));

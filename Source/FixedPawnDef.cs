@@ -139,5 +139,8 @@ namespace FixedPawnGenerate
         //Facial Animation
         [MayRequire("Nals.FacialAnimation")]
         public FPG_FacialAnimationProps facialAnimationProps = null;
+
+
+        public List<String> tags = new List<String>();
     }
 }
