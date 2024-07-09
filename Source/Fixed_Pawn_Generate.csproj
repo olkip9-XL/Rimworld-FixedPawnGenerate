@@ -7,7 +7,7 @@
     <ProjectGuid>{D7D21B4A-1DA7-41D8-B202-C58CA8FA62AA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fixed_Pawn_Generate</RootNamespace>
+    <RootNamespace>FixedPawnGenerate</RootNamespace>
     <AssemblyName>Fixed_Pawn_Generate</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -55,6 +55,9 @@
     <None Include="..\About\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompFixedPawn.cs" />
+    <Compile Include="CompProperties_Tachie.cs" />
+    <Compile Include="CompTachie.cs" />
     <Compile Include="Example.cs" />
     <Compile Include="FPG_FacialAnimationProps.cs" />
     <Compile Include="FixedPawnDef.cs" />

@@ -15,21 +15,12 @@ namespace FixedPawnGenerate
 {
     public static class FixedPawnUtility
     {
-        public static readonly List<string> callerWhiteList = new List<string>();
-
         public static readonly List<string> callerBlackList = new List<string>();
 
         public static int startingPawnCount = 0;
 
         static FixedPawnUtility()
         {
-
-            callerWhiteList.Add("StartingPawnUtility.NewGeneratedStartingPawn");
-            callerWhiteList.Add("WildAnimalSpawner.SpawnRandomWildAnimalAt");
-            callerWhiteList.Add("ThingSetMaker_MapGen_AncientPodContents.GenerateAngryAncient");
-            callerWhiteList.Add("SymbolResolver_SinglePawn.Resolve");
-            callerWhiteList.Add("PawnGroupKindWorker_Normal.GeneratePawns");
-
             callerBlackList.Add("Faction.TryGenerateNewLeader");
             callerBlackList.Add("<PlayerStartingThings>d__17.MoveNext");
             callerBlackList.Add("GenStep_Monolith.GenerateMonolith");
@@ -286,6 +277,27 @@ namespace FixedPawnGenerate
                 }
             }
 
+            //Add CompFixedPawn
+            CompFixedPawn compFixedPawn = null;
+            try
+            {
+                compFixedPawn = (CompFixedPawn)Activator.CreateInstance(typeof(CompFixedPawn));
+                compFixedPawn.parent = pawn;
+                compFixedPawn.def = def;
+                pawn.AllComps.Add(compFixedPawn);
+                //compFixedPawn.Initialize(compProp);
+            }
+            catch (Exception arg)
+            {
+                Log.Error("Could not instantiate or initialize a ThingComp: " + arg);
+                pawn.AllComps.Remove(compFixedPawn);
+            }
+
+            if (compFixedPawn != null)
+            {
+                compFixedPawn.PostPostMake();
+            }
+
             //abilities
             foreach (var ability in def.abilities)
             {
@@ -428,12 +440,30 @@ namespace FixedPawnGenerate
             ModifyRequest(ref request, def);
 
             Pawn result = PawnGenerator.GeneratePawn(request);
+
             ModifyPawn(result, def);
+
+            if (def.isUnique)
+            {
+                Manager.uniqePawns.Remove(def);
+            }
 
             return result;
         }
 
+        public static FixedPawnDef TryGetFixedPawnDefOfPawn(Pawn pawn)
+        {
+            CompFixedPawn compFixedPawn = pawn.TryGetComp<CompFixedPawn>();
+            if (compFixedPawn != null)
+            {
+                return compFixedPawn.def;
+            }
+            return null;
+        }
+
+
     }
+
 
 
 
