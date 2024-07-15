@@ -10,9 +10,12 @@ using System.Threading.Tasks;
 using Verse;
 
 using UnityEngine;
+using System.Security.Cryptography;
+using HarmonyLib;
 
 namespace FixedPawnGenerate
 {
+    [StaticConstructorOnStartup]
     public static class FixedPawnUtility
     {
         public static readonly List<string> callerBlackList = new List<string>();
@@ -26,34 +29,77 @@ namespace FixedPawnGenerate
             callerBlackList.Add("GenStep_Monolith.GenerateMonolith");
             callerBlackList.Add("PawnRelationWorker_Sibling.GenerateParent");
             callerBlackList.Add("FixedPawnUtility.GenerateFixedPawnWithDef");
+
+            //fix relations
+            foreach (FixedPawnDef def in DefDatabase<FixedPawnDef>.AllDefs.Where(x => x.isUnique))
+            {
+                foreach (var relationData in def.relations)
+                {
+                    FixedPawnDef targetDef = relationData.fixedPawn;
+
+                    if (targetDef.relations.Find(x => x.fixedPawn == def) != null)
+                    {
+                        continue;
+                    }
+
+                    targetDef.relations.AddDistinct(new FixedPawnDef.RelationData(GetOppositeRelation(relationData.relation), def));
+#if DEBUG
+                    Log.Warning($"[Debug]Add relation {GetOppositeRelation(relationData.relation)}({def.defName}) to {targetDef.defName}");
+#endif
+                }
+            }
         }
 
-
-        public static List<FixedPawnDef> GetFixedPawnDefsByRequest(ref PawnGenerationRequest request)
+        private static PawnRelationDef GetOppositeRelation(PawnRelationDef relation)
         {
-            FactionDef factionDef = null;
-            PawnKindDef pawnKindDef = null;
-            ThingDef race = null;
-
-            if (request.Faction != null)
-                factionDef = request.Faction.def;
-
-            if (request.KindDef != null)
+            if (relation == PawnRelationDefOf.Parent)
             {
-                pawnKindDef = request.KindDef;
-
-                race = request.KindDef.race;
+                return PawnRelationDefOf.Child;
             }
-
-#if DEBUG
-
-            Log.Warning($"factionDef:{factionDef?.defName} pawnKindDef:{pawnKindDef.defName}, {race.defName}");
-#endif
-
-
-            return DefDatabase<FixedPawnDef>.AllDefsListForReading.FindAll(x => (x.faction == null || x.faction == factionDef) &&
-                                                                            (x.race == null || x.race == race) &&
-                                                                            (x.pawnKind == null || x.pawnKind == pawnKindDef));
+            else if (relation == PawnRelationDefOf.Child)
+            {
+                return PawnRelationDefOf.Parent;
+            }
+            else if (relation == PawnRelationDefOf.Grandparent)
+            {
+                return PawnRelationDefOf.Grandchild;
+            }
+            else if (relation == PawnRelationDefOf.Grandchild)
+            {
+                return PawnRelationDefOf.Grandparent;
+            }
+            else if (relation == PawnRelationDefOf.GreatGrandparent)
+            {
+                return PawnRelationDefOf.GreatGrandchild;
+            }
+            else if (relation == PawnRelationDefOf.GreatGrandchild)
+            {
+                return PawnRelationDefOf.GreatGrandparent;
+            }
+            else if (relation == PawnRelationDefOf.UncleOrAunt)
+            {
+                return PawnRelationDefOf.NephewOrNiece;
+            }
+            else if (relation == PawnRelationDefOf.NephewOrNiece)
+            {
+                return PawnRelationDefOf.UncleOrAunt;
+            }
+            else if (relation == PawnRelationDefOf.GranduncleOrGrandaunt)
+            {
+                return PawnRelationDefOf.Grandchild;
+            }
+            else if(relation == PawnRelationDefOf.ParentBirth)
+            {
+                return PawnRelationDefOf.Child;
+            }
+            else if(relation == PawnRelationDefOf.Kin)
+            {
+                return null;
+            }
+            else
+            {
+                return relation;
+            }
         }
 
         public static T GetTargetDef<T>(string defName) where T : Def
@@ -92,6 +138,12 @@ namespace FixedPawnGenerate
                     continue;
                 }
                 thing.stackCount = def.count;
+
+                thing.TryGetComp<CompQuality>()?.SetQuality(def.quality, ArtGenerationContext.Colony);
+
+                if(def.color.a != 0f)
+                    thing.TryGetComp<CompColorable>()?.SetColor(def.color);
+
                 innercontainer.TryAdd(thing, thing.stackCount);
             }
 
@@ -200,7 +252,8 @@ namespace FixedPawnGenerate
                 if (skill != null)
                 {
                     skill.Level = skillData.level;
-                    skill.passion = skillData.passion;
+                    if(skillData.replacePassion)
+                        skill.passion = skillData.passion;
                 }
             }
 
@@ -250,53 +303,7 @@ namespace FixedPawnGenerate
                     pawn.health.AddHediff(hediff);
                 }
             }
-
-            //comps
-            if (def.comps.Count > 0)
-            {
-                foreach (var compProp in def.comps)
-                {
-                    ThingComp thingComp = null;
-                    try
-                    {
-                        thingComp = (ThingComp)Activator.CreateInstance(compProp.compClass);
-                        thingComp.parent = pawn;
-                        pawn.AllComps.Add(thingComp);
-                        thingComp.Initialize(compProp);
-                    }
-                    catch (Exception arg)
-                    {
-                        Log.Error("Could not instantiate or initialize a ThingComp: " + arg);
-                        pawn.AllComps.Remove(thingComp);
-                    }
-
-                    if (thingComp != null)
-                    {
-                        thingComp.PostPostMake();
-                    }
-                }
-            }
-
-            //Add CompFixedPawn
-            CompFixedPawn compFixedPawn = null;
-            try
-            {
-                compFixedPawn = (CompFixedPawn)Activator.CreateInstance(typeof(CompFixedPawn));
-                compFixedPawn.parent = pawn;
-                compFixedPawn.def = def;
-                pawn.AllComps.Add(compFixedPawn);
-                //compFixedPawn.Initialize(compProp);
-            }
-            catch (Exception arg)
-            {
-                Log.Error("Could not instantiate or initialize a ThingComp: " + arg);
-                pawn.AllComps.Remove(compFixedPawn);
-            }
-
-            if (compFixedPawn != null)
-            {
-                compFixedPawn.PostPostMake();
-            }
+                    
 
             //abilities
             foreach (var ability in def.abilities)
@@ -310,13 +317,63 @@ namespace FixedPawnGenerate
                 def.facialAnimationProps.SetPawn(pawn);
             }
 
+            //relation
+            Manager.AddPawn(pawn, def);
 
-            //relation Todo
-            //pawn.relations.everSeenByPlayer = true;
-
+            GenerateRelations(pawn);
         }
 
-        // Generate a random defName based on weights
+        private static void GenerateRelations(Pawn pawn)
+        {
+#if DEBUG
+            Log.Warning($"GenerateRelations:{pawn.Name}");
+#endif
+
+            if (pawn == null)
+            {
+                return;
+            }
+            List<FixedPawnDef.RelationData> relations = Manager.GetDef(pawn)?.relations;
+
+            if(relations == null)
+            {
+                return;
+            }
+            
+            foreach (var relationData in relations)
+            {
+                Pawn relationPawn = GenerateFixedPawnWithDef(relationData.fixedPawn, false);
+                if (relationPawn != null)
+                {
+#if DEBUG
+                    Log.Warning($"GenerateRelations:{pawn.Name} {relationData.relation.defName} {relationPawn.Name}");
+#endif
+                    bool flag = false;
+
+                    if (relationData.relation.implied)
+                    {
+                        flag = true;
+                        relationData.relation.implied = false;
+                    }
+
+                    if (pawn.relations.RelatedPawns.Contains(relationPawn))
+                    {
+                        continue;
+                    }
+
+                    pawn.relations.AddDirectRelation(relationData.relation, relationPawn);
+                    if(flag)
+                    {
+                        relationData.relation.implied = true;
+                    }
+                  
+                }
+            }
+
+        }
+           
+
+        // Get a random def based on weights
         public static FixedPawnDef GetRandomFixedPawnDefByWeight(List<FixedPawnDef> list)
         {
             double totalWeight = 0;
@@ -385,6 +442,8 @@ namespace FixedPawnGenerate
                 return;
             }
 
+            request.CanGeneratePawnRelations = false;
+
             if (def.age > 0)
             {
                 request.FixedBiologicalAge = def.age;
@@ -423,13 +482,33 @@ namespace FixedPawnGenerate
                 request.SetFixedLastName(def.lastName);
             if (def.bodyType != null)
                 request.ForceBodyType = def.bodyType;
+
+            //comps properties
+            FixedPawnHarmony.Global.compProperties.Clear();
+            FixedPawnHarmony.Global.compProperties.AddRange(def.comps);
         }
 
-        public static Pawn GenerateFixedPawnWithDef(FixedPawnDef def)
+        public static Pawn GenerateFixedPawnWithDef(FixedPawnDef def, bool removeUnique = true)
         {
             if (def == null || def.pawnKind == null)
             {
                 return null;
+            }
+
+            Pawn result = null;
+            if (def.isUnique)
+            {
+                if (removeUnique)
+                {
+                    Manager.uniqePawns.Remove(def);
+                }
+
+                result = Manager.GetPawn(def);
+
+                if(result != null)
+                {
+                   return result;
+                }
             }
 
             Faction faction = null;
@@ -439,32 +518,17 @@ namespace FixedPawnGenerate
             PawnGenerationRequest request = new PawnGenerationRequest(def.pawnKind, faction);
             ModifyRequest(ref request, def);
 
-            Pawn result = PawnGenerator.GeneratePawn(request);
+
+
+            result = PawnGenerator.GeneratePawn(request);
 
             ModifyPawn(result, def);
-
-            if (def.isUnique)
-            {
-                Manager.uniqePawns.Remove(def);
-            }
 
             return result;
         }
 
-        public static FixedPawnDef TryGetFixedPawnDefOfPawn(Pawn pawn)
-        {
-            CompFixedPawn compFixedPawn = pawn.TryGetComp<CompFixedPawn>();
-            if (compFixedPawn != null)
-            {
-                return compFixedPawn.def;
-            }
-            return null;
-        }
 
+        public static ModSetting_FixedPawnGenerate Settings => LoadedModManager.GetMod<Mod_FixedPawnGenerate>().GetSettings<ModSetting_FixedPawnGenerate>();
 
     }
-
-
-
-
 }

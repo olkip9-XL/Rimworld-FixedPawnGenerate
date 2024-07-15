@@ -26,16 +26,20 @@ namespace FixedPawnGenerate
         private void DrawTachie()
         {
             MainTabWindow_Inspect mainTabWindow_Inspect = Find.WindowStack.WindowOfType<MainTabWindow_Inspect>();
+            if (mainTabWindow_Inspect != null)
+            {
+                float num = 0f;
+                float num2 = 430f / (float)(2f);
 
-            float num = 0f;
-            float num2 = 430f / (float)(2f);
-            float num3 = mainTabWindow_Inspect.PaneTopY - 500f - 30f;
+                float num3 = mainTabWindow_Inspect.PaneTopY - 500f - 30f;
 
-            if (this.texture == null)
-                this.texture = ContentFinder<Texture2D>.Get(Props.texture);
+                if (this.texture == null)
+                    this.texture = ContentFinder<Texture2D>.Get(Props.texture);
 
-            if (this.texture != null)
-                Widgets.DrawTextureFitted(new Rect(num2 * (float)(num + 1) - 215f + Props.offsetX, num3 + Props.offsetY, 430f, 500f), this.texture, Props.scale);
+                if (this.texture != null)
+                    Widgets.DrawTextureFitted(new Rect(num2 * (float)(num + 1) - 215f + Props.offsetX, num3 + Props.offsetY, 430f, 500f), this.texture, Props.scale);
+            }
+           
         }
 
         private Texture2D texture = null;

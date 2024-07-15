@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+  
+  <allowRelation>Allow natural generation of character relationships</allowRelation>
+  <allowRelationDescription>Allow natural generation of character relationships</allowRelationDescription>
+
+  <maxGenerateRate_Starting>Highest generation rate for custom characters in the starting character selection screen: {0}</maxGenerateRate_Starting>
+  <maxGenerateRate_Global>Highest generation rate for custom characters globally:{0}</maxGenerateRate_Global>
+
+  <Reset>Reset</Reset>
+</LanguageData>

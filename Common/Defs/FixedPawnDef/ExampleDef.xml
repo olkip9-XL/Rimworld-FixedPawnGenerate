@@ -9,7 +9,7 @@
 
     <generateWeight>1</generateWeight>
     <generateRate>0</generateRate><!--0 - 1-->
-    <isUnique>false</isUnique>
+    <isUnique>true</isUnique>
 
     <faction>PlayerColony</faction>
     <race>Human</race>
@@ -42,20 +42,28 @@
 
     <favoriteColor MayRequire="ludeon.rimworld.ideology">(237, 202, 156)</favoriteColor>
 
-    <equipment>
+    <!--<equipment>
       <li>
         <thing>Gun_BoltActionRifle</thing>
       </li>
+    </equipment>-->
+    
+    <equipment>
+      <Gun_BoltActionRifle quality="Legendary" color="(255,255,255)"/>
     </equipment>
 
-    <inventory>
+    <!--<inventory>
       <li>
         <thing>MealSurvivalPack</thing>
         <count>5</count>
       </li>
+    </inventory>-->
+    
+    <inventory>
+      <MealSurvivalPack>6</MealSurvivalPack>
     </inventory>
 
-    <apparel>
+    <!--<apparel>
       <li>
         <thing>Apparel_Pants</thing>
       </li>
@@ -63,35 +71,58 @@
         <thing>Apparel_BasicShirt</thing>
         <stuff>Leather_Thrumbo</stuff>
       </li>
+    </apparel>--> 
+    
+    <apparel>
+      <li>
+        <thing>Apparel_Pants</thing>
+        <quality>Good</quality>
+        <color>(16, 124, 16)</color>
+      </li>
+      <Apparel_BasicShirt  quality="Awful" color="(0, 120, 212)">Leather_Thrumbo</Apparel_BasicShirt>
     </apparel>
 
     <skills>
-      <li>
+      <Shooting>(10,2)</Shooting>
+      
+      <!--<li>
         <skill>Shooting</skill>
         <level>10</level>
         <passion>0</passion>
-      </li>
-      <li>
+      </li>-->
+      <Cooking>(5,Minor)</Cooking>
+      
+      <!--<li>
         <skill>Cooking</skill>
         <level>5</level>
-        <passion>1</passion>
-      </li>
-      <li>
+        <passion>1</passion>```
+      </li>-->
+      <Mining>12</Mining>
+
+      <!--<li>
         <skill>Mining</skill>
         <level>12</level>
         <passion>1</passion>
-      </li>
+      </li>-->
     </skills>
 
-    <hediffs>
+    <!--<hediffs>
       <li>
         <hediff>Gunshot</hediff>
         <severity>0.5</severity>
         <bodyPart>Head</bodyPart>
       </li>
+      <li>
+        <hediff>Heatstroke</hediff>
+        <severity>0.3</severity>
+      </li>
+    </hediffs>-->
+    <hediffs>
+      <Gunshot>(0.5,Head)</Gunshot>
+      <Heatstroke>0.3</Heatstroke>
     </hediffs>
 
-    <traits>
+    <!--<traits>
       <li>
         <trait>Kind</trait>
       </li>
@@ -107,7 +138,17 @@
       <trait>NaturalMood</trait>
       <degree>1</degree>
     </li>
+    </traits>-->
+    <traits>
+      <Kind/>
+      <Psychopath>0</Psychopath>
+      <Nerves>-1</Nerves>
+      <NaturalMood>1</NaturalMood>
     </traits>
+
+    <!--<relations>
+      <Parent>TestParent</Parent>
+    </relations>-->
 
     <comps>
       <li Class="CompProperties_ProjectileInterceptor">
@@ -119,12 +160,14 @@
         <hitPoints>50</hitPoints>
         <hitPointsRestoreInstantlyAfterCharge>true</hitPointsRestoreInstantlyAfterCharge>
         <chargeDurationTicks>1200</chargeDurationTicks>
-        <!--  20s  -->
         <rechargeHitPointsIntervalTicks>120</rechargeHitPointsIntervalTicks>
         <minIdleAlpha>0.2</minIdleAlpha>
         <drawWithNoSelection>false</drawWithNoSelection>
         <disarmedByEmpForTicks>600</disarmedByEmpForTicks>
         <gizmoTipKey>ProjectileInterceptorTip</gizmoTipKey>
+      </li>
+      <li Class="FixedPawnGenerate.CompProperties_Tachie">
+        <texture>test</texture>
       </li>
     </comps>
 
@@ -144,6 +187,47 @@
     </facialAnimationProps>
     
   </FixedPawnGenerate.FixedPawnDef>
+
+  <!--Parent-->
+  <FixedPawnGenerate.FixedPawnDef>
+    <defName>TestParent</defName>
+
+    <generateWeight>1</generateWeight>
+    <generateRate>0</generateRate>
+    <isUnique>true</isUnique>
+
+    <faction>PlayerColony</faction>
+    <race>Human</race>
+    <pawnKind>Colonist</pawnKind>
+
+    <xenotype MayRequire="ludeon.rimworld.biotech">Baseliner</xenotype>
+
+    <age>35</age>
+    <chronologicalAge>200</chronologicalAge>
+    <gender>Female</gender>
+
+    <firstName>TestParent</firstName>
+    <nickName>TestParent</nickName>
+    <lastName>TestParent</lastName>
+
+    <beard>Anchor</beard>
+    <hair>Mop</hair>
+    <hairColor>(237, 202, 156)</hairColor>
+
+    <headType>Female_AverageWide</headType>
+    <faceTattoo MayRequire="ludeon.rimworld.ideology">Face_Pantheon</faceTattoo>
+
+    <bodyType>Male</bodyType>
+    <bodyTattoo MayRequire="ludeon.rimworld.ideology">Body_Tiger</bodyTattoo>
+    <skinColor>(155,155,155)</skinColor>
+
+    <apparel>
+      <Apparel_BasicShirt>Leather_Thrumbo</Apparel_BasicShirt>
+    </apparel>
+
+  </FixedPawnGenerate.FixedPawnDef>
+
+  
 
  <!--=======================================-->
   <FixedPawnGenerate.FixedPawnDef>

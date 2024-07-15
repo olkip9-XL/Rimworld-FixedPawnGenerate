@@ -11,10 +11,10 @@ namespace FixedPawnGenerate
     {
         /*
          * 这是一个手动生成固定角色的例子。
-         * 手动生成固定角色的方法，需要先定义一些FixedPawnDef，并将generateRate设置为1。
+         * 手动生成固定角色的方法，需要先定义一些FixedPawnDef，并将generateRate设置为0。
          * 
          * A Example of how to generate a fixed pawn manually.
-         * Before using this method, you need to define some FixedPawnDef, and set the generateRate to 1.
+         * Before using this method, you need to define some FixedPawnDef, and set the generateRate to 0.
          */
         public static Pawn ExampleGeneratePawnFromPool()
         {

@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
+using System.Xml;
+using System.Xml.Linq;
+
 
 namespace FixedPawnGenerate
 {
@@ -94,9 +97,74 @@ namespace FixedPawnGenerate
 
         public class ThingData
         {
+            public void LoadDataFromXmlCustom(XmlNode xmlRoot)
+            {
+                if(xmlRoot.Name == "li")
+                {
+                    foreach (XmlNode xmlNode in xmlRoot.ChildNodes)
+                    {
+                        switch(xmlNode.Name)
+                        {
+                            case "thing":
+                                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "thing", xmlNode.InnerText, null, null, null);
+                                break;
+                            case "count":
+                                this.count = ParseHelper.FromString<int>(xmlNode.InnerText);
+                                break;
+                            case "stuff":
+                                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "stuff", xmlNode.InnerText, null, null, null);
+                                break;
+                            case "quality":
+                                this.quality = (QualityCategory)Enum.Parse(typeof(QualityCategory), xmlNode.InnerText);
+                                break;
+                            case "color":
+                                this.color = ParseHelper.FromString<Color>(xmlNode.InnerText);
+                                break;
+                            default:
+                                Log.Error($"Unknown node {xmlNode.Name} in {xmlRoot.Name}");
+                                break;
+                        }
+                    }
+
+                    return;
+                }
+
+                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "thing", xmlRoot.Name, null, null, null);
+
+
+                foreach (XmlAttribute xmlAttribute in xmlRoot.Attributes)
+                {
+                    switch (xmlAttribute.Name)
+                    {
+                        case "quality":
+                            this.quality = (QualityCategory)Enum.Parse(typeof(QualityCategory), xmlAttribute.Value);
+                            break;
+                        case "color":
+                            this.color = ParseHelper.FromString<Color>(xmlAttribute.Value);
+                            break;
+                        default:
+                            Log.Error($"Unknown attribute {xmlAttribute.Name} in {xmlRoot.Name}");
+                            break;
+                    }
+                }
+
+                if (xmlRoot.HasChildNodes)
+                {
+                    if (!int.TryParse(xmlRoot.InnerText, out this.count))
+                    {
+                        this.count = 1;
+                        DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "stuff", xmlRoot.InnerText, null, null, null);
+                    }
+                }
+            }
+
             public ThingDef thing = null;
             public int count = 1;
             public ThingDef stuff = null;
+
+            public QualityCategory quality = QualityCategory.Normal;
+
+            public Color color;
         }
 
         public List<ThingData> equipment = new List<ThingData>();
@@ -107,6 +175,53 @@ namespace FixedPawnGenerate
 
         public class SkillData
         {
+            public void LoadDataFromXmlCustom(XmlNode xmlRoot)
+            {
+                if (xmlRoot.Name == "li")
+                {
+                    foreach (XmlNode xmlNode in xmlRoot.ChildNodes)
+                    {
+                        switch (xmlNode.Name)
+                        {
+                            case "skill":
+                                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "skill", xmlNode.InnerText, null, null, null);
+                                break;
+                            case "level":
+                                this.level = ParseHelper.FromString<int>(xmlNode.InnerText);
+                                break;
+                            case "passion":
+                                this.passion = (Passion)Enum.Parse(typeof(Passion), xmlNode.InnerText);
+                                replacePassion = true;
+                                break;
+                            default:
+                                Log.Error($"Unknown node {xmlNode.Name} in {xmlRoot.Name}");
+                                break;
+                        }
+                    }
+                    return;
+                }
+
+                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "skill", xmlRoot.Name, null, null, null);
+                if (xmlRoot.InnerText.Contains('('))
+                {
+                    string valueText = xmlRoot.InnerText.Trim('(', ')');
+                    string[] strArray = valueText.Split(',');
+
+                    this.level = ParseHelper.FromString<int>(strArray[0]);
+                    this.passion = (Passion)Enum.Parse(typeof(Passion), strArray[1]);
+
+                    replacePassion = true;
+                }
+                else
+                {
+                    this.level = ParseHelper.FromString<int>(xmlRoot.InnerText);
+                }
+
+
+            }
+
+            public bool replacePassion = false;
+
             public SkillDef skill;
             public int level;
             public Passion passion;
@@ -116,6 +231,45 @@ namespace FixedPawnGenerate
 
         public class HediffData
         {
+            public void LoadDataFromXmlCustom(XmlNode xmlRoot)
+            {
+                if (xmlRoot.Name == "li")
+                {
+                    foreach (XmlNode xmlNode in xmlRoot.ChildNodes)
+                    {
+                        switch (xmlNode.Name)
+                        {
+                            case "hediff":
+                                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "hediff", xmlNode.InnerText, null, null, null);
+                                break;
+                            case "bodyPart":
+                                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "bodyPart", xmlNode.InnerText, null, null, null);
+                                break;
+                            case "severity":
+                                this.severity = ParseHelper.FromString<float>(xmlNode.InnerText);
+                                break;
+                            default:
+                                Log.Error($"Unknown node {xmlNode.Name} in {xmlRoot.Name}");
+                                break;
+                        }
+                    }
+                    return;
+                }
+
+                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "hediff", xmlRoot.Name, null, null, null);
+                if (xmlRoot.InnerText.Contains('(')){
+                    string valueText = xmlRoot.InnerText.Trim('(', ')');
+                    string[] strArray = valueText.Split(',');
+
+                    this.severity = ParseHelper.FromString<float>(strArray[0]);
+                    DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "bodyPart", strArray[1], null, null, null);
+                }
+                else
+                {
+                   this.severity = ParseHelper.FromString<float>(xmlRoot.InnerText);
+                }
+            }
+
             public HediffDef hediff;
             public BodyPartDef bodyPart = null;
             public float severity=0.5f;
@@ -125,6 +279,36 @@ namespace FixedPawnGenerate
         
         public class TraitData
         {
+            public void LoadDataFromXmlCustom(XmlNode xmlRoot)
+            {
+                if (xmlRoot.Name == "li")
+                {
+                    foreach (XmlNode xmlNode in xmlRoot.ChildNodes)
+                    {
+                        switch (xmlNode.Name)
+                        {
+                            case "trait":
+                                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "trait", xmlNode.InnerText, null, null, null);
+                                break;
+                            case "degree":
+                                this.degree = ParseHelper.FromString<int>(xmlNode.InnerText);
+                                break;
+                            default:
+                                Log.Error($"Unknown node {xmlNode.Name} in {xmlRoot.Name}");
+                                break;
+                        }
+                    }
+                    return;
+                }
+
+                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "trait", xmlRoot.Name, null, null, null);
+                this.degree = 0;
+                if (xmlRoot.HasChildNodes)
+                {
+                    this.degree = ParseHelper.FromString<int>(xmlRoot.InnerText);
+                }
+            }
+
             public TraitDef trait;
             public int degree = 0;
         }
@@ -135,12 +319,55 @@ namespace FixedPawnGenerate
 
         public List<AbilityDef> abilities = new List<AbilityDef>();
 
-
         //Facial Animation
         [MayRequire("Nals.FacialAnimation")]
         public FPG_FacialAnimationProps facialAnimationProps = null;
 
-
         public List<String> tags = new List<String>();
+
+        public class RelationData
+        {
+            public void LoadDataFromXmlCustom(XmlNode xmlRoot)
+            {
+                if (xmlRoot.Name == "li")
+                {
+                    foreach (XmlNode xmlNode in xmlRoot.ChildNodes)
+                    {
+                        switch (xmlNode.Name)
+                        {
+                            case "relation":
+                                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "relation", xmlNode.InnerText, null, null, null);
+                                break;
+                            case "fixedPawn":
+                                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "fixedPawn", xmlNode.InnerText, "LotusLand.FixedPawnGenerate", null, null);
+                                break;
+                            default:
+                                Log.Error($"Unknown node {xmlNode.Name} in {xmlRoot.Name}");
+                                break;
+                        }
+                    }
+                    return;
+                }
+
+                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "relation", xmlRoot.Name, null, null, null);
+                DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "fixedPawn", xmlRoot.InnerText, "LotusLand.FixedPawnGenerate", null, null);
+            }
+
+            public RelationData(PawnRelationDef relationDef, FixedPawnDef fixedPawnDef )
+            {
+                this.relation = relationDef;
+                this.fixedPawn = fixedPawnDef;
+            }
+            public RelationData()
+            {
+                this.relation = null;
+                this.fixedPawn = null;
+            }
+
+            public PawnRelationDef relation;
+            public FixedPawnDef fixedPawn;
+        }
+
+        public List<RelationData> relations = new List<RelationData>();
     }
 }

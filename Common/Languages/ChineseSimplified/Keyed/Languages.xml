@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+  
+  <allowRelation>允许自然生成人物关系</allowRelation>
+  <allowRelationDescription>允许自然生成人物关系</allowRelationDescription>
+
+  <maxGenerateRate_Starting>开局选人界面的自定义人物的最高生成率：{0}</maxGenerateRate_Starting>
+  <maxGenerateRate_Global>全局的自定义人物的最高生成率：{0}</maxGenerateRate_Global>
+
+  <Reset>重置</Reset>
+</LanguageData>
