@@ -20,8 +20,6 @@ namespace FixedPawnGenerate
     {
         public static readonly List<string> callerBlackList = new List<string>();
 
-        public static int startingPawnCount = 0;
-
         static FixedPawnUtility()
         {
             callerBlackList.Add("Faction.TryGenerateNewLeader");
@@ -221,7 +219,7 @@ namespace FixedPawnGenerate
             }
         }
 
-        public static void ModifyPawn(Pawn pawn, FixedPawnDef def)
+        internal static void ModifyPawn(Pawn pawn, FixedPawnDef def)
         {
             if (def == null || pawn == null)
             {
@@ -435,11 +433,26 @@ namespace FixedPawnGenerate
             }
         }
 
-        public static void ModifyRequest(ref PawnGenerationRequest request, FixedPawnDef def)
+        internal static Pawn ModifyRequest(ref PawnGenerationRequest request, FixedPawnDef def, bool removeUnique = true)
         {
             if (def == null)
             {
-                return;
+                return null;
+            }
+
+            //Locate pawn if it is unique
+            Pawn pawn = null;
+            if (def.isUnique)
+            {
+                if (removeUnique)
+                    Manager.uniqePawns.Remove(def);
+
+                pawn = Manager.GetPawn(def);
+
+                if (pawn != null)
+                {
+                    return pawn;
+                }
             }
 
             request.CanGeneratePawnRelations = false;
@@ -486,6 +499,8 @@ namespace FixedPawnGenerate
             //comps properties
             FixedPawnHarmony.Global.compProperties.Clear();
             FixedPawnHarmony.Global.compProperties.AddRange(def.comps);
+
+            return null;
         }
 
         public static Pawn GenerateFixedPawnWithDef(FixedPawnDef def, bool removeUnique = true)
@@ -495,30 +510,33 @@ namespace FixedPawnGenerate
                 return null;
             }
 
-            Pawn result = null;
-            if (def.isUnique)
-            {
-                if (removeUnique)
-                {
-                    Manager.uniqePawns.Remove(def);
-                }
+            //Pawn result = null;
+            //if (def.isUnique)
+            //{
+            //    if (removeUnique)
+            //    {
+            //        Manager.uniqePawns.Remove(def);
+            //    }
 
-                result = Manager.GetPawn(def);
+            //    result = Manager.GetPawn(def);
 
-                if(result != null)
-                {
-                   return result;
-                }
-            }
+            //    if(result != null)
+            //    {
+            //       return result;
+            //    }
+            //}
 
             Faction faction = null;
             if (def.faction != null)
                 faction = Find.FactionManager.FirstFactionOfDef(def.faction);
 
             PawnGenerationRequest request = new PawnGenerationRequest(def.pawnKind, faction);
-            ModifyRequest(ref request, def);
 
-
+            Pawn result = null;
+            if((result = ModifyRequest(ref request, def, removeUnique))!=null)
+            {
+                return result;
+            }
 
             result = PawnGenerator.GeneratePawn(request);
 

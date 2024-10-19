@@ -41,16 +41,16 @@ namespace FixedPawnGenerate
                     return true;
                 }
 
-                //Randomly Get value 
+                //Randomly Get Def 
                 float randValue = Rand.Value;
 
-                bool isStarting = (caller == "StartingPawnUtility.NewGeneratedStartingPawn" || 
+                bool isStarting = (caller == "StartingPawnUtility.NewGeneratedStartingPawn" ||
                                     caller == "DynamicMethodDefinition.Verse.StartingPawnUtility.NewGeneratedStartingPawn_Patch0");
 
                 float maxRate = (isStarting ? FixedPawnUtility.Settings.maxGenerateRate_Starting : FixedPawnUtility.Settings.maxGenerateRate_Global);
 
 
-                List<FixedPawnDef> list = GetFixedPawnDefsByRequest(ref request).FindAll(x => randValue < x.generateRate && randValue < maxRate );
+                List<FixedPawnDef> list = GetFixedPawnDefsByRequest(ref request).FindAll(x => randValue < x.generateRate && randValue < maxRate);
 
                 if (isStarting)
                 {
@@ -76,21 +76,26 @@ namespace FixedPawnGenerate
 #if DEBUG
                     Log.Warning($"[Debug]调用者:{caller}, 生成:{__state}");
 #endif
-                    if (def.isUnique)
+                    //if (def.isUnique)
+                    //{
+                    //    if(!isStarting)
+                    //        FixedPawnUtility.Manager.uniqePawns.Remove(def);
+
+                    //    __result = FixedPawnUtility.Manager.GetPawn(def);
+
+                    //    if (__result != null)
+                    //    {
+                    //        __state = "None";
+                    //        return false;
+                    //    }
+                    //}
+
+                    __result = FixedPawnUtility.ModifyRequest(ref request, def, !isStarting);
+                    if (__result != null)
                     {
-                        if(!isStarting)
-                            FixedPawnUtility.Manager.uniqePawns.Remove(def);
-                       
-                        __result = FixedPawnUtility.Manager.GetPawn(def);
-
-                        if (__result != null)
-                        {
-                            __state = "None";
-                            return false;
-                        }
+                        __state = "None";
+                        return false;
                     }
-
-                    FixedPawnUtility.ModifyRequest(ref request, def);
                 }
 
                 return true;
@@ -151,9 +156,9 @@ namespace FixedPawnGenerate
 #endif
 
                 FixedPawnDef fixedPawnDef = FixedPawnUtility.Manager.GetDef(pawn);
-                if (fixedPawnDef != null && fixedPawnDef.isUnique ) 
+                if (fixedPawnDef != null && fixedPawnDef.isUnique)
                 {
-                                      
+
                     Pawn pawn2 = StartingPawnUtility.NewGeneratedStartingPawn(index);
                     startingAndOptionalPawns[index] = pawn2;
                     __result = pawn2;
@@ -226,8 +231,8 @@ namespace FixedPawnGenerate
             }
         }
 
-       
-        
+
+
 
         [HarmonyPatch(typeof(ThingWithComps), "InitializeComps")]
         public static class Patch3
@@ -239,7 +244,7 @@ namespace FixedPawnGenerate
                 if (__instance is Pawn pawn)
                 {
 
-                    if (pawn.AllComps.Count>0)
+                    if (pawn.AllComps.Count > 0)
                     {
                         List<CompProperties> list = new List<CompProperties>();
                         FixedPawnDef fixedPawnDef = FixedPawnUtility.Manager.GetDef(pawn);
@@ -290,7 +295,7 @@ namespace FixedPawnGenerate
                     if (fixedPawnDef == null)
                         return false;
 
-                    foreach(var comp in fixedPawnDef.comps)
+                    foreach (var comp in fixedPawnDef.comps)
                     {
                         if (comp.compClass == CompClass)
                         {
@@ -311,7 +316,7 @@ namespace FixedPawnGenerate
 
                 int[] stateHashByGroup = (int[])fieldInfo2.GetValue(__instance);
 
-                if(ContainComp(t, typeof(CompProjectileInterceptor)))
+                if (ContainComp(t, typeof(CompProjectileInterceptor)))
                 {
                     List<Thing> list = listsByGroup[(int)ThingRequestGroup.ProjectileInterceptor];
                     if (list == null)

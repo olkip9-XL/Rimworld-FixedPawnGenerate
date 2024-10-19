@@ -87,7 +87,7 @@ namespace FixedPawnGenerate
             {
                 Pawn pawn = pair.Key;
 
-                if(pawn.Map == null && !Find.WorldPawns.Contains(pawn))
+                if(pawn.Map == null && !Find.WorldPawns.Contains(pawn) && !pawn.InContainerEnclosed)
                 {
                     Find.WorldPawns.PassToWorld(pawn, RimWorld.Planet.PawnDiscardDecideMode.KeepForever );
 
