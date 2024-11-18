@@ -76,19 +76,6 @@ namespace FixedPawnGenerate
 #if DEBUG
                     Log.Warning($"[Debug]调用者:{caller}, 生成:{__state}");
 #endif
-                    //if (def.isUnique)
-                    //{
-                    //    if(!isStarting)
-                    //        FixedPawnUtility.Manager.uniqePawns.Remove(def);
-
-                    //    __result = FixedPawnUtility.Manager.GetPawn(def);
-
-                    //    if (__result != null)
-                    //    {
-                    //        __state = "None";
-                    //        return false;
-                    //    }
-                    //}
 
                     __result = FixedPawnUtility.ModifyRequest(ref request, def, !isStarting);
                     if (__result != null)

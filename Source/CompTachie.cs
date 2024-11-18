@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using RimWorld;
+﻿using RimWorld;
+using System;
 using UnityEngine;
 using Verse;
 
@@ -14,34 +9,55 @@ namespace FixedPawnGenerate
     {
         public CompProperties_Tachie Props => (CompProperties_Tachie)this.props;
 
-        private ThingWithComps FirstDrawThing => Find.Selector.SelectedPawns.Find(x => x.HasComp<CompTachie>()) ;
+        private ThingWithComps FirstDrawThing => Find.Selector.SelectedPawns.Find(x => x.HasComp<CompTachie>());
 
         public override void DrawGUIOverlay()
         {
-            if(FirstDrawThing == this.parent)
+            if (FirstDrawThing == this.parent)
                 DrawTachie();
+
             base.DrawGUIOverlay();
         }
 
         private void DrawTachie()
         {
+            //mainTabWindow_Inspect
+            //(x:0.00, y:664.00, width:432.00, height:165.00)
             MainTabWindow_Inspect mainTabWindow_Inspect = Find.WindowStack.WindowOfType<MainTabWindow_Inspect>();
             if (mainTabWindow_Inspect != null)
             {
-                float num = 0f;
-                float num2 = 430f / (float)(2f);
+                float minWidth = 360f;
+                Rect rect = new Rect();
 
-                float num3 = mainTabWindow_Inspect.PaneTopY - 500f - 30f;
+                rect.height = 500f;
+                rect.width = Mathf.Max(rect.height * ((float)texture.width / (float)texture.height), minWidth);
+                rect.x = 0f;
+                rect.y = mainTabWindow_Inspect.windowRect.y - 300f;
 
-                if (this.texture == null)
-                    this.texture = ContentFinder<Texture2D>.Get(Props.texture);
 
-                if (this.texture != null)
-                    Widgets.DrawTextureFitted(new Rect(num2 * (float)(num + 1) - 215f + Props.offsetX, num3 + Props.offsetY, 430f, 500f), this.texture, Props.scale);
+                if (rect.width > mainTabWindow_Inspect.windowRect.width)
+                {
+                    rect.width = mainTabWindow_Inspect.windowRect.width;
+                    GUI.DrawTexture(rect, this.texture, ScaleMode.ScaleAndCrop);
+                }
+                else
+                {
+                    GUI.DrawTexture(rect, this.texture, ScaleMode.ScaleToFit);
+                }
             }
-           
         }
 
-        private Texture2D texture = null;
+        public Texture2D texture
+        {
+            get
+            {
+                if (textureCache == null)
+                    textureCache = ContentFinder<Texture2D>.Get(Props.texture);
+
+                return textureCache;
+            }
+        }
+        private Texture2D textureCache = null;
+
     }
 }
