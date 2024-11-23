@@ -77,7 +77,7 @@ namespace FixedPawnGenerate
                     Log.Warning($"[Debug]调用者:{caller}, 生成:{__state}");
 #endif
 
-                    __result = FixedPawnUtility.ModifyRequest(ref request, def, !isStarting);
+                    __result = FixedPawnUtility.ModifyRequest(ref request, def);
                     if (__result != null)
                     {
                         __state = "None";
@@ -95,7 +95,11 @@ namespace FixedPawnGenerate
                 {
                     FixedPawnDef fixedPawnDef = DefDatabase<FixedPawnDef>.GetNamed(__state);
 
-                    FixedPawnUtility.ModifyPawn(pawn, fixedPawnDef);
+                    String caller = FixedPawnUtility.GetCallerMethodName(5);
+                    bool isStarting = (caller == "StartingPawnUtility.NewGeneratedStartingPawn" ||
+                                   caller == "DynamicMethodDefinition.Verse.StartingPawnUtility.NewGeneratedStartingPawn_Patch0");
+
+                    FixedPawnUtility.ModifyPawn(pawn, fixedPawnDef, !isStarting);
                 }
 #if DEBUG
                 Find.WorldPawns.LogWorldPawns();
@@ -170,15 +174,7 @@ namespace FixedPawnGenerate
             //    //}   
 
             //}
-            private static bool IsUniquePawn(Pawn pawn)
-            {
-                FixedPawnDef fixedPawnDef = FixedPawnUtility.Manager.GetDef(pawn);
-                if (fixedPawnDef != null && fixedPawnDef.isUnique)
-                {
-                    return true;
-                }
-                return false;
-            }
+          
         }
 
 #if DEBUG

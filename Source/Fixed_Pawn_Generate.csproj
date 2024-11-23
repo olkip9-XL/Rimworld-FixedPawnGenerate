@@ -61,6 +61,7 @@
     <Compile Include="CardinfoHarmony.cs" />
     <Compile Include="CompProperties_Tachie.cs" />
     <Compile Include="CompTachie.cs" />
+    <Compile Include="DebugActions.cs" />
     <Compile Include="Example.cs" />
     <Compile Include="FPG_FacialAnimationProps.cs" />
     <Compile Include="FixedPawnDef.cs" />

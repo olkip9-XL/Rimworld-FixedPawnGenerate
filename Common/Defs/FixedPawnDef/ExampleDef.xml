@@ -146,9 +146,9 @@
       <NaturalMood>1</NaturalMood>
     </traits>
 
-    <!--<relations>
+    <relations>
       <Parent>TestParent</Parent>
-    </relations>-->
+    </relations>
 
     <comps>
       <li Class="CompProperties_ProjectileInterceptor">

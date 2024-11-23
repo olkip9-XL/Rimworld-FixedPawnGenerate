@@ -369,5 +369,9 @@ namespace FixedPawnGenerate
         }
 
         public List<RelationData> relations = new List<RelationData>();
+
+        /**********************************/
+        public bool IsSpawned => this.isUnique && FixedPawnUtility.Manager.GetPawn(this) != null;
+
     }
 }

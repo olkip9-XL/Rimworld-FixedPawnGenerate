@@ -20,13 +20,19 @@ namespace FixedPawnGenerate
     {
         public static readonly List<string> callerBlackList = new List<string>();
 
+        public static GameComponent_FixedPawn Manager => Current.Game.GetComponent<GameComponent_FixedPawn>();
+
         static FixedPawnUtility()
         {
+            //add Black List
             callerBlackList.Add("Faction.TryGenerateNewLeader");
             callerBlackList.Add("<PlayerStartingThings>d__17.MoveNext");
             callerBlackList.Add("GenStep_Monolith.GenerateMonolith");
             callerBlackList.Add("PawnRelationWorker_Sibling.GenerateParent");
             callerBlackList.Add("FixedPawnUtility.GenerateFixedPawnWithDef");
+            callerBlackList.Add("PregnancyUtility.ApplyBirthOutcome_NewTemp");
+
+
 
             //fix relations
             foreach (FixedPawnDef def in DefDatabase<FixedPawnDef>.AllDefs.Where(x => x.isUnique))
@@ -34,6 +40,12 @@ namespace FixedPawnGenerate
                 foreach (var relationData in def.relations)
                 {
                     FixedPawnDef targetDef = relationData.fixedPawn;
+
+                    if (!targetDef.isUnique)
+                    {
+                        Log.Error($"Trying add relation to {targetDef.defName}, but {targetDef.defName} is NOT unique!");
+                        continue;
+                    }
 
                     if (targetDef.relations.Find(x => x.fixedPawn == def) != null)
                     {
@@ -98,12 +110,6 @@ namespace FixedPawnGenerate
             {
                 return relation;
             }
-        }
-
-        public static T GetTargetDef<T>(string defName) where T : Def
-        {
-            defName.Trim();
-            return DefDatabase<T>.GetNamed(defName);
         }
 
         private static bool ReplaceInnercontainer(ThingOwner innercontainer, List<FixedPawnDef.ThingData> list)
@@ -219,7 +225,7 @@ namespace FixedPawnGenerate
             }
         }
 
-        internal static void ModifyPawn(Pawn pawn, FixedPawnDef def)
+        internal static void ModifyPawn(Pawn pawn, FixedPawnDef def, bool addToManager = true)
         {
             if (def == null || pawn == null)
             {
@@ -316,9 +322,13 @@ namespace FixedPawnGenerate
             }
 
             //relation
-            Manager.AddPawn(pawn, def);
+            if(!def.isUnique || addToManager)
+                Manager.AddPawn(pawn, def);
 
-            GenerateRelations(pawn);
+            if (def.isUnique)
+            {
+                GenerateRelations(pawn);
+            }
         }
 
         private static void GenerateRelations(Pawn pawn)
@@ -340,31 +350,33 @@ namespace FixedPawnGenerate
             
             foreach (var relationData in relations)
             {
-                Pawn relationPawn = GenerateFixedPawnWithDef(relationData.fixedPawn, false);
+                if (relationData.fixedPawn.IsSpawned)
+                {
+                    continue;
+                }
+
+                Pawn relationPawn = GenerateFixedPawnWithDef(relationData.fixedPawn);
                 if (relationPawn != null)
                 {
 #if DEBUG
                     Log.Warning($"GenerateRelations:{pawn.Name} {relationData.relation.defName} {relationPawn.Name}");
 #endif
-                    bool flag = false;
+                    //bool flag = false;
 
-                    if (relationData.relation.implied)
-                    {
-                        flag = true;
-                        relationData.relation.implied = false;
-                    }
+                    //if (relationData.relation.implied)
+                    //{
+                    //    flag = true;
+                    //    relationData.relation.implied = false;
+                    //}
 
-                    if (pawn.relations.RelatedPawns.Contains(relationPawn))
-                    {
-                        continue;
-                    }
+                    //pawn.relations.AddDirectRelation(relationData.relation, relationPawn);
 
-                    pawn.relations.AddDirectRelation(relationData.relation, relationPawn);
-                    if(flag)
-                    {
-                        relationData.relation.implied = true;
-                    }
-                  
+                    //if (flag)
+                    //{
+                    //    relationData.relation.implied = true;
+                    //}
+                    PawnGenerationRequest request = new PawnGenerationRequest();
+                    relationData.relation.Worker.CreateRelation(pawn, relationPawn, ref request);
                 }
             }
 
@@ -372,11 +384,13 @@ namespace FixedPawnGenerate
            
 
         // Get a random def based on weights
-        public static FixedPawnDef GetRandomFixedPawnDefByWeight(List<FixedPawnDef> list)
+        public static FixedPawnDef GetRandomFixedPawnDefByWeight(List<FixedPawnDef> list, bool ExceptSpawned = true)
         {
             double totalWeight = 0;
 
-            list.RemoveAll(x => x.isUnique && !Manager.uniqePawns.Contains(x));
+            //list.RemoveAll(x => x.isUnique && !Manager.uniqePawns.Contains(x));
+            if(ExceptSpawned)
+                list.RemoveAll(x => x.isUnique &&  Manager.GetPawn(x) != null);
 
             foreach (var def in list)
             {
@@ -425,15 +439,9 @@ namespace FixedPawnGenerate
             return null;
         }
 
-        public static GameComponent_FixedPawn Manager
-        {
-            get
-            {
-                return Current.Game.GetComponent<GameComponent_FixedPawn>();
-            }
-        }
+        
 
-        internal static Pawn ModifyRequest(ref PawnGenerationRequest request, FixedPawnDef def, bool removeUnique = true)
+        internal static Pawn ModifyRequest(ref PawnGenerationRequest request, FixedPawnDef def)
         {
             if (def == null)
             {
@@ -444,9 +452,6 @@ namespace FixedPawnGenerate
             Pawn pawn = null;
             if (def.isUnique)
             {
-                if (removeUnique)
-                    Manager.uniqePawns.Remove(def);
-
                 pawn = Manager.GetPawn(def);
 
                 if (pawn != null)
@@ -503,7 +508,7 @@ namespace FixedPawnGenerate
             return null;
         }
 
-        public static Pawn GenerateFixedPawnWithDef(FixedPawnDef def, bool removeUnique = true)
+        public static Pawn GenerateFixedPawnWithDef(FixedPawnDef def, bool addToManager = true)
         {
             if (def == null || def.pawnKind == null)
             {
@@ -533,14 +538,14 @@ namespace FixedPawnGenerate
             PawnGenerationRequest request = new PawnGenerationRequest(def.pawnKind, faction);
 
             Pawn result = null;
-            if((result = ModifyRequest(ref request, def, removeUnique))!=null)
+            if((result = ModifyRequest(ref request, def))!=null)
             {
                 return result;
             }
 
             result = PawnGenerator.GeneratePawn(request);
 
-            ModifyPawn(result, def);
+            ModifyPawn(result, def, addToManager);
 
             return result;
         }
@@ -549,4 +554,14 @@ namespace FixedPawnGenerate
         public static ModSetting_FixedPawnGenerate Settings => LoadedModManager.GetMod<Mod_FixedPawnGenerate>().GetSettings<ModSetting_FixedPawnGenerate>();
 
     }
+
+    //PawnExtension
+    public static class PawnExtension
+    {
+        public static FixedPawnDef GetFixedPawnDef(this Pawn pawn)
+        {
+            return FixedPawnUtility.Manager.GetDef(pawn);
+        }
+    }
+
 }
