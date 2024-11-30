@@ -8,4 +8,20 @@
   <maxGenerateRate_Global>全局的自定义人物的最高生成率：{0}</maxGenerateRate_Global>
 
   <Reset>重置</Reset>
+
+  <FPG_Generate>角色生成</FPG_Generate>
+  <FPG_Protrait>立绘控制</FPG_Protrait>
+  
+  <FPG_allowMainProtrait>启用主立绘</FPG_allowMainProtrait>
+  <FPG_allowMainProtrait_description>在游戏界面左下角的立绘</FPG_allowMainProtrait_description>
+
+  <FPG_allowInfoProtrait>启用角色属性面板立绘</FPG_allowInfoProtrait>
+  <FPG_allowInfoProtrait_description>在角色属性面板的立绘</FPG_allowInfoProtrait_description>
+
+  <FPG_showFullProtrait>显示全身立绘</FPG_showFullProtrait>
+  <FPG_showFullProtrait_description>启用全身立绘，默认关闭，显示半身立绘</FPG_showFullProtrait_description>
+
+  <FPG_globalProtraitOffsetY>立绘垂直偏移</FPG_globalProtraitOffsetY>
+  <FPG_globalProtraitOffsetY_description>立绘在垂直方向上的偏移量，负数是向上偏移</FPG_globalProtraitOffsetY_description>
+  
 </LanguageData>

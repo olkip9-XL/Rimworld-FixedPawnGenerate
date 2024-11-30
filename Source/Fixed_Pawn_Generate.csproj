@@ -56,9 +56,12 @@
     <Reference Include="UnityEngine.IMGUIModule">
       <HintPath>..\..\..\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CardinfoHarmony.cs" />
+    <Compile Include="Harmony\FPGProtraitHarmony.cs" />
     <Compile Include="CompProperties_Tachie.cs" />
     <Compile Include="CompTachie.cs" />
     <Compile Include="DebugActions.cs" />
@@ -66,10 +69,11 @@
     <Compile Include="FPG_FacialAnimationProps.cs" />
     <Compile Include="FixedPawnDef.cs" />
     <Compile Include="FixedPawnDefOf.cs" />
-    <Compile Include="FixedPawnHarmony.cs" />
-    <Compile Include="FixedPawnHarmonyStartup.cs" />
+    <Compile Include="Harmony\FixedPawnHarmony.cs" />
+    <Compile Include="Harmony\FixedPawnHarmonyStartup.cs" />
     <Compile Include="FixedPawnUtility.cs" />
     <Compile Include="GameComponent_FixedPawn.cs" />
+    <Compile Include="Extensions\Listing_StandardExtentison.cs" />
     <Compile Include="ModSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -16,6 +16,7 @@ namespace FixedPawnGenerate
         {
             var harmony = new HarmonyLib.Harmony("Lotus.FixedPawnGenerate");
             harmony.PatchAll(typeof(FixedPawnHarmony).Assembly);
+            harmony.PatchAll(typeof(FPGProtraitHarmony).Assembly);
         }
     }
 }

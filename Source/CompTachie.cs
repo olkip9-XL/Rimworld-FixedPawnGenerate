@@ -9,45 +9,53 @@ namespace FixedPawnGenerate
     {
         public CompProperties_Tachie Props => (CompProperties_Tachie)this.props;
 
-        private ThingWithComps FirstDrawThing => Find.Selector.SelectedPawns.Find(x => x.HasComp<CompTachie>());
-
-        public override void DrawGUIOverlay()
+        public void DrawProtrait(float x, float y, float height, float minWidth = 0f, float maxWidth = 1E+09f, ProtraitAnchor anchor = ProtraitAnchor.TopLeft, float transparency = 1.0f )
         {
-            if (FirstDrawThing == this.parent)
-                DrawTachie();
+            Rect rect = new Rect(x,y,minWidth,height);
+            float textureRatio= (float)this.texture.width/(float)this.texture.height;
+            float textureWidth = textureRatio * height;
 
-            base.DrawGUIOverlay();
-        }
+            rect.width = Mathf.Clamp(textureWidth, minWidth, maxWidth);
 
-        private void DrawTachie()
-        {
-            //mainTabWindow_Inspect
-            //(x:0.00, y:664.00, width:432.00, height:165.00)
-            MainTabWindow_Inspect mainTabWindow_Inspect = Find.WindowStack.WindowOfType<MainTabWindow_Inspect>();
-            if (mainTabWindow_Inspect != null)
+            switch (anchor)
             {
-                float minWidth = 360f;
-                Rect rect = new Rect();
-
-                rect.height = 500f;
-                rect.width = Mathf.Max(rect.height * ((float)texture.width / (float)texture.height), minWidth);
-                rect.x = 0f;
-                rect.y = mainTabWindow_Inspect.windowRect.y - 300f;
-
-
-                if (rect.width > mainTabWindow_Inspect.windowRect.width)
-                {
-                    rect.width = mainTabWindow_Inspect.windowRect.width;
-                    GUI.DrawTexture(rect, this.texture, ScaleMode.ScaleAndCrop);
-                }
-                else
-                {
-                    GUI.DrawTexture(rect, this.texture, ScaleMode.ScaleToFit);
-                }
+                case ProtraitAnchor.TopLeft:
+                    break;
+                case ProtraitAnchor.TopRight:
+                    rect.x -= rect.width;
+                    break;
+                case ProtraitAnchor.BottomLeft:
+                    rect.y -= rect.height;
+                    break;
+                case ProtraitAnchor.BottomRight:
+                    rect.x -= rect.width;
+                    rect.y -= rect.height;
+                    break;
+                default:
+                    break;
             }
+
+            ScaleMode scaleMode = ScaleMode.ScaleToFit;
+            if(textureRatio > rect.width/rect.height)// texture too wide
+                scaleMode = ScaleMode.ScaleAndCrop;
+
+            //debug
+            //GUI.DrawTexture(rect, new Texture2D(1, 1), ScaleMode.StretchToFill);
+
+            Color originalColor = GUI.color;
+            GUI.color = new Color(originalColor.r, originalColor.g, originalColor.b, transparency);
+            GUI.DrawTexture(rect, this.texture, scaleMode);
+            GUI.color = originalColor;
         }
 
-        public Texture2D texture
+        public enum ProtraitAnchor
+        {
+            TopLeft,
+            TopRight,
+            BottomLeft,
+            BottomRight,
+        }
+        private Texture2D texture
         {
             get
             {

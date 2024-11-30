@@ -21,7 +21,8 @@ namespace FixedPawnGenerate
         //old
         //public List<FixedPawnDef> uniqePawns = new List<FixedPawnDef>();
 
-        private Dictionary<String, FixedPawnDef> pawnDics = new Dictionary<String, FixedPawnDef>();
+        //加载存档时使用
+        private Dictionary<string, FixedPawnDef> pawnDics = new Dictionary<string, FixedPawnDef>();
 
         //old
         //private Dictionary<Pawn, FixedPawnDef> cachedPawns = new Dictionary<Pawn, FixedPawnDef>();
@@ -45,7 +46,7 @@ namespace FixedPawnGenerate
                     {
                         if (pawnDics.TryGetValue(pawn.ThingID, out FixedPawnDef def))
                         {
-                            spawnedPawns.Add(pawn, def);
+                            spawnedPawns.AddDistinct(pawn, def);
                         }
                     }
                 }
@@ -54,7 +55,7 @@ namespace FixedPawnGenerate
                 {
                     if (pawnDics.TryGetValue(pawn.ThingID, out FixedPawnDef def))
                     {
-                        spawnedPawns.Add(pawn, def);
+                        spawnedPawns.AddDistinct(pawn, def);
                     }
                 }
 
@@ -82,22 +83,32 @@ namespace FixedPawnGenerate
         public override void ExposeData()
         {
             base.ExposeData();
-            //Log.Warning($"Scribe mode: {Scribe.mode}");
 
+            //构建pawnDics
+            if (Scribe.mode == LoadSaveMode.Saving)
+            {
+                pawnDics.Clear();
+                foreach(var pair in spawnedPawns)
+                {
+                    pawnDics.Add(pair.Key.ThingID, pair.Value);
+                }
+            }
+
+            //pawnDics为加载存档时构建comps时使用
+            Scribe_Collections.Look(ref pawnDics, "pawnDics", LookMode.Value, LookMode.Def);
             Scribe_Collections.Look<Pawn, FixedPawnDef>(ref spawnedPawns, "spawnedPawns", LookMode.Reference, LookMode.Def, ref workingPawnList, ref workingDefList);
             
-            if(Scribe.mode == LoadSaveMode.ResolvingCrossRefs)
-            {
-
-            }
             if(Scribe.mode == LoadSaveMode.LoadingVars && spawnedPawns == null)
             {
                 spawnedPawns = new Dictionary<Pawn, FixedPawnDef>();
                 spawnedPawns.Clear();
-
-                Scribe_Collections.Look(ref pawnDics, "pawnDics", LookMode.Value, LookMode.Def);
             }
-            if(Scribe.mode == LoadSaveMode.Saving)
+            if (Scribe.mode == LoadSaveMode.LoadingVars && pawnDics == null)
+            {
+                pawnDics = new Dictionary<string, FixedPawnDef>();
+                pawnDics.Clear();
+            }
+            if (Scribe.mode == LoadSaveMode.Saving)
             {
                 //无归属的pawn移至世界
                 foreach (var pair in spawnedPawns)
@@ -125,8 +136,15 @@ namespace FixedPawnGenerate
             {
                 return null;
             }
+            
+            FixedPawnDef def = null;
 
-            if(spawnedPawns.TryGetValue(pawn, out FixedPawnDef def))
+            if(pawnDics.TryGetValue(pawn.ThingID, out def))
+            {
+                return def;
+            }
+
+            if(spawnedPawns.TryGetValue(pawn, out def))
             {
                 return def;
             }
