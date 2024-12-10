@@ -61,6 +61,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\PawnExtension.cs" />
     <Compile Include="Harmony\FPGProtraitHarmony.cs" />
     <Compile Include="CompProperties_Tachie.cs" />
     <Compile Include="CompTachie.cs" />

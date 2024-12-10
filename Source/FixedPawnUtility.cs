@@ -31,7 +31,9 @@ namespace FixedPawnGenerate
             callerBlackList.Add("PawnRelationWorker_Sibling.GenerateParent");
             callerBlackList.Add("FixedPawnUtility.GenerateFixedPawnWithDef");
             callerBlackList.Add("PregnancyUtility.ApplyBirthOutcome_NewTemp");
-
+            callerBlackList.Add("DynamicMethodDefinition.RimWorld.GameComponent_PawnDuplicator.Duplicate_Patch4");
+            callerBlackList.Add("DynamicMethodDefinition.RimWorld.GameComponent_PawnDuplicator.Duplicate_Patch2");
+            callerBlackList.Add("GameComponent_PawnDuplicator.Duplicate");
 
 
             //fix relations
@@ -412,6 +414,7 @@ namespace FixedPawnGenerate
             return null; // Return null if no defName is found
         }
 
+        //get caller of PawnGenerator:GeneratePawn(), 5 at least
         public static string GetCallerMethodName(int index = 5)
         {
             StackTrace stackTrace = new StackTrace();
@@ -502,8 +505,8 @@ namespace FixedPawnGenerate
                 request.ForceBodyType = def.bodyType;
 
             //comps properties
-            FixedPawnHarmony.Global.compProperties.Clear();
-            FixedPawnHarmony.Global.compProperties.AddRange(def.comps);
+            FixedPawnHarmony.FPG_Global.compProperties.Clear();
+            FixedPawnHarmony.FPG_Global.compProperties.AddRange(def.comps);
 
             return null;
         }
@@ -554,14 +557,6 @@ namespace FixedPawnGenerate
         public static ModSetting_FixedPawnGenerate Settings => LoadedModManager.GetMod<Mod_FixedPawnGenerate>().GetSettings<ModSetting_FixedPawnGenerate>();
 
     }
-
-    //PawnExtension
-    public static class PawnExtension
-    {
-        public static FixedPawnDef GetFixedPawnDef(this Pawn pawn)
-        {
-            return FixedPawnUtility.Manager.GetDef(pawn);
-        }
-    }
+    
 
 }

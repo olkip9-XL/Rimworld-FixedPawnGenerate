@@ -19,7 +19,7 @@ namespace FixedPawnGenerate
     public static class FixedPawnHarmony
     {
 
-        public static class Global
+        public static class FPG_Global
         {
             public static List<CompProperties> compProperties = new List<CompProperties>();
         }
@@ -38,6 +38,9 @@ namespace FixedPawnGenerate
 
                 if (FixedPawnUtility.callerBlackList.Contains(caller))
                 {
+#if DEBUG
+                    Log.Warning($"[Debug]调用者:{caller}, 生成: Skip");
+#endif
                     return true;
                 }
 
@@ -84,6 +87,12 @@ namespace FixedPawnGenerate
                         return false;
                     }
                 }
+#if DEBUG
+                else
+                {
+                    Log.Warning($"[Debug]调用者:{caller}, 生成: No Match");
+                }
+#endif
 
                 return true;
             }
@@ -101,9 +110,6 @@ namespace FixedPawnGenerate
 
                     FixedPawnUtility.ModifyPawn(pawn, fixedPawnDef, !isStarting);
                 }
-#if DEBUG
-                Find.WorldPawns.LogWorldPawns();
-#endif
             }
 
             private static List<FixedPawnDef> GetFixedPawnDefsByRequest(ref PawnGenerationRequest request)
@@ -210,7 +216,7 @@ namespace FixedPawnGenerate
                 Log.Warning($"Pawn Destroyed:{__instance.Name}");
 #endif
 
-                FixedPawnUtility.Manager.RemovePawn(__instance);
+                //FixedPawnUtility.Manager.RemovePawn(__instance);
             }
         }
 
@@ -236,10 +242,10 @@ namespace FixedPawnGenerate
                             list.AddRange(fixedPawnDef.comps);
                         }
 
-                        if (Global.compProperties.Count > 0)
+                        if (FPG_Global.compProperties.Count > 0)
                         {
-                            list.AddRange(Global.compProperties);
-                            Global.compProperties.Clear();
+                            list.AddRange(FPG_Global.compProperties);
+                            FPG_Global.compProperties.Clear();
                         }
 
                         foreach (var item in list)
@@ -311,24 +317,38 @@ namespace FixedPawnGenerate
                     list.Add(t);
                     stateHashByGroup[(int)ThingRequestGroup.ProjectileInterceptor]++;
                 }
-
-                //foreach (ThingRequestGroup thingRequestGroup in ThingListGroupHelper.AllGroups)
-                //{
-                //    if ((__instance.use != ListerThingsUse.Region || thingRequestGroup.StoreInRegion()) && thingRequestGroup.Includes(t.def))
-                //    {
-                //        List<Thing> list = listsByGroup[(int)thingRequestGroup];
-                //        if (list == null)
-                //        {
-                //            list = new List<Thing>();
-                //            listsByGroup[(int)thingRequestGroup] = list;
-                //            stateHashByGroup[(int)thingRequestGroup] = 0;
-                //        }
-                //        list.Add(t);
-                //        stateHashByGroup[(int)thingRequestGroup]++;
-                //    }
-                //}
             }
         }
+
+        //Anomaly
+        [HarmonyPatch(typeof(GameComponent_PawnDuplicator), "Duplicate")]
+        public static class PawnDuplicatePatch
+        {
+            //copy comps
+            public static void Prefix(Pawn pawn, Pawn __result)
+            {
+                FixedPawnDef def = pawn.GetFixedPawnDef();
+                if(def != null)
+                {
+#if DEBUG
+                    Log.Warning($"[Debug]Pawn复制：{def.defName}");
+#endif
+
+                    FPG_Global.compProperties.AddRange(def.comps);
+                }
+            }
+
+            public static void Postfix(Pawn pawn, Pawn __result)
+            {
+                FixedPawnDef def = pawn.GetFixedPawnDef();
+                if (def != null && __result.GetFixedPawnDef() == null)
+                {
+                    FixedPawnUtility.Manager.AddPawn(__result, def);
+                }
+            }
+        }
+
+
     }
 }
 

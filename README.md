@@ -53,6 +53,10 @@ Fields not set indicate a full match, for example, the following code matches al
 <race>Human</race>
 ```
 
+注意：生成人物时，可能会在意想不到的的地方生成，比如怀孕生下的孩子或者复制方尖碑（已修复），这可能会造成某些bug。这种情况下可以与我联系，我会修复。
+
+Warming: When generating characters, they might appear in unexpected places, such as a child being born during pregnancy or a duplicated obelisk (now fixed). This could cause some bugs. In such cases, you can contact me, and I will fix it.
+
 #### 2. Generate Rate
 
 ```xml
@@ -162,6 +166,18 @@ faceTatoo, bodyTatoo, favoriteColor require the Ideology DLC.
         <thing>Apparel_BasicShirt</thing>
     </li>
 </apparel>
+
+<!--a simpler syntax-->
+<equipment>
+    <Gun_BoltActionRifle/>
+</equipment>
+<inventory>
+    <MealSurvivalPack>5<MealSurvivalPack/>
+</inventory>
+<apparel>
+    <Apparel_Pants/>
+    <Apparel_BasicShirt/>
+</apparel>
 ```
 
 背包内分为三部分，武器、衣着和持有物。没有设置的部分会依照原版生成，设置了的部分则会覆盖原来的物品。
@@ -171,7 +187,7 @@ The inventory is divided into three parts: weapons, clothing, and possessions. P
 #### 7. Skills、Hediffs、Traits
 
 ```xml
-    <skills>
+<skills>
     <li>
         <skill>Shooting</skill>
         <level>10</level>
@@ -196,6 +212,22 @@ The inventory is divided into three parts: weapons, clothing, and possessions. P
         <degree>-1</degree>
     </li>
 </traits>
+
+<!--a simpler syntax-->
+
+<skills>
+    <Shooting>(10,0)<Shooting/>
+</skills>
+
+<hediffs>
+    <Gunshot>(0.5,Head)</Gunshot>
+</hediffs>
+
+<traits>
+    <Kind/>
+    <Nerves>-1<Nerves/>
+</traits>
+
 ```
 
 技能部分只有定义了的部分会被覆盖

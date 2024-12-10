@@ -18,6 +18,7 @@ namespace FixedPawnGenerate
         private List<Pawn> workingPawnList;
         private List<FixedPawnDef> workingDefList;
 
+
         //old
         //public List<FixedPawnDef> uniqePawns = new List<FixedPawnDef>();
 
@@ -198,7 +199,6 @@ namespace FixedPawnGenerate
 
             Log.Warning(str);
         }
-
         
 
     }

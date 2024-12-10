@@ -57,6 +57,9 @@ namespace FixedPawnGenerate
     {
         private ModSetting_FixedPawnGenerate settings;
 
+        //buffer
+        string globalProtraitOffsetYBuffer;
+
         public Mod_FixedPawnGenerate(ModContentPack content) : base(content)
         {
             settings = GetSettings<ModSetting_FixedPawnGenerate>();
@@ -64,9 +67,6 @@ namespace FixedPawnGenerate
 
         public override void DoSettingsWindowContents(Rect inRect)
         {
-            //buffer
-            string globalProtraitOffsetYBuffer = settings.globalProtraitOffsetY.ToString();
-
             Listing_Standard listingStandard = new Listing_Standard();
 
             Rect rect = inRect;
@@ -109,6 +109,7 @@ namespace FixedPawnGenerate
             if (listingStandard.ButtonTextCenter("Reset".Translate(), widthPct: 0.1f))
             {
                 settings.Reset();
+                ResetBuffer();
             }
 
             listingStandard.End();
@@ -118,6 +119,11 @@ namespace FixedPawnGenerate
         public override string SettingsCategory()
         {
             return "Fixed Pawn Generate";
+        }
+
+        private void ResetBuffer()
+        {
+            globalProtraitOffsetYBuffer = settings.globalProtraitOffsetY.ToString();
         }
     }
 }
