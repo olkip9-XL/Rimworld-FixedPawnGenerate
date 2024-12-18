@@ -331,7 +331,7 @@ namespace FixedPawnGenerate
                 if(def != null)
                 {
 #if DEBUG
-                    Log.Warning($"[Debug]Pawn复制：{def.defName}");
+                    Log.Warning($"[Debug]Pawn复制：{pawn.Name}");
 #endif
 
                     FPG_Global.compProperties.AddRange(def.comps);

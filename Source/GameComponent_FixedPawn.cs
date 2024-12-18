@@ -116,8 +116,12 @@ namespace FixedPawnGenerate
                 {
                     Pawn pawn = pair.Key;
 
-                    if (pawn.Map == null && !Find.WorldPawns.Contains(pawn) && !pawn.InContainerEnclosed)
+                    //if (pawn.Map == null && !Find.WorldPawns.Contains(pawn) && !pawn.InContainerEnclosed)
+                    if(pawn.GetPawnPositionState() == PawnPositionState.OTHER)
                     {
+#if DEBUG
+                        Log.Warning($"[Debug]:Pass to world:{pawn.Name}");
+#endif
                         Find.WorldPawns.PassToWorld(pawn, RimWorld.Planet.PawnDiscardDecideMode.KeepForever);
 
                         Faction faction = null;
@@ -180,21 +184,32 @@ namespace FixedPawnGenerate
                 pawn = pair.Key;
                 def = pair.Value;
 
-                string location = "None";
-                if (pawn.Map != null)
+                string location = "Error";
+
+                switch (pawn.GetPawnPositionState())
                 {
-                    location = pawn.Map.uniqueID.ToString();
-                }
-                else if (Find.WorldPawns.Contains(pawn))
-                {
-                    location = "World Pawn";
-                }
-                else if (pawn.InContainerEnclosed)
-                {
-                    location = "In Container Enclosed";
+                    case PawnPositionState.IN_MAP:
+                        location = $"Map[{pawn.Map.uniqueID.ToString()}]";
+                        break;
+                    case PawnPositionState.WORLD_PAWN:
+                        location = "World Pawn";
+                        break;
+                    case PawnPositionState.IN_CONTAINER:
+                        location = "In Container Enclosed";
+                        break;
+                    case PawnPositionState.IN_CORPSE:
+                        location = "In Corpse or Unnatural Corpse";
+                        break;
+                    case PawnPositionState.OTHER:
+                        location = "None";
+                        break;
+                    case PawnPositionState.ERROR:
+                        break;
+                    default:
+                        break;
                 }
 
-                str += $"[{count++}]Name:{pawn.Name}, Def: {def.defName}-{def.isUnique}, Location:{location}\n";
+                str += $"[{count++}]Name:{pawn.Name}, \t\tDef: {def.defName}-{def.isUnique}, \tLocation:{location}\n";
             }
 
             Log.Warning(str);
