@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using System;
+using System.IO;
 using UnityEngine;
 using Verse;
 
@@ -9,10 +10,10 @@ namespace FixedPawnGenerate
     {
         public CompProperties_Tachie Props => (CompProperties_Tachie)this.props;
 
-        public void DrawProtrait(float x, float y, float height, float minWidth = 0f, float maxWidth = 1E+09f, ProtraitAnchor anchor = ProtraitAnchor.TopLeft, float transparency = 1.0f )
+        public void DrawProtrait(float x, float y, float height, float minWidth = 0f, float maxWidth = 1E+09f, ProtraitAnchor anchor = ProtraitAnchor.TopLeft, float transparency = 1.0f)
         {
-            Rect rect = new Rect(x,y,minWidth,height);
-            float textureRatio= (float)this.texture.width/(float)this.texture.height;
+            Rect rect = new Rect(x, y, minWidth, height);
+            float textureRatio = (float)this.texture.width / (float)this.texture.height;
             float textureWidth = textureRatio * height;
 
             rect.width = Mathf.Clamp(textureWidth, minWidth, maxWidth);
@@ -36,8 +37,14 @@ namespace FixedPawnGenerate
             }
 
             ScaleMode scaleMode = ScaleMode.ScaleToFit;
-            if(textureRatio > rect.width/rect.height)// texture too wide
+            if (textureRatio > rect.width / rect.height)// texture too wide
                 scaleMode = ScaleMode.ScaleAndCrop;
+
+            //Apply props
+            rect.y += this.Props.offsetY;
+            rect.x += this.Props.offsetX;
+            rect.width *= this.Props.scale;
+            rect.height *= this.Props.scale;
 
             //debug
             //GUI.DrawTexture(rect, new Texture2D(1, 1), ScaleMode.StretchToFill);
@@ -60,12 +67,41 @@ namespace FixedPawnGenerate
             get
             {
                 if (textureCache == null)
-                    textureCache = ContentFinder<Texture2D>.Get(Props.texture);
+                {
+                    string path = Props.texture;
+
+                    if (path != "" && (Props.texture.Contains(":") || Props.texture[0] == '\\'))
+                    {
+                        textureCache = this.LoadTexture(Props.texture);
+                    }
+                    else
+                    {
+                        textureCache = ContentFinder<Texture2D>.Get(Props.texture);
+                    }
+                }
 
                 return textureCache;
             }
         }
         private Texture2D textureCache = null;
 
-    }
+        //从绝对路径读取Texture2D
+        Texture2D LoadTexture(string path)
+        {
+            if (File.Exists(path))
+            {
+                Texture2D texture = new Texture2D(1, 1);
+
+                byte[] fileData = File.ReadAllBytes(path);
+
+                texture.LoadImage(fileData);
+
+                return texture;
+            }
+
+            Log.Error($"File {path} doesn't exsit!!");
+            return ContentFinder<Texture2D>.Get("Empty");
+        }
+
+    } 
 }

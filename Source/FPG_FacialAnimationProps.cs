@@ -31,30 +31,32 @@ namespace FixedPawnGenerate
             {
                 FacialAnimation.HeadTypeDef headTypeDef = DefDatabase<FacialAnimation.HeadTypeDef>.GetNamed(head);
 
-                pawn.GetComp<HeadControllerComp>().FaceType = headTypeDef;
-
-                //pawn.GetComp<HeadControllerComp>().FaceType = head;
+                if(headTypeDef == null)
+                    pawn.GetComp<HeadControllerComp>().FaceType = headTypeDef;
             }
 
             if (brow != null)
             {
                 BrowTypeDef browTypeDef = DefDatabase<BrowTypeDef>.GetNamed(brow);
 
-                pawn.GetComp<BrowControllerComp>().FaceType = browTypeDef;
+                if(browTypeDef != null)
+                    pawn.GetComp<BrowControllerComp>().FaceType = browTypeDef;
             }
 
             if (lid != null)
             {
                 LidTypeDef lidTypeDef = DefDatabase<LidTypeDef>.GetNamed(lid);
 
-                pawn.GetComp<LidControllerComp>().FaceType = lidTypeDef;
+                if(lidTypeDef != null)
+                    pawn.GetComp<LidControllerComp>().FaceType = lidTypeDef;
             }
 
             if (eye != null)
             {
                 EyeballTypeDef eyeballTypeDef = DefDatabase<EyeballTypeDef>.GetNamed(eye);
 
-                pawn.GetComp<EyeballControllerComp>().FaceType = eyeballTypeDef;
+                if(eyeballTypeDef != null)
+                    pawn.GetComp<EyeballControllerComp>().FaceType = eyeballTypeDef;
             }
             if (leftEyeColor.a != 0f)
             {
@@ -69,14 +71,16 @@ namespace FixedPawnGenerate
             {
                 MouthTypeDef mouthTypeDef = DefDatabase<MouthTypeDef>.GetNamed(mouth);
 
-                pawn.GetComp<MouthControllerComp>().FaceType = mouthTypeDef;
+                if(mouthTypeDef != null)
+                    pawn.GetComp<MouthControllerComp>().FaceType = mouthTypeDef;
             }
 
             if (skin != null)
             {
                 SkinTypeDef skinTypeDef = DefDatabase<SkinTypeDef>.GetNamed(skin);
 
-                pawn.GetComp<SkinControllerComp>().FaceType = skinTypeDef;
+                if(skinTypeDef != null)
+                    pawn.GetComp<SkinControllerComp>().FaceType = skinTypeDef;
             }
         }
 

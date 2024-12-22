@@ -69,17 +69,17 @@ namespace FixedPawnGenerate
             base.StartedNewGame();
 
             //starting pawns
-            for(int i= Find.GameInitData.startingAndOptionalPawns.Count-1; i>=0; i--)
-            {
-                Pawn pawn = Find.GameInitData.startingAndOptionalPawns[i];
-                FixedPawnDef fixedPawnDef = this.GetDef(pawn);
+            //for(int i= Find.GameInitData.startingAndOptionalPawns.Count-1; i>=0; i--)
+            //{
+            //    Pawn pawn = Find.GameInitData.startingAndOptionalPawns[i];
+            //    FixedPawnDef fixedPawnDef = this.GetDef(pawn);
 
-                if (fixedPawnDef != null)
-                {
-                    //uniqePawns.Remove(fixedPawnDef);
-                    spawnedPawns.Add(pawn, fixedPawnDef);
-                }
-            }
+            //    if (fixedPawnDef != null)
+            //    {
+            //        //uniqePawns.Remove(fixedPawnDef);
+            //        spawnedPawns.Add(pawn, fixedPawnDef);
+            //    }
+            //}
         }
         public override void ExposeData()
         {
@@ -199,6 +199,9 @@ namespace FixedPawnGenerate
                         break;
                     case PawnPositionState.IN_CORPSE:
                         location = "In Corpse or Unnatural Corpse";
+                        break;
+                    case PawnPositionState.IN_OTHER_HOLDER:
+                        location = "In Unknown Holder";
                         break;
                     case PawnPositionState.OTHER:
                         location = "None";

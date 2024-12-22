@@ -142,6 +142,9 @@ namespace FixedPawnGenerate
                         case "color":
                             this.color = ParseHelper.FromString<Color>(xmlAttribute.Value);
                             break;
+                        case "stuff":
+                            DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "stuff", xmlAttribute.Value, null, null, null);
+                            break;
                         default:
                             Log.Error($"Unknown attribute {xmlAttribute.Name} in {xmlRoot.Name}");
                             break;
@@ -373,5 +376,13 @@ namespace FixedPawnGenerate
         /**********************************/
         public bool IsSpawned => this.isUnique && FixedPawnUtility.Manager.GetPawn(this) != null;
 
+        public Pawn GetPawn()
+        {
+            if (this.isUnique)
+            {
+                return FixedPawnUtility.Manager.GetPawn(this);
+            }
+            return null;
+        }
     }
 }

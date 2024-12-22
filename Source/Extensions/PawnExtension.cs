@@ -13,6 +13,7 @@ namespace FixedPawnGenerate
         WORLD_PAWN,
         IN_CONTAINER,
         IN_CORPSE,
+        IN_OTHER_HOLDER,
         OTHER,
 
         ERROR
@@ -52,8 +53,26 @@ namespace FixedPawnGenerate
                 return PawnPositionState.IN_CORPSE;
             }
 
+            if (pawn.ParentHolder != null)
+            {
+                return PawnPositionState.IN_OTHER_HOLDER;
+            }
+
             return PawnPositionState.OTHER;
         }
+    
+        public static bool IsUniquePawn(this Pawn pawn)
+        {
+            FixedPawnDef def = pawn.GetFixedPawnDef();
+
+            if(def != null && def.isUnique)
+                return true;
+            else
+                return false;
+        }
+    
+    
+    
     }
 
 }

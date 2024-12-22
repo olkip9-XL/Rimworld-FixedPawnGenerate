@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Verse;
 using UnityEngine;
 using RimWorld;
+using Verse.Noise;
+using static HarmonyLib.Code;
 
 namespace FixedPawnGenerate
 {
@@ -58,5 +60,41 @@ namespace FixedPawnGenerate
             listing.Gap(listing.verticalSpacing);
             return result;
         }
+
+        public static string TextEntryLabeled(this Listing_Standard listing, string label, string text, string tooltip = null, float labelPct = 0.5f, int lineCount = 1)
+        {
+            Rect rect = listing.GetRect(Text.LineHeight * (float)lineCount);
+
+            Rect leftRect = rect.LeftPart(labelPct);
+            Rect rightRect = rect.RightPart(1 - labelPct);
+
+            if (!tooltip.NullOrEmpty())
+            {
+                if (Mouse.IsOver(leftRect))
+                {
+                    Widgets.DrawHighlight(leftRect);
+                }
+
+                TooltipHandler.TipRegion(leftRect, tooltip);
+            }
+
+            Widgets.Label(leftRect, label);
+
+            string result = "";
+            if (rect.height <= 30f)
+            {
+                result = Widgets.TextField(rightRect, text);
+            }
+            else
+            {
+                result =Widgets.TextArea(rightRect, text);
+            }
+
+            listing.Gap(listing.verticalSpacing);
+
+            return result;
+        }
+
+
     }
 }

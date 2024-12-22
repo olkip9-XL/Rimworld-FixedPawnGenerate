@@ -31,8 +31,8 @@ namespace FixedPawnGenerate
             callerBlackList.Add("PawnRelationWorker_Sibling.GenerateParent");
             callerBlackList.Add("FixedPawnUtility.GenerateFixedPawnWithDef");
             callerBlackList.Add("PregnancyUtility.ApplyBirthOutcome_NewTemp");
-            callerBlackList.Add("DynamicMethodDefinition.RimWorld.GameComponent_PawnDuplicator.Duplicate_Patch4");
-            callerBlackList.Add("DynamicMethodDefinition.RimWorld.GameComponent_PawnDuplicator.Duplicate_Patch2");
+            //callerBlackList.Add("DynamicMethodDefinition.RimWorld.GameComponent_PawnDuplicator.Duplicate_Patch4");
+            //callerBlackList.Add("DynamicMethodDefinition.RimWorld.GameComponent_PawnDuplicator.Duplicate_Patch2");
             callerBlackList.Add("GameComponent_PawnDuplicator.Duplicate");
 
 
@@ -354,31 +354,18 @@ namespace FixedPawnGenerate
             {
                 if (relationData.fixedPawn.IsSpawned)
                 {
-                    continue;
-                }
-
-                Pawn relationPawn = GenerateFixedPawnWithDef(relationData.fixedPawn);
-                if (relationPawn != null)
-                {
-#if DEBUG
-                    Log.Warning($"GenerateRelations:{pawn.Name} {relationData.relation.defName} {relationPawn.Name}");
-#endif
-                    //bool flag = false;
-
-                    //if (relationData.relation.implied)
-                    //{
-                    //    flag = true;
-                    //    relationData.relation.implied = false;
-                    //}
-
-                    //pawn.relations.AddDirectRelation(relationData.relation, relationPawn);
-
-                    //if (flag)
-                    //{
-                    //    relationData.relation.implied = true;
-                    //}
                     PawnGenerationRequest request = new PawnGenerationRequest();
+
+                    Pawn relationPawn = relationData.fixedPawn.GetPawn();
+
+                    //这个会让未被招募的角色显示在人物社交面板里面
+                    //relationPawn.relations.everSeenByPlayer = true;
+                    //pawn.relations.everSeenByPlayer = true;
                     relationData.relation.Worker.CreateRelation(pawn, relationPawn, ref request);
+                }
+                else
+                {
+                    GenerateFixedPawnWithDef(relationData.fixedPawn);
                 }
             }
 
@@ -386,7 +373,7 @@ namespace FixedPawnGenerate
            
 
         // Get a random def based on weights
-        public static FixedPawnDef GetRandomFixedPawnDefByWeight(List<FixedPawnDef> list, bool ExceptSpawned = true)
+        public static FixedPawnDef GetRandomFixedPawnDefByWeight(List<FixedPawnDef> list, bool ExceptSpawned = false)
         {
             double totalWeight = 0;
 
@@ -413,6 +400,11 @@ namespace FixedPawnGenerate
 
             return null; // Return null if no defName is found
         }
+        public static FixedPawnDef GetRandomFixedPawnDefByWeight(IEnumerable<FixedPawnDef> list, bool ExceptSpawned = false)
+        {
+            return FixedPawnUtility.GetRandomFixedPawnDefByWeight(new List<FixedPawnDef>(list), ExceptSpawned);
+        }
+
 
         //get caller of PawnGenerator:GeneratePawn(), 5 at least
         public static string GetCallerMethodName(int index = 5)
@@ -505,8 +497,10 @@ namespace FixedPawnGenerate
                 request.ForceBodyType = def.bodyType;
 
             //comps properties
-            FixedPawnHarmony.FPG_Global.compProperties.Clear();
-            FixedPawnHarmony.FPG_Global.compProperties.AddRange(def.comps);
+            //FixedPawnHarmony.FPG_Global.compProperties.Clear();
+            //FixedPawnHarmony.FPG_Global.compProperties.AddRange(def.comps);
+
+            FixedPawnHarmony.SetCompProperties(def.comps);
 
             return null;
         }
@@ -541,7 +535,7 @@ namespace FixedPawnGenerate
             PawnGenerationRequest request = new PawnGenerationRequest(def.pawnKind, faction);
 
             Pawn result = null;
-            if((result = ModifyRequest(ref request, def))!=null)
+            if ((result = ModifyRequest(ref request, def)) != null)
             {
                 return result;
             }

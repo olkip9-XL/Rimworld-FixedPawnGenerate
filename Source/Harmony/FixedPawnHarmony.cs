@@ -19,13 +19,38 @@ namespace FixedPawnGenerate
     public static class FixedPawnHarmony
     {
 
-        public static class FPG_Global
+        private static List<CompProperties> compProperties = new List<CompProperties>();
+
+        public static void SetCompProperties(List<CompProperties> list)
         {
-            public static List<CompProperties> compProperties = new List<CompProperties>();
+            if (compProperties.Count > 0)
+                Log.Error("compProperties in FixedPawnHarmony is not null, may be it is been set twice");
+
+            compProperties.Clear();
+            compProperties.AddRange(list);
         }
 
+        //public static class FPG_Global
+        //{
+        //    public static List<CompProperties> compProperties = new List<CompProperties>();
+        //}
+
+        private static bool CallerInBlackList(string caller)
+        {
+            foreach(string str in FixedPawnUtility.callerBlackList)
+            {
+                if (str == caller)
+                    return true;
+                
+                if(caller.Contains(str)) 
+                    return true;
+            }
+            return false;
+        }
+
+
         [HarmonyPatch(typeof(PawnGenerator), "GenerateNewPawnInternal")]
-        public static class Patch1
+        public static class Patch_GenerateNewPawnInternal
         {
             public static bool Prefix(out string __state, ref Pawn __result, ref PawnGenerationRequest request)
             {
@@ -36,7 +61,8 @@ namespace FixedPawnGenerate
                 //Black list check
                 String caller = FixedPawnUtility.GetCallerMethodName(5);
 
-                if (FixedPawnUtility.callerBlackList.Contains(caller))
+                //if (FixedPawnUtility.callerBlackList.Contains(caller))
+                if(CallerInBlackList(caller))
                 {
 #if DEBUG
                     Log.Warning($"[Debug]调用者:{caller}, 生成: Skip");
@@ -47,8 +73,10 @@ namespace FixedPawnGenerate
                 //Randomly Get Def 
                 float randValue = Rand.Value;
 
-                bool isStarting = (caller == "StartingPawnUtility.NewGeneratedStartingPawn" ||
-                                    caller == "DynamicMethodDefinition.Verse.StartingPawnUtility.NewGeneratedStartingPawn_Patch0");
+                //bool isStarting = (caller == "StartingPawnUtility.NewGeneratedStartingPawn" ||
+                //                    caller == "DynamicMethodDefinition.Verse.StartingPawnUtility.NewGeneratedStartingPawn_Patch0");
+
+                bool isStarting = caller.Contains("StartingPawnUtility.NewGeneratedStartingPawn");
 
                 float maxRate = (isStarting ? FixedPawnUtility.Settings.maxGenerateRate_Starting : FixedPawnUtility.Settings.maxGenerateRate_Global);
 
@@ -77,7 +105,7 @@ namespace FixedPawnGenerate
 
                     __state = def.defName;
 #if DEBUG
-                    Log.Warning($"[Debug]调用者:{caller}, 生成:{__state}");
+                    Log.Warning($"[Debug]Prefix调用者:{caller}, 生成:{__state}");
 #endif
 
                     __result = FixedPawnUtility.ModifyRequest(ref request, def);
@@ -90,7 +118,7 @@ namespace FixedPawnGenerate
 #if DEBUG
                 else
                 {
-                    Log.Warning($"[Debug]调用者:{caller}, 生成: No Match");
+                    Log.Warning($"[Debug]Prefix调用者:{caller}, 生成: No Match");
                 }
 #endif
 
@@ -140,91 +168,50 @@ namespace FixedPawnGenerate
             }
         }
 
-        [HarmonyPatch(typeof(StartingPawnUtility), "RegenerateStartingPawnInPlace")]
-        public static class Patch4
+        [HarmonyPatch(typeof(Pawn), "Destroy")]
+        public static class Patch_Pawn_Destroy
         {
-            public static bool Prefix(ref int index, ref Pawn __result)
+            public static bool Prefix(Pawn __instance)
             {
-                List<Pawn> startingAndOptionalPawns = Find.GameInitData.startingAndOptionalPawns;
 
-                Pawn pawn = startingAndOptionalPawns[index];
-#if DEBUG
-                Log.Warning($"Replacing :{pawn.Name}");
-#endif
-
-                FixedPawnDef fixedPawnDef = FixedPawnUtility.Manager.GetDef(pawn);
-                if (fixedPawnDef != null && fixedPawnDef.isUnique)
+                FixedPawnDef def = __instance.GetFixedPawnDef();
+                if (def != null)
                 {
+                    if (def.isUnique)
+                        return false;
+                    else
+                        FixedPawnUtility.Manager.RemovePawn(__instance);
+                }
 
-                    Pawn pawn2 = StartingPawnUtility.NewGeneratedStartingPawn(index);
-                    startingAndOptionalPawns[index] = pawn2;
-                    __result = pawn2;
+#if DEBUG
+                Log.Warning($"Pawn Destroyed:{__instance.Name}");
+#endif
+                return true;
+            }
+        }
 
-                    return false;
+        [HarmonyPatch(typeof(WorldPawns), "PassToWorld")]
+        public static class Patch_PassToWorld
+        {
+            public static bool Prefix(Pawn pawn, ref PawnDiscardDecideMode discardMode)
+            {
+                FixedPawnDef def = pawn.GetFixedPawnDef();
+                if (def != null && def.isUnique)
+                {
+                    discardMode = PawnDiscardDecideMode.KeepForever;
+
+                    //already in world
+                    if (pawn.GetPawnPositionState() == PawnPositionState.WORLD_PAWN)
+                        return false;
                 }
 
                 return true;
             }
-
-            //public static void Postfix(ref int index, ref Pawn __result)
-            //{
-            //    //Pawn pawn = __result;
-
-            //    //List<DirectPawnRelation> relations = new List<DirectPawnRelation>();
-
-            //    //relations.AddRange(pawn.relations.DirectRelations.FindAll(x=> IsUniquePawn(x.otherPawn)));
-
-            //    //foreach (var relation in relations)
-            //    //{
-            //    //    pawn.relations.RemoveDirectRelation(relation);
-            //    //}   
-
-            //}
-          
         }
-
-#if DEBUG
-
-        [HarmonyPatch(typeof(PawnUtility), "DestroyStartingColonistFamily")]
-        public static class Patch_DestroyStartingColonistFamily
-        {
-            public static void Prefix(Pawn pawn)
-            {
-                String str=$"Destroying StartingColonistFamily of {pawn.Name}\n";
-                foreach (Pawn pawn2 in Enumerable.ToList<Pawn>(pawn.relations.RelatedPawns))
-                {
-                    if (!Find.GameInitData.startingAndOptionalPawns.Contains(pawn2))
-                    {
-                        WorldPawnSituation situation = Find.WorldPawns.GetSituation(pawn2);
-                        if (situation == WorldPawnSituation.Free || situation == WorldPawnSituation.Dead)
-                        {
-                            str += $"Destroying {pawn2.Name}\n";
-                        }
-                    }
-                }
-                Log.Warning(str);
-            }
-        }
-
-#endif
-        [HarmonyPatch(typeof(Pawn), "Destroy")]
-        public static class Patch2
-        {
-            public static void Prefix(Pawn __instance)
-            {
-#if DEBUG
-                Log.Warning($"Pawn Destroyed:{__instance.Name}");
-#endif
-
-                //FixedPawnUtility.Manager.RemovePawn(__instance);
-            }
-        }
-
-
 
 
         [HarmonyPatch(typeof(ThingWithComps), "InitializeComps")]
-        public static class Patch3
+        public static class Patch_InitializeComps
         {
             public static void Postfix(ThingWithComps __instance)
             {
@@ -242,10 +229,16 @@ namespace FixedPawnGenerate
                             list.AddRange(fixedPawnDef.comps);
                         }
 
-                        if (FPG_Global.compProperties.Count > 0)
+                        //if (FPG_Global.compProperties.Count > 0)
+                        //{
+                        //    list.AddRange(FPG_Global.compProperties);
+                        //    FPG_Global.compProperties.Clear();
+                        //}
+
+                        if (compProperties.Count > 0)
                         {
-                            list.AddRange(FPG_Global.compProperties);
-                            FPG_Global.compProperties.Clear();
+                            list.AddRange(compProperties);
+                            compProperties.Clear();
                         }
 
                         foreach (var item in list)
@@ -320,7 +313,7 @@ namespace FixedPawnGenerate
             }
         }
 
-        //Anomaly
+        //Anomaly Duplicate
         [HarmonyPatch(typeof(GameComponent_PawnDuplicator), "Duplicate")]
         public static class PawnDuplicatePatch
         {
@@ -334,7 +327,7 @@ namespace FixedPawnGenerate
                     Log.Warning($"[Debug]Pawn复制：{pawn.Name}");
 #endif
 
-                    FPG_Global.compProperties.AddRange(def.comps);
+                    compProperties.AddRange(def.comps);
                 }
             }
 

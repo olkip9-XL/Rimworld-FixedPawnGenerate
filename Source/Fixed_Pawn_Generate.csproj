@@ -52,12 +52,17 @@
       <HintPath>..\..\..\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <None Include="..\About\**" />
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>..\..\..\RimWorldWin64_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
       <HintPath>..\..\..\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
       <HintPath>..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -75,8 +80,10 @@
     <Compile Include="FixedPawnUtility.cs" />
     <Compile Include="GameComponent_FixedPawn.cs" />
     <Compile Include="Extensions\Listing_StandardExtentison.cs" />
+    <Compile Include="Harmony\StartingPawnHarmony.cs" />
     <Compile Include="ModSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScenPart_ConfigPage_ConfigureStartingFixedPawns.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
