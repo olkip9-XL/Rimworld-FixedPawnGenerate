@@ -19,9 +19,8 @@ namespace FixedPawnGenerate
     public static class FixedPawnUtility
     {
         public static readonly List<string> callerBlackList = new List<string>();
-
         public static GameComponent_FixedPawn Manager => Current.Game.GetComponent<GameComponent_FixedPawn>();
-
+        public static ModSetting_FixedPawnGenerate Settings => LoadedModManager.GetMod<Mod_FixedPawnGenerate>().GetSettings<ModSetting_FixedPawnGenerate>();
         static FixedPawnUtility()
         {
             //add Black List
@@ -227,7 +226,7 @@ namespace FixedPawnGenerate
             }
         }
 
-        internal static void ModifyPawn(Pawn pawn, FixedPawnDef def, bool addToManager = true)
+        internal static void ModifyPawn(Pawn pawn, FixedPawnDef def)
         {
             if (def == null || pawn == null)
             {
@@ -324,8 +323,7 @@ namespace FixedPawnGenerate
             }
 
             //relation
-            if(!def.isUnique || addToManager)
-                Manager.AddPawn(pawn, def);
+            Manager.AddPawn(pawn,def);
 
             if (def.isUnique)
             {
@@ -365,7 +363,7 @@ namespace FixedPawnGenerate
                 }
                 else
                 {
-                    GenerateFixedPawnWithDef(relationData.fixedPawn);
+                    GenerateFixedPawnWithDef(relationData.fixedPawn, addToManager:false);
                 }
             }
 
@@ -373,13 +371,14 @@ namespace FixedPawnGenerate
            
 
         // Get a random def based on weights
-        public static FixedPawnDef GetRandomFixedPawnDefByWeight(List<FixedPawnDef> list, bool ExceptSpawned = false)
+        public static FixedPawnDef GetRandomFixedPawnDefByWeight(List<FixedPawnDef> list, bool ExceptSpawned = true)
         {
             double totalWeight = 0;
 
             //list.RemoveAll(x => x.isUnique && !Manager.uniqePawns.Contains(x));
             if(ExceptSpawned)
-                list.RemoveAll(x => x.isUnique &&  Manager.GetPawn(x) != null);
+                //list.RemoveAll(x => x.isUnique &&  Manager.GetPawn(x) != null);
+                list.RemoveAll(x => x.IsSpawned);
 
             foreach (var def in list)
             {
@@ -400,7 +399,7 @@ namespace FixedPawnGenerate
 
             return null; // Return null if no defName is found
         }
-        public static FixedPawnDef GetRandomFixedPawnDefByWeight(IEnumerable<FixedPawnDef> list, bool ExceptSpawned = false)
+        public static FixedPawnDef GetRandomFixedPawnDefByWeight(IEnumerable<FixedPawnDef> list, bool ExceptSpawned = true)
         {
             return FixedPawnUtility.GetRandomFixedPawnDefByWeight(new List<FixedPawnDef>(list), ExceptSpawned);
         }
@@ -436,7 +435,7 @@ namespace FixedPawnGenerate
 
         
 
-        internal static Pawn ModifyRequest(ref PawnGenerationRequest request, FixedPawnDef def)
+        internal static Pawn ModifyRequest(ref PawnGenerationRequest request, FixedPawnDef def, bool addToManager = true)
         {
             if (def == null)
             {
@@ -447,10 +446,15 @@ namespace FixedPawnGenerate
             Pawn pawn = null;
             if (def.isUnique)
             {
+                if (addToManager)
+                    Manager.spawnedUniquePawns.AddDistinct(def);
+
                 pawn = Manager.GetPawn(def);
 
                 if (pawn != null)
                 {
+                    
+
                     return pawn;
                 }
             }
@@ -535,20 +539,31 @@ namespace FixedPawnGenerate
             PawnGenerationRequest request = new PawnGenerationRequest(def.pawnKind, faction);
 
             Pawn result = null;
-            if ((result = ModifyRequest(ref request, def)) != null)
+            if ((result = ModifyRequest(ref request, def, addToManager)) != null)
             {
                 return result;
             }
 
             result = PawnGenerator.GeneratePawn(request);
 
-            ModifyPawn(result, def, addToManager);
+            ModifyPawn(result, def);
 
             return result;
         }
 
 
-        public static ModSetting_FixedPawnGenerate Settings => LoadedModManager.GetMod<Mod_FixedPawnGenerate>().GetSettings<ModSetting_FixedPawnGenerate>();
+
+        public static IEnumerable<FixedPawnDef> SpawnedPawnWithTag(string tag)
+        {
+            foreach (var def in Manager.spawnedUniquePawns)
+            {
+                if (def.tags.Contains(tag))
+                    yield return def;
+            }
+
+            yield break;
+        }
+
 
     }
     

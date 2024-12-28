@@ -17,6 +17,7 @@ namespace FixedPawnGenerate
         OTHER,
 
         ERROR
+
     }
     public static class PawnExtension
     {

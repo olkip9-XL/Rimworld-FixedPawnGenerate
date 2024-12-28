@@ -108,7 +108,7 @@ namespace FixedPawnGenerate
                     Log.Warning($"[Debug]Prefix调用者:{caller}, 生成:{__state}");
 #endif
 
-                    __result = FixedPawnUtility.ModifyRequest(ref request, def);
+                    __result = FixedPawnUtility.ModifyRequest(ref request, def, !isStarting);
                     if (__result != null)
                     {
                         __state = "None";
@@ -136,7 +136,7 @@ namespace FixedPawnGenerate
                     bool isStarting = (caller == "StartingPawnUtility.NewGeneratedStartingPawn" ||
                                    caller == "DynamicMethodDefinition.Verse.StartingPawnUtility.NewGeneratedStartingPawn_Patch0");
 
-                    FixedPawnUtility.ModifyPawn(pawn, fixedPawnDef, !isStarting);
+                    FixedPawnUtility.ModifyPawn(pawn, fixedPawnDef);
                 }
             }
 

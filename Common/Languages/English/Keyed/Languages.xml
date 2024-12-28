@@ -10,18 +10,24 @@
   <Reset>Reset</Reset>
 
   <FPG_Generate>Character Generation</FPG_Generate>
-  <FPG_Protrait>Portrait Control</FPG_Protrait>
+  <FPG_Portrait>Portrait Control</FPG_Portrait>
 
-  <FPG_allowMainProtrait>Enable Main Portrait</FPG_allowMainProtrait>
-  <FPG_allowMainProtrait_description>The portrait in the lower left corner of the game interface</FPG_allowMainProtrait_description>
+  <FPG_allowMainPortrait>Enable Main Portrait</FPG_allowMainPortrait>
+  <FPG_allowMainPortrait_description>The portrait in the lower left corner of the game interface</FPG_allowMainPortrait_description>
 
-  <FPG_allowInfoProtrait>Enable Attribute Panel Portrait</FPG_allowInfoProtrait>
-  <FPG_allowInfoProtrait_description>The portrait in the character attribute panel</FPG_allowInfoProtrait_description>
+  <FPG_allowInfoPortrait>Enable Attribute Panel Portrait</FPG_allowInfoPortrait>
+  <FPG_allowInfoPortrait_description>The portrait in the character attribute panel</FPG_allowInfoPortrait_description>
 
-  <FPG_showFullProtrait>Show Full-Body Portrait</FPG_showFullProtrait>
-  <FPG_showFullProtrait_description>Enable full-body portrait, disabled by default</FPG_showFullProtrait_description>
+  <FPG_showFullPortrait>Show Full-Body Portrait</FPG_showFullPortrait>
+  <FPG_showFullPortrait_description>Enable full-body portrait, disabled by default</FPG_showFullPortrait_description>
 
-  <FPG_globalProtraitOffsetY>Portrait Vertical Offset</FPG_globalProtraitOffsetY>
-  <FPG_globalProtraitOffsetY_description>Vertical offset of the portrait, negative values move it upwards</FPG_globalProtraitOffsetY_description>
+  <FPG_globalPortraitOffsetY>Portrait Vertical Offset</FPG_globalPortraitOffsetY>
+  <FPG_globalPortraitOffsetY_description>Vertical offset of the portrait, negative values move it upwards</FPG_globalPortraitOffsetY_description>
 
+  <FPG_globalPortraitOffsetX>Portrait Horizontal Offset</FPG_globalPortraitOffsetX>
+  <FPG_globalPortraitOffsetX_description>Horizontal offset of the portrait</FPG_globalPortraitOffsetX_description>
+
+  <FPG_globalPortraitScale>Portrait Scale</FPG_globalPortraitScale>
+  <FPG_globalPortraitScale_description>Scale of the portrait</FPG_globalPortraitScale_description>
+  
 </LanguageData>

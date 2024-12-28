@@ -374,7 +374,7 @@ namespace FixedPawnGenerate
         public List<RelationData> relations = new List<RelationData>();
 
         /**********************************/
-        public bool IsSpawned => this.isUnique && FixedPawnUtility.Manager.GetPawn(this) != null;
+        public bool IsSpawned => this.isUnique && FixedPawnUtility.Manager.IsSpawned(this);
 
         public Pawn GetPawn()
         {
@@ -383,6 +383,11 @@ namespace FixedPawnGenerate
                 return FixedPawnUtility.Manager.GetPawn(this);
             }
             return null;
+        }
+
+        public static FixedPawnDef Named(string defName)
+        {
+            return DefDatabase<FixedPawnDef>.GetNamed(defName);
         }
     }
 }

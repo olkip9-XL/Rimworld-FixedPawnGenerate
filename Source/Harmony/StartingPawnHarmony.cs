@@ -90,7 +90,7 @@ namespace FixedPawnGenerate
                 {
                     FixedPawnDef def = FixedPawnUtility.GetRandomFixedPawnDefByWeight(list);
 
-                    Pawn pawn = FixedPawnUtility.GenerateFixedPawnWithDef(def);
+                    Pawn pawn = FixedPawnUtility.GenerateFixedPawnWithDef(def, false);
 
                     StartingPawnUtility.GeneratePossessions(pawn);
 

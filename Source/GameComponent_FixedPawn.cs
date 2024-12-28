@@ -30,6 +30,8 @@ namespace FixedPawnGenerate
 
         private Dictionary<Pawn, FixedPawnDef> spawnedPawns = new Dictionary<Pawn, FixedPawnDef>();
 
+        internal List<FixedPawnDef> spawnedUniquePawns = new List<FixedPawnDef>();
+
         public GameComponent_FixedPawn(Game game) : base()
         {
             this.game = game;
@@ -39,8 +41,10 @@ namespace FixedPawnGenerate
             base.LoadedGame();
 
             //兼容旧存档
-            if (pawnDics != null && pawnDics.Count>0)
+            if (pawnDics != null && pawnDics.Count>0 && (!this.spawnedPawns.Any() || !this.spawnedUniquePawns.Any()))
             {
+                //Log.Warning("Compatibility with old saves in progress");
+
                 foreach (Map map in Find.Maps)
                 {
                     foreach (Pawn pawn in map.mapPawns.AllPawns)
@@ -48,6 +52,8 @@ namespace FixedPawnGenerate
                         if (pawnDics.TryGetValue(pawn.ThingID, out FixedPawnDef def))
                         {
                             spawnedPawns.AddDistinct(pawn, def);
+                            if (def.isUnique)
+                                spawnedUniquePawns.AddDistinct(def);
                         }
                     }
                 }
@@ -57,16 +63,28 @@ namespace FixedPawnGenerate
                     if (pawnDics.TryGetValue(pawn.ThingID, out FixedPawnDef def))
                     {
                         spawnedPawns.AddDistinct(pawn, def);
+                        if(def.isUnique && pawn.relations.everSeenByPlayer == true)
+                            spawnedUniquePawns.AddDistinct(def);
                     }
                 }
-
-                //Log.Warning($"old:{pawnDics.Count}, new:{spawnedPawns.Count}");
             }
+
+
         }
 
         public override void StartedNewGame()
         {
             base.StartedNewGame();
+
+            //starting pawns
+            foreach (var pawn in Find.GameInitData.startingAndOptionalPawns)
+            {
+                FixedPawnDef def = pawn.GetFixedPawnDef();
+                if (def != null)
+                {
+                    this.spawnedUniquePawns.Add(def);
+                }
+            }
 
             //starting pawns
             //for(int i= Find.GameInitData.startingAndOptionalPawns.Count-1; i>=0; i--)
@@ -98,6 +116,8 @@ namespace FixedPawnGenerate
             //pawnDics为加载存档时构建comps时使用
             Scribe_Collections.Look(ref pawnDics, "pawnDics", LookMode.Value, LookMode.Def);
             Scribe_Collections.Look<Pawn, FixedPawnDef>(ref spawnedPawns, "spawnedPawns", LookMode.Reference, LookMode.Def, ref workingPawnList, ref workingDefList);
+
+            Scribe_Collections.Look(ref spawnedUniquePawns, "spawnedUniquePawns", LookMode.Def);
             
             if(Scribe.mode == LoadSaveMode.LoadingVars && spawnedPawns == null)
             {
@@ -108,6 +128,11 @@ namespace FixedPawnGenerate
             {
                 pawnDics = new Dictionary<string, FixedPawnDef>();
                 pawnDics.Clear();
+            }
+            if(Scribe.mode == LoadSaveMode.LoadingVars && spawnedUniquePawns == null)
+            {
+                spawnedUniquePawns = new List<FixedPawnDef>();
+                spawnedUniquePawns.Clear();
             }
             if (Scribe.mode == LoadSaveMode.Saving)
             {
@@ -135,7 +160,7 @@ namespace FixedPawnGenerate
 
         }
 
-        public FixedPawnDef GetDef(Pawn pawn)
+        internal FixedPawnDef GetDef(Pawn pawn)
         {
             if(pawn == null)
             {
@@ -157,7 +182,7 @@ namespace FixedPawnGenerate
             return null;
         }
 
-        public Pawn GetPawn(FixedPawnDef def)
+        internal Pawn GetPawn(FixedPawnDef def)
         {
             return spawnedPawns.FirstOrDefault(x => x.Value == def).Key;
         }
@@ -215,9 +240,27 @@ namespace FixedPawnGenerate
                 str += $"[{count++}]Name:{pawn.Name}, \t\tDef: {def.defName}-{def.isUnique}, \tLocation:{location}\n";
             }
 
+            str += "\n\n============Unique Pawns============\n";
+            count = 0;
+            foreach(var item in spawnedUniquePawns)
+            {
+                str += $"[{count++}]{item.defName}:{item.name}, tags:";
+                foreach(var tag in item.tags)
+                {
+                    str += $"{tag},";
+                }
+                str += "\n";
+            }
+
             Log.Warning(str);
         }
         
+        internal bool IsSpawned(FixedPawnDef def)
+        {
+            return this.spawnedUniquePawns.Contains(def);
+        }
+
+       
 
     }
 

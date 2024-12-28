@@ -10,7 +10,7 @@ namespace FixedPawnGenerate
     {
         public CompProperties_Tachie Props => (CompProperties_Tachie)this.props;
 
-        public void DrawProtrait(float x, float y, float height, float minWidth = 0f, float maxWidth = 1E+09f, ProtraitAnchor anchor = ProtraitAnchor.TopLeft, float transparency = 1.0f)
+        public void DrawPortrait(float x, float y, float height, float minWidth = 0f, float maxWidth = 1E+09f, PortraitAnchor anchor = PortraitAnchor.TopLeft, float transparency = 1.0f, float scale = 1)
         {
             Rect rect = new Rect(x, y, minWidth, height);
             float textureRatio = (float)this.texture.width / (float)this.texture.height;
@@ -20,15 +20,15 @@ namespace FixedPawnGenerate
 
             switch (anchor)
             {
-                case ProtraitAnchor.TopLeft:
+                case PortraitAnchor.TopLeft:
                     break;
-                case ProtraitAnchor.TopRight:
+                case PortraitAnchor.TopRight:
                     rect.x -= rect.width;
                     break;
-                case ProtraitAnchor.BottomLeft:
+                case PortraitAnchor.BottomLeft:
                     rect.y -= rect.height;
                     break;
-                case ProtraitAnchor.BottomRight:
+                case PortraitAnchor.BottomRight:
                     rect.x -= rect.width;
                     rect.y -= rect.height;
                     break;
@@ -46,6 +46,9 @@ namespace FixedPawnGenerate
             rect.width *= this.Props.scale;
             rect.height *= this.Props.scale;
 
+            rect.width *= scale;
+            rect.height *= scale;
+
             //debug
             //GUI.DrawTexture(rect, new Texture2D(1, 1), ScaleMode.StretchToFill);
 
@@ -55,7 +58,7 @@ namespace FixedPawnGenerate
             GUI.color = originalColor;
         }
 
-        public enum ProtraitAnchor
+        public enum PortraitAnchor
         {
             TopLeft,
             TopRight,

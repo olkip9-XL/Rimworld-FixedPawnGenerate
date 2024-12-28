@@ -20,10 +20,14 @@ namespace FixedPawnGenerate
         public float maxGenerateRate_Global = 1f;
 
         //立绘
-        public int globalProtraitOffsetY = 0;
-        public bool allowMainProtrait = true;
-        public bool allowInfoProtrait = true;
-        public bool showFullProtrait = false;
+        public bool allowMainPortrait = true;
+        public bool allowInfoPortrait = true;
+        public bool showFullPortrait = false;
+
+        public int globalPortraitOffsetY = 0;
+        public int globalPortraitOffsetX = 0;
+        public float globalPortraitScale = 1;
+
 
         public void Reset()
         {
@@ -31,10 +35,14 @@ namespace FixedPawnGenerate
             maxGenerateRate_Starting = 0.125f;
             maxGenerateRate_Global = 1f;
 
-            globalProtraitOffsetY = 0;
-            allowMainProtrait = true;
-            allowInfoProtrait = true;   
-            showFullProtrait = false;
+            allowMainPortrait = true;
+            allowInfoPortrait = true;   
+            showFullPortrait = false;
+
+            globalPortraitOffsetY = 0;
+            globalPortraitOffsetX = 0;
+            globalPortraitScale = 1f;
+
         }
 
         //ExposeData
@@ -46,10 +54,14 @@ namespace FixedPawnGenerate
             Scribe_Values.Look(ref maxGenerateRate_Starting, "maxGenerateRate_Starting", 0.125f);
             Scribe_Values.Look(ref maxGenerateRate_Global, "maxGenerateRate_Global", 1f);
 
-            Scribe_Values.Look(ref globalProtraitOffsetY, "globalProtraitOffsetY", 0);
-            Scribe_Values.Look(ref allowMainProtrait, "allowMainProtrait", true);
-            Scribe_Values.Look(ref allowInfoProtrait, "allowInfoProtrait", true);
-            Scribe_Values.Look(ref showFullProtrait, "showFullProtrait", false);
+            Scribe_Values.Look(ref allowMainPortrait, "allowMainPortrait", true);
+            Scribe_Values.Look(ref allowInfoPortrait, "allowInfoPortrait", true);
+            Scribe_Values.Look(ref showFullPortrait, "showFullPortrait", false);
+
+            Scribe_Values.Look(ref globalPortraitOffsetY, "globalPortraitOffsetY", 0);
+            Scribe_Values.Look(ref globalPortraitOffsetX, "globalPortraitOffsetX", 0);
+            Scribe_Values.Look(ref globalPortraitScale, "globalPortraitScale", 1f);
+
         }
     }
 
@@ -58,7 +70,9 @@ namespace FixedPawnGenerate
         private ModSetting_FixedPawnGenerate settings;
 
         //buffer
-        string globalProtraitOffsetYBuffer;
+        string globalPortraitOffsetYBuffer;
+        string globalPortraitOffsetXBuffer;
+        string globalPortraitScaleBuffer;
 
         public Mod_FixedPawnGenerate(ModContentPack content) : base(content)
         {
@@ -89,21 +103,26 @@ namespace FixedPawnGenerate
             listingStandard.Gap(6f);
             settings.maxGenerateRate_Global = listingStandard.SliderLabeled("maxGenerateRate_Global".Translate(settings.maxGenerateRate_Global.ToStringPercent("F2")), settings.maxGenerateRate_Global, 0f, 1f);
 
-            //Protrait
+            //Portrait
             Text.Font = GameFont.Medium;
             listingStandard.GapLine(6f);
             listingStandard.Gap(6f);
-            listingStandard.Label("FPG_Protrait".Translate());
+            listingStandard.Label("FPG_Portrait".Translate());
             Text.Font = GameFont.Small;
 
             listingStandard.Gap(6f);
-            listingStandard.CheckboxLabeled("FPG_allowMainProtrait".Translate(), ref settings.allowMainProtrait, "FPG_allowMainProtrait_description".Translate());
+            listingStandard.CheckboxLabeled("FPG_allowMainPortrait".Translate(), ref settings.allowMainPortrait, "FPG_allowMainPortrait_description".Translate());
             listingStandard.Gap(6f);
-            listingStandard.CheckboxLabeled("FPG_allowInfoProtrait".Translate(), ref settings.allowInfoProtrait, "FPG_allowInfoProtrait_description".Translate());
+            listingStandard.CheckboxLabeled("FPG_allowInfoPortrait".Translate(), ref settings.allowInfoPortrait, "FPG_allowInfoPortrait_description".Translate());
             listingStandard.Gap(6f);
-            listingStandard.CheckboxLabeled("FPG_showFullProtrait".Translate(), ref settings.showFullProtrait, "FPG_showFullProtrait_description".Translate());
+            listingStandard.CheckboxLabeled("FPG_showFullPortrait".Translate(), ref settings.showFullPortrait, "FPG_showFullPortrait_description".Translate());
             listingStandard.Gap(6f);
-            listingStandard.TextFieldNumericLabeled<int>("FPG_globalProtraitOffsetY".Translate(), ref settings.globalProtraitOffsetY, ref globalProtraitOffsetYBuffer, 0.7f, "FPG_globalProtraitOffsetY_description".Translate(), -900, 500);
+            listingStandard.TextFieldNumericLabeled<int>("FPG_globalPortraitOffsetY".Translate(), ref settings.globalPortraitOffsetY, ref globalPortraitOffsetYBuffer, 0.7f, "FPG_globalPortraitOffsetY_description".Translate(), -900, 500);
+            listingStandard.Gap(6f);
+            listingStandard.TextFieldNumericLabeled<int>("FPG_globalPortraitOffsetX".Translate(), ref settings.globalPortraitOffsetX, ref globalPortraitOffsetXBuffer, 0.7f, "FPG_globalPortraitOffsetX_description".Translate());
+            listingStandard.Gap(6f);
+            listingStandard.TextFieldNumericLabeled<float>("FPG_globalPortraitScale".Translate(), ref settings.globalPortraitScale, ref globalPortraitScaleBuffer, 0.7f, "FPG_globalPortraitScale_description".Translate());
+
 
             listingStandard.GapLine(6f);
             if (listingStandard.ButtonTextCenter("Reset".Translate(), widthPct: 0.1f))
@@ -123,7 +142,9 @@ namespace FixedPawnGenerate
 
         private void ResetBuffer()
         {
-            globalProtraitOffsetYBuffer = settings.globalProtraitOffsetY.ToString();
+            globalPortraitOffsetYBuffer = settings.globalPortraitOffsetY.ToString();
+            globalPortraitOffsetXBuffer = settings.globalPortraitOffsetX.ToString();
+            globalPortraitScaleBuffer = settings.globalPortraitScale.ToString();
         }
     }
 }

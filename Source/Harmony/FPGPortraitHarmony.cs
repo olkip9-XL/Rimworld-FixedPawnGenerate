@@ -7,7 +7,7 @@ using RimWorld;
 
 namespace FixedPawnGenerate
 {
-    public static class FPGProtraitHarmony
+    public static class FPGPortraitHarmony
     {
 
         [HarmonyPatch(typeof(Dialog_InfoCard), "FillCard")]
@@ -18,7 +18,7 @@ namespace FixedPawnGenerate
             private static void Prefix(Dialog_InfoCard __instance, Rect cardRect, Thing ___thing, Dialog_InfoCard.InfoCardTab ___tab)
             {
 
-                if(!FixedPawnUtility.Settings.allowInfoProtrait) 
+                if(!FixedPawnUtility.Settings.allowInfoPortrait) 
                     return;
 
                 //info card
@@ -29,7 +29,7 @@ namespace FixedPawnGenerate
                     CompTachie compTachie = ___thing.TryGetComp<CompTachie>();
                     if (compTachie != null)
                     {
-                        compTachie.DrawProtrait(cardRect.x + cardRect.width, cardRect.y, 576f, minWidth: 447f, anchor: CompTachie.ProtraitAnchor.TopRight, transparency: 0.5f);
+                        compTachie.DrawPortrait(cardRect.x + cardRect.width, cardRect.y, 576f, minWidth: 447f, anchor: CompTachie.PortraitAnchor.TopRight, transparency: 0.5f);
                     }
                 }
             }
@@ -41,7 +41,7 @@ namespace FixedPawnGenerate
             private static void Prefix()
             {
                 ModSetting_FixedPawnGenerate settings = FixedPawnUtility.Settings;
-                if (!settings.allowMainProtrait)
+                if (!settings.allowMainPortrait)
                     return;
 
                 MainTabWindow_Inspect mainTabWindow_Inspect = Find.WindowStack.WindowOfType<MainTabWindow_Inspect>();
@@ -58,15 +58,17 @@ namespace FixedPawnGenerate
                     //mainTabWindow_Inspect
                     //(x:0.00, y:664.00, width:432.00, height:165.00)
                     float rectY = inRect.y - 300f;
+                    float rectX = 0;
 
                     //apply settings
-                    if (settings.showFullProtrait)
+                    if (settings.showFullPortrait)
                     {
                         rectY = rectY - 200 - 30;
                     }
-                    rectY += settings.globalProtraitOffsetY;
+                    rectY += settings.globalPortraitOffsetY;
+                    rectX += settings.globalPortraitOffsetX;
 
-                    compTachie.DrawProtrait(0, rectY, 500f, minWidth: 360f, maxWidth: inRect.width);
+                    compTachie.DrawPortrait(rectX, rectY, 500f, minWidth: 360f, maxWidth: inRect.width, scale:settings.globalPortraitScale);
                 }
             }
         }
