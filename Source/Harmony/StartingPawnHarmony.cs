@@ -8,6 +8,7 @@ using static Verse.Dialog_InfoCard;
 using UnityEngine;
 using Verse;
 using RimWorld;
+using RimWorld.Planet;
 
 namespace FixedPawnGenerate
 {

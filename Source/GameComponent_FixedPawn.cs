@@ -77,28 +77,24 @@ namespace FixedPawnGenerate
             base.StartedNewGame();
 
             //starting pawns
-            foreach (var pawn in Find.GameInitData.startingAndOptionalPawns)
-            {
-                FixedPawnDef def = pawn.GetFixedPawnDef();
-                if (def != null)
-                {
-                    this.spawnedUniquePawns.Add(def);
-                }
-            }
-
-            //starting pawns
-            //for(int i= Find.GameInitData.startingAndOptionalPawns.Count-1; i>=0; i--)
+            //foreach (var pawn in Find.GameInitData.startingAndOptionalPawns)
             //{
-            //    Pawn pawn = Find.GameInitData.startingAndOptionalPawns[i];
-            //    FixedPawnDef fixedPawnDef = this.GetDef(pawn);
-
-            //    if (fixedPawnDef != null)
+            //    FixedPawnDef def = pawn.GetFixedPawnDef();
+            //    if (def != null && def.isUnique)
             //    {
-            //        //uniqePawns.Remove(fixedPawnDef);
-            //        spawnedPawns.Add(pawn, fixedPawnDef);
+            //        this.spawnedUniquePawns.Add(def);
             //    }
             //}
+            this.spawnedUniquePawns.AddRange(Find.GameInitData.startingAndOptionalPawns
+                    .Select(pawn => pawn.GetFixedPawnDef())
+                    .Where(def => def != null && def.isUnique));
+
+
+            //remove non-unique pawns;
+            spawnedPawns.RemoveAll(x => !Find.GameInitData.startingAndOptionalPawns.Contains(x.Key) && !x.Value.isUnique );
         }
+
+        /*LoadingVars -> ResolvingCrossRefs -> PostLoadInit*/
         public override void ExposeData()
         {
             base.ExposeData();
@@ -115,11 +111,11 @@ namespace FixedPawnGenerate
 
             //pawnDics为加载存档时构建comps时使用
             Scribe_Collections.Look(ref pawnDics, "pawnDics", LookMode.Value, LookMode.Def);
-            Scribe_Collections.Look<Pawn, FixedPawnDef>(ref spawnedPawns, "spawnedPawns", LookMode.Reference, LookMode.Def, ref workingPawnList, ref workingDefList);
+            Scribe_Collections.Look<Pawn, FixedPawnDef>(ref spawnedPawns, "spawnedPawns", LookMode.Reference, LookMode.Def, ref workingPawnList, ref workingDefList, true, true, true);
 
             Scribe_Collections.Look(ref spawnedUniquePawns, "spawnedUniquePawns", LookMode.Def);
             
-            if(Scribe.mode == LoadSaveMode.LoadingVars && spawnedPawns == null)
+            if (Scribe.mode == LoadSaveMode.LoadingVars && spawnedPawns == null)
             {
                 spawnedPawns = new Dictionary<Pawn, FixedPawnDef>();
                 spawnedPawns.Clear();
@@ -189,7 +185,10 @@ namespace FixedPawnGenerate
 
         internal void AddPawn(Pawn pawn, FixedPawnDef def)
         {
-            spawnedPawns.Add(pawn,def);
+            if (!spawnedPawns.ContainsKey(pawn))
+            {
+                spawnedPawns.Add(pawn, def);
+            }
         }
 
         internal void RemovePawn(Pawn pawn)

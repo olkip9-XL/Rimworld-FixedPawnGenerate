@@ -8,7 +8,7 @@
     <generateWeight>1</generateWeight>
     <!--想用的话把generateRate调高即可-->
     <generateRate>0</generateRate>
-    <isUnique>false</isUnique>
+    <isUnique>true</isUnique>
 
     <faction>WSGR_PlayerFaction</faction>
     <!--<faction>PlayerColony</faction>-->

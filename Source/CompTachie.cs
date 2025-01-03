@@ -10,7 +10,7 @@ namespace FixedPawnGenerate
     {
         public CompProperties_Tachie Props => (CompProperties_Tachie)this.props;
 
-        public void DrawPortrait(float x, float y, float height, float minWidth = 0f, float maxWidth = 1E+09f, PortraitAnchor anchor = PortraitAnchor.TopLeft, float transparency = 1.0f, float scale = 1)
+        public void DrawPortrait(float x, float y, float height, float minWidth = 0f, float maxWidth = 1E+09f, PortraitAnchor anchor = PortraitAnchor.TopLeft, float transparency = 1.0f, float scale = 1, bool applyProps = true)
         {
             Rect rect = new Rect(x, y, minWidth, height);
             float textureRatio = (float)this.texture.width / (float)this.texture.height;
@@ -41,13 +41,17 @@ namespace FixedPawnGenerate
                 scaleMode = ScaleMode.ScaleAndCrop;
 
             //Apply props
-            rect.y += this.Props.offsetY;
-            rect.x += this.Props.offsetX;
-            rect.width *= this.Props.scale;
-            rect.height *= this.Props.scale;
+            if (applyProps)
+            {
+                rect.y += this.Props.offsetY;
+                rect.x += this.Props.offsetX;
+                rect.width *= this.Props.scale;
+                rect.height *= this.Props.scale;
 
-            rect.width *= scale;
-            rect.height *= scale;
+                rect.width *= scale;
+                rect.height *= scale;
+            }
+
 
             //debug
             //GUI.DrawTexture(rect, new Texture2D(1, 1), ScaleMode.StretchToFill);

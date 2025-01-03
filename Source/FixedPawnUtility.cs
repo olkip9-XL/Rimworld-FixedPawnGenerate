@@ -494,9 +494,11 @@ namespace FixedPawnGenerate
             if (def.gender != Gender.None)
                 request.FixedGender = def.gender;
             if (def.firstName != null)
-                request.SetFixedBirthName(def.firstName);
+                //request.SetFixedBirthName(def.firstName);
+                request.FixedBirthName = def.firstName;
             if (def.lastName != null)
-                request.SetFixedLastName(def.lastName);
+                //request.SetFixedLastName(def.lastName);
+                request.FixedLastName = def.lastName;
             if (def.bodyType != null)
                 request.ForceBodyType = def.bodyType;
 

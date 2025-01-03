@@ -263,3 +263,51 @@ In the original game, there seems to be no method other than rewriting <ThingDef
 The writing method of this mod is the same as the <comps> under the original <ThingDef>, it will add comp when Pawn is generated, and will NOT overwrite the original comp
 
 This allows to keep the original race while adding comp.
+
+## Comps
+
+### CompTachie
+
+```xml
+<--Example-->
+<li Class="FixedPawnGenerate.CompProperties_Tachie">
+    <texture>path to picture</texture> 
+    <offsetY>0</offsetY>
+    <offsetX>0</offsetX>
+    <scale>1</scale>
+</li>
+```
+该comp可以在角色左下角和信息页添加立绘
+左下角的立绘默认显示图片的上部的 3/5, 高度固定是500.
+信息页的立绘显示全部，透明度是0.5
+
+texture 字段支持绝对路径
+
+## Scenario
+
+本mod提供一个自定义剧本的功能，只需要如下设置
+
+```xml
+<!-- Config pages -->
+<li Class="FixedPawnGenerate.ScenPart_ConfigPage_ConfigureStartingFixedPawns"> <--change class-->
+    <def>ConfigPage_ConfigureStartingFixedPawns</def> <--change def-->
+    <pawnCount>4</pawnCount>
+    <pawnChoiceCount>8</pawnChoiceCount>
+    <pawnTags> <--add pawnTags-->
+        <li/> <--Default-->
+        <li>your FixedPawnDef's tag1</li>
+        <li>your FixedPawnDef's tag1</li>
+        <li>your FixedPawnDef's tag2</li>
+        <li>your FixedPawnDef's tag3</li>
+        <li>your FixedPawnDef's tag4</li>
+        <li>your FixedPawnDef's tag5</li>
+        <li>your FixedPawnDef's tag5</li>
+    </pawnTags>
+</li>
+```
+
+需要ScenarioDef的Config pages项。
+Class改为"FixedPawnGenerate.ScenPart_ConfigPage_ConfigureStartingFixedPawns"
+def改为"ConfigPage_ConfigureStartingFixedPawns"。
+
+pawnTags是开局选人界面对应位置的人物的tag，最好令pawnTags的项的数量与pawnChoiceCount一致

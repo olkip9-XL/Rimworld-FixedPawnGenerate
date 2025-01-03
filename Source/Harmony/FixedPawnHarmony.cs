@@ -30,11 +30,6 @@ namespace FixedPawnGenerate
             compProperties.AddRange(list);
         }
 
-        //public static class FPG_Global
-        //{
-        //    public static List<CompProperties> compProperties = new List<CompProperties>();
-        //}
-
         private static bool CallerInBlackList(string caller)
         {
             foreach(string str in FixedPawnUtility.callerBlackList)
@@ -168,28 +163,6 @@ namespace FixedPawnGenerate
             }
         }
 
-        [HarmonyPatch(typeof(Pawn), "Destroy")]
-        public static class Patch_Pawn_Destroy
-        {
-            public static bool Prefix(Pawn __instance)
-            {
-
-                FixedPawnDef def = __instance.GetFixedPawnDef();
-                if (def != null)
-                {
-                    if (def.isUnique)
-                        return false;
-                    else
-                        FixedPawnUtility.Manager.RemovePawn(__instance);
-                }
-
-#if DEBUG
-                Log.Warning($"Pawn Destroyed:{__instance.Name}");
-#endif
-                return true;
-            }
-        }
-
         [HarmonyPatch(typeof(WorldPawns), "PassToWorld")]
         public static class Patch_PassToWorld
         {
@@ -264,7 +237,7 @@ namespace FixedPawnGenerate
 
         //Todo more Comps needed
         [HarmonyPatch(typeof(ListerThings), "Add")]
-        public static class Patch5
+        public static class Patch_ListerThings_Add
         {
             private static bool ContainComp(Thing t, Type CompClass)
             {

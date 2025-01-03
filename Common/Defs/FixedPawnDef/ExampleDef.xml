@@ -227,11 +227,32 @@
 
   </FixedPawnGenerate.FixedPawnDef>
 
-  
-
- <!--=======================================-->
   <FixedPawnGenerate.FixedPawnDef>
     <defName>TestPawn2</defName>
+
+    <generateWeight>1</generateWeight>
+    <generateRate>0</generateRate>
+    <isUnique>false</isUnique>
+
+    <faction>PlayerColony</faction>
+    <race>Human</race>
+    <pawnKind>Colonist</pawnKind>
+
+    <xenotype MayRequire="ludeon.rimworld.biotech">Baseliner</xenotype>
+
+    <age>35</age>
+    <chronologicalAge>200</chronologicalAge>
+    <gender>Female</gender>
+
+    <firstName>TestPawn2</firstName>
+    <nickName>TestPawn2</nickName>
+    <lastName>TestPawn2</lastName>
+
+  </FixedPawnGenerate.FixedPawnDef>
+
+ <!--=================Other faction ======================-->
+  <FixedPawnGenerate.FixedPawnDef>
+    <defName>TestPawnFaction</defName>
 
     <generateWeight>1</generateWeight>
     <generateRate>0</generateRate>
