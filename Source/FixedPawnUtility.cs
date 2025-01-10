@@ -9,18 +9,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Verse;
 
-using UnityEngine;
-using System.Security.Cryptography;
-using HarmonyLib;
-
 namespace FixedPawnGenerate
 {
     [StaticConstructorOnStartup]
     public static class FixedPawnUtility
     {
+        //public 
         public static readonly List<string> callerBlackList = new List<string>();
         public static GameComponent_FixedPawn Manager => Current.Game.GetComponent<GameComponent_FixedPawn>();
         public static ModSetting_FixedPawnGenerate Settings => LoadedModManager.GetMod<Mod_FixedPawnGenerate>().GetSettings<ModSetting_FixedPawnGenerate>();
+
+        //private
+        private static bool isAlienRaceActive;
         static FixedPawnUtility()
         {
             //add Black List
@@ -58,6 +58,9 @@ namespace FixedPawnGenerate
                     Log.Warning($"[Debug]Add relation {GetOppositeRelation(relationData.relation)}({def.defName}) to {targetDef.defName}");
 #endif
                 }
+
+                //alienrace
+                isAlienRaceActive = ModLister.HasActiveModWithName("Humanoid Alien Races 2.0") || ModLister.HasActiveModWithName("Humanoid Alien Races") || ModLister.HasActiveModWithName("Humanoid Alien Races ~ Dev");
             }
         }
 
@@ -203,7 +206,15 @@ namespace FixedPawnGenerate
 
             //body
             if (def.skinColor.a != 0f)
-                pawn.story.skinColorOverride = def.skinColor;
+            {
+                pawn.story.SkinColorBase = def.skinColor;
+
+                //alien race compatible
+                if (isAlienRaceActive)
+                {
+                   FPG_Alienrace.SetPawnSkinColor(pawn, def.skinColor);
+                }
+            }
 
             if (def.bodyType != null)
                 pawn.story.bodyType = def.bodyType;
@@ -453,8 +464,6 @@ namespace FixedPawnGenerate
 
                 if (pawn != null)
                 {
-                    
-
                     return pawn;
                 }
             }

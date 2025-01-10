@@ -34,6 +34,10 @@
       <HintPath>..\..\..\..\..\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AlienRace">
+      <HintPath>..\..\..\..\..\workshop\content\294100\839005762\1.5\Assemblies\AlienRace.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
@@ -67,11 +71,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\PawnExtension.cs" />
+    <Compile Include="FPG_Alienrace.cs" />
     <Compile Include="Harmony\FPGPortraitHarmony.cs" />
-    <Compile Include="CompProperties_Tachie.cs" />
-    <Compile Include="CompTachie.cs" />
+    <Compile Include="Comps\CompProperties_Tachie.cs" />
+    <Compile Include="Comps\CompTachie.cs" />
     <Compile Include="DebugActions.cs" />
-    <Compile Include="Example.cs" />
     <Compile Include="FPG_FacialAnimationProps.cs" />
     <Compile Include="FixedPawnDef.cs" />
     <Compile Include="FixedPawnDefOf.cs" />
