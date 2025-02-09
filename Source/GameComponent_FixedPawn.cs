@@ -227,6 +227,12 @@ namespace FixedPawnGenerate
                     case PawnPositionState.IN_OTHER_HOLDER:
                         location = "In Unknown Holder";
                         break;
+                    case PawnPositionState.IN_CARAVAN:
+                        location = "In Caravan";
+                        break;
+                    case PawnPositionState.IN_VOE_OUTPOST:
+                        location = "In VOE Outpost";
+                        break;
                     case PawnPositionState.OTHER:
                         location = "None";
                         break;

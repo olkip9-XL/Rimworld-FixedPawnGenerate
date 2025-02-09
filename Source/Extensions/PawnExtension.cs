@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RimWorld.Planet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,8 @@ namespace FixedPawnGenerate
         WORLD_PAWN,
         IN_CONTAINER,
         IN_CORPSE,
+        IN_CARAVAN,
+        IN_VOE_OUTPOST,
         IN_OTHER_HOLDER,
         OTHER,
 
@@ -39,11 +42,6 @@ namespace FixedPawnGenerate
                 return PawnPositionState.IN_MAP;
             }
 
-            if (Find.WorldPawns.Contains(pawn))
-            {
-                return PawnPositionState.WORLD_PAWN;
-            }
-
             if (pawn.InContainerEnclosed)
             {
                 return PawnPositionState.IN_CONTAINER;
@@ -53,6 +51,21 @@ namespace FixedPawnGenerate
             {
                 return PawnPositionState.IN_CORPSE;
             }
+
+            if (pawn.GetCaravan() != null)
+            {
+                return PawnPositionState.IN_CARAVAN;
+            }
+
+            if (Find.WorldPawns.Contains(pawn))
+            {
+                return PawnPositionState.WORLD_PAWN;
+            }
+
+            if (pawn.IsInVOEOutpost())
+            {
+                return PawnPositionState.IN_VOE_OUTPOST;
+            }   
 
             if (pawn.ParentHolder != null)
             {

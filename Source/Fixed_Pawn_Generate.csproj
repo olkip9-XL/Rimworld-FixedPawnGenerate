@@ -46,6 +46,10 @@
       <HintPath>..\..\..\..\..\workshop\content\294100\1635901197\1.5\Assemblies\FacialAnimation.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Outposts">
+      <HintPath>..\..\..\..\..\workshop\content\294100\2023507013\1.5\Assemblies\Outposts.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -71,12 +75,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\PawnExtension.cs" />
-    <Compile Include="FPG_Alienrace.cs" />
+    <Compile Include="ModCompatible\FPG_Alienrace.cs" />
     <Compile Include="Harmony\FPGPortraitHarmony.cs" />
     <Compile Include="Comps\CompProperties_Tachie.cs" />
     <Compile Include="Comps\CompTachie.cs" />
     <Compile Include="DebugActions.cs" />
-    <Compile Include="FPG_FacialAnimationProps.cs" />
+    <Compile Include="ModCompatible\FPG_FacialAnimationProps.cs" />
     <Compile Include="FixedPawnDef.cs" />
     <Compile Include="FixedPawnDefOf.cs" />
     <Compile Include="Harmony\FixedPawnHarmony.cs" />
@@ -85,6 +89,7 @@
     <Compile Include="GameComponent_FixedPawn.cs" />
     <Compile Include="Extensions\Listing_StandardExtentison.cs" />
     <Compile Include="Harmony\StartingPawnHarmony.cs" />
+    <Compile Include="ModCompatible\VOE.cs" />
     <Compile Include="ModSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScenPart_ConfigPage_ConfigureStartingFixedPawns.cs" />

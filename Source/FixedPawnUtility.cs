@@ -210,9 +210,13 @@ namespace FixedPawnGenerate
                 pawn.story.SkinColorBase = def.skinColor;
 
                 //alien race compatible
-                if (isAlienRaceActive)
+                if (!isAlienRaceActive)
                 {
-                   FPG_Alienrace.SetPawnSkinColor(pawn, def.skinColor);
+                    pawn.story.skinColorOverride = def.skinColor;
+                }
+                else
+                {
+                    FPG_Alienrace.SetPawnSkinColor(pawn, def.skinColor);
                 }
             }
 
@@ -561,8 +565,6 @@ namespace FixedPawnGenerate
 
             return result;
         }
-
-
 
         public static IEnumerable<FixedPawnDef> SpawnedPawnWithTag(string tag)
         {
