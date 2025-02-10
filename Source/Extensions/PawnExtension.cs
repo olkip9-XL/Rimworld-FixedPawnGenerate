@@ -62,7 +62,8 @@ namespace FixedPawnGenerate
                 return PawnPositionState.WORLD_PAWN;
             }
 
-            if (pawn.IsInVOEOutpost())
+
+            if (ModLister.HasActiveModWithName("Vanilla Outposts Expanded") && pawn.IsInVOEOutpost())
             {
                 return PawnPositionState.IN_VOE_OUTPOST;
             }   
