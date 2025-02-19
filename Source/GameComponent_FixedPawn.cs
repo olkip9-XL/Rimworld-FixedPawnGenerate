@@ -41,7 +41,7 @@ namespace FixedPawnGenerate
             base.LoadedGame();
 
             //兼容旧存档
-            if (pawnDics != null && pawnDics.Count>0 && (!this.spawnedPawns.Any() || !this.spawnedUniquePawns.Any()))
+            if (pawnDics != null && pawnDics.Count > 0 && (!this.spawnedPawns.Any() || !this.spawnedUniquePawns.Any()))
             {
                 //Log.Warning("Compatibility with old saves in progress");
 
@@ -63,7 +63,7 @@ namespace FixedPawnGenerate
                     if (pawnDics.TryGetValue(pawn.ThingID, out FixedPawnDef def))
                     {
                         spawnedPawns.AddDistinct(pawn, def);
-                        if(def.isUnique && pawn.relations.everSeenByPlayer == true)
+                        if (def.isUnique && pawn.relations.everSeenByPlayer == true)
                             spawnedUniquePawns.AddDistinct(def);
                     }
                 }
@@ -76,22 +76,28 @@ namespace FixedPawnGenerate
         {
             base.StartedNewGame();
 
-            //starting pawns
-            //foreach (var pawn in Find.GameInitData.startingAndOptionalPawns)
-            //{
-            //    FixedPawnDef def = pawn.GetFixedPawnDef();
-            //    if (def != null && def.isUnique)
-            //    {
-            //        this.spawnedUniquePawns.Add(def);
-            //    }
-            //}
             this.spawnedUniquePawns.AddRange(Find.GameInitData.startingAndOptionalPawns
                     .Select(pawn => pawn.GetFixedPawnDef())
                     .Where(def => def != null && def.isUnique));
 
 
             //remove non-unique pawns;
-            spawnedPawns.RemoveAll(x => !Find.GameInitData.startingAndOptionalPawns.Contains(x.Key) && !x.Value.isUnique );
+            spawnedPawns.RemoveAll(x => !Find.GameInitData.startingAndOptionalPawns.Contains(x.Key) && !x.Value.isUnique);
+
+            //pass to world
+            foreach (var pair in spawnedPawns)
+            {
+                if (pair.Key.GetPawnPositionState() == PawnPositionState.OTHER)
+                {
+                    Find.WorldPawns.PassToWorld(pair.Key, RimWorld.Planet.PawnDiscardDecideMode.KeepForever);
+
+                    Faction faction = null;
+                    if (pair.Value.faction != null)
+                        faction = Find.FactionManager.FirstFactionOfDef(pair.Value.faction);
+
+                    pair.Key.SetFaction(faction);
+                }
+            }
         }
 
         /*LoadingVars -> ResolvingCrossRefs -> PostLoadInit*/
@@ -103,7 +109,7 @@ namespace FixedPawnGenerate
             if (Scribe.mode == LoadSaveMode.Saving)
             {
                 pawnDics.Clear();
-                foreach(var pair in spawnedPawns)
+                foreach (var pair in spawnedPawns)
                 {
                     pawnDics.Add(pair.Key.ThingID, pair.Value);
                 }
@@ -114,7 +120,8 @@ namespace FixedPawnGenerate
             Scribe_Collections.Look<Pawn, FixedPawnDef>(ref spawnedPawns, "spawnedPawns", LookMode.Reference, LookMode.Def, ref workingPawnList, ref workingDefList, true, true, true);
 
             Scribe_Collections.Look(ref spawnedUniquePawns, "spawnedUniquePawns", LookMode.Def);
-            
+
+            //null list check
             if (Scribe.mode == LoadSaveMode.LoadingVars && spawnedPawns == null)
             {
                 spawnedPawns = new Dictionary<Pawn, FixedPawnDef>();
@@ -125,59 +132,34 @@ namespace FixedPawnGenerate
                 pawnDics = new Dictionary<string, FixedPawnDef>();
                 pawnDics.Clear();
             }
-            if(Scribe.mode == LoadSaveMode.LoadingVars && spawnedUniquePawns == null)
+            if (Scribe.mode == LoadSaveMode.LoadingVars && spawnedUniquePawns == null)
             {
                 spawnedUniquePawns = new List<FixedPawnDef>();
                 spawnedUniquePawns.Clear();
             }
-            if (Scribe.mode == LoadSaveMode.Saving)
-            {
-                //无归属的pawn移至世界
-                foreach (var pair in spawnedPawns)
-                {
-                    Pawn pawn = pair.Key;
-
-                    //if (pawn.Map == null && !Find.WorldPawns.Contains(pawn) && !pawn.InContainerEnclosed)
-                    if(pawn.GetPawnPositionState() == PawnPositionState.OTHER)
-                    {
-#if DEBUG
-                        Log.Warning($"[Debug]:Pass to world:{pawn.Name}");
-#endif
-                        Find.WorldPawns.PassToWorld(pawn, RimWorld.Planet.PawnDiscardDecideMode.KeepForever);
-
-                        Faction faction = null;
-                        if (pair.Value.faction != null)
-                            faction = Find.FactionManager.FirstFactionOfDef(pair.Value.faction);
-
-                        pawn.SetFaction(faction);
-                    }
-                }
-            }
-
         }
 
         internal FixedPawnDef GetDef(Pawn pawn)
         {
-            if(pawn == null)
+            if (pawn == null)
             {
                 return null;
             }
-            
+
             FixedPawnDef def = null;
 
-            if(pawnDics.TryGetValue(pawn.ThingID, out def))
+            if (pawnDics.TryGetValue(pawn.ThingID, out def))
             {
                 return def;
             }
 
-            if(spawnedPawns.TryGetValue(pawn, out def))
+            if (spawnedPawns.TryGetValue(pawn, out def))
             {
                 return def;
             }
 
             return null;
         }
-
         internal Pawn GetPawn(FixedPawnDef def)
         {
             return spawnedPawns.FirstOrDefault(x => x.Value == def).Key;
@@ -198,12 +180,16 @@ namespace FixedPawnGenerate
 
         public void LogPawnDics()
         {
-            String str = "============Spawned Pawns============\n";
+            String str = "============Spawned Pawns============\n" +
+                $"   {"Name",-30} {"Def",-10} {"Location",-25} {"ThingID",-15}\n";
 
             Pawn pawn = null;
             FixedPawnDef def = null;
             int count = 0;
-            foreach(var pair in spawnedPawns)
+
+
+
+            foreach (var pair in spawnedPawns)
             {
                 pawn = pair.Key;
                 def = pair.Value;
@@ -230,9 +216,6 @@ namespace FixedPawnGenerate
                     case PawnPositionState.IN_CARAVAN:
                         location = "In Caravan";
                         break;
-                    case PawnPositionState.IN_VOE_OUTPOST:
-                        location = "In VOE Outpost";
-                        break;
                     case PawnPositionState.OTHER:
                         location = "None";
                         break;
@@ -242,15 +225,15 @@ namespace FixedPawnGenerate
                         break;
                 }
 
-                str += $"[{count++}]Name:{pawn.Name}, \t\tDef: {def.defName}-{def.isUnique}, \tLocation:{location}\n";
+                str += $"[{count++}]{pawn.Name,-30}\t{def.defName + (def.isUnique ? "★" : ""),-10}\t{location,-25}\t{pawn.ThingID,-15}\n";
             }
 
             str += "\n\n============Unique Pawns============\n";
             count = 0;
-            foreach(var item in spawnedUniquePawns)
+            foreach (var item in spawnedUniquePawns)
             {
                 str += $"[{count++}]{item.defName}:{item.name}, tags:";
-                foreach(var tag in item.tags)
+                foreach (var tag in item.tags)
                 {
                     str += $"{tag},";
                 }
@@ -259,13 +242,11 @@ namespace FixedPawnGenerate
 
             Log.Warning(str);
         }
-        
+
         internal bool IsSpawned(FixedPawnDef def)
         {
             return this.spawnedUniquePawns.Contains(def);
         }
-
-       
 
     }
 

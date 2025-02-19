@@ -15,7 +15,6 @@ namespace FixedPawnGenerate
         IN_CONTAINER,
         IN_CORPSE,
         IN_CARAVAN,
-        IN_VOE_OUTPOST,
         IN_OTHER_HOLDER,
         OTHER,
 
@@ -61,12 +60,6 @@ namespace FixedPawnGenerate
             {
                 return PawnPositionState.WORLD_PAWN;
             }
-
-
-            if (ModLister.HasActiveModWithName("Vanilla Outposts Expanded") && pawn.IsInVOEOutpost())
-            {
-                return PawnPositionState.IN_VOE_OUTPOST;
-            }   
 
             if (pawn.ParentHolder != null)
             {

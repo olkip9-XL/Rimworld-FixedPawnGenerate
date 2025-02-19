@@ -16,7 +16,7 @@ namespace FixedPawnGenerate
         {
             FixedPawnUtility.Manager.LogPawnDics();
         }
-        [DebugAction("FixedPawnGenerate", "FPG: Log world pawns", false, false, false, false, 0, false, allowedGameStates = AllowedGameStates.PlayingOnMap)]
+        [DebugAction("FixedPawnGenerate", "FPG: Log world pawns", false, false, false, false, 0, false, allowedGameStates = AllowedGameStates.Playing)]
         private static void LogWorldPawns()
         {
             Find.WorldPawns.LogWorldPawns();

@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Verse;
+using static FixedPawnGenerate.FixedPawnDef;
 
 namespace FixedPawnGenerate
 {
@@ -344,6 +346,9 @@ namespace FixedPawnGenerate
             {
                 GenerateRelations(pawn);
             }
+
+            
+
         }
 
         private static void GenerateRelations(Pawn pawn)
@@ -365,20 +370,41 @@ namespace FixedPawnGenerate
             
             foreach (var relationData in relations)
             {
-                if (relationData.fixedPawn.IsSpawned)
+                if (relationData.fixedPawn.isUnique && relationData.fixedPawn.GetPawn()!=null)
                 {
-                    PawnGenerationRequest request = new PawnGenerationRequest();
 
                     Pawn relationPawn = relationData.fixedPawn.GetPawn();
+
+                    if(pawn.relations.RelatedPawns.Contains(relationPawn))
+                    {
+                        continue;
+                    }
 
                     //这个会让未被招募的角色显示在人物社交面板里面
                     //relationPawn.relations.everSeenByPlayer = true;
                     //pawn.relations.everSeenByPlayer = true;
+                    PawnGenerationRequest request = new PawnGenerationRequest();
                     relationData.relation.Worker.CreateRelation(pawn, relationPawn, ref request);
                 }
                 else
                 {
-                    GenerateFixedPawnWithDef(relationData.fixedPawn, addToManager:false);
+                    Pawn relationPawn = GenerateFixedPawnWithDef(relationData.fixedPawn, addToManager:false);
+
+                    //pass to world
+                    if (relationPawn.GetPawnPositionState() == PawnPositionState.OTHER)
+                    {
+#if DEBUG
+                        Log.Warning($"[Debug]:Pass to world:{relationPawn.Name}");
+#endif
+                        Find.WorldPawns.PassToWorld(relationPawn, RimWorld.Planet.PawnDiscardDecideMode.KeepForever);
+
+                        Faction faction = null;
+                        if (relationData.fixedPawn.faction != null)
+                            faction = Find.FactionManager.FirstFactionOfDef(relationData.fixedPawn.faction);
+
+                        relationPawn.SetFaction(faction);
+                    }
+
                 }
             }
 
@@ -447,8 +473,6 @@ namespace FixedPawnGenerate
 
             return null;
         }
-
-        
 
         internal static Pawn ModifyRequest(ref PawnGenerationRequest request, FixedPawnDef def, bool addToManager = true)
         {

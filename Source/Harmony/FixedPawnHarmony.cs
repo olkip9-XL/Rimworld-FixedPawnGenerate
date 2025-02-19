@@ -291,8 +291,15 @@ namespace FixedPawnGenerate
         public static class PawnDuplicatePatch
         {
             //copy comps
-            public static void Prefix(Pawn pawn, Pawn __result)
+            public static void Prefix(Pawn pawn)
             {
+
+                if(pawn == null)
+                {
+                    Log.Warning("Pawn is null when Duplicating(Prefix) Pawn");
+                    return;
+                }
+
                 FixedPawnDef def = pawn.GetFixedPawnDef();
                 if(def != null)
                 {
@@ -306,6 +313,18 @@ namespace FixedPawnGenerate
 
             public static void Postfix(Pawn pawn, Pawn __result)
             {
+                if (pawn == null || __result == null)
+                {
+                    Log.Warning("Pawn or __result is null when Duplicating(Postfix) Pawn");
+
+                    if (compProperties.Any())
+                    {
+                        Log.Warning("compProperties is not empty when Duplicating Pawn");
+                        compProperties.Clear();
+                    }
+                    return;
+                }
+
                 FixedPawnDef def = pawn.GetFixedPawnDef();
                 if (def != null && __result.GetFixedPawnDef() == null)
                 {
