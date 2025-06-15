@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<ScenPartDef>
+		<defName>ConfigPage_ConfigureStartingFixedPawns</defName>
+		<label>starting fixed pawns</label>
+		<category>Fixed</category>
+		<scenPartClass>FixedPawnGenerate.ScenPart_ConfigPage_ConfigureStartingFixedPawns</scenPartClass>
+		<pageClass>Page_ConfigureStartingPawns</pageClass>
+		<summaryPriority>500</summaryPriority>
+	</ScenPartDef>
+</Defs>

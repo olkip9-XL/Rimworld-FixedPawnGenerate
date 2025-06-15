@@ -3,12 +3,15 @@ using RimWorld;
 using RimWorld.Planet;
 using RuntimeAudioClipLoader;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
@@ -19,32 +22,64 @@ namespace FixedPawnGenerate
     public static class FixedPawnHarmony
     {
 
-        private static List<CompProperties> compProperties = new List<CompProperties>();
+        //private static List<CompProperties> compProperties = new List<CompProperties>();
 
-        public static void SetCompProperties(List<CompProperties> list)
+        //private static ConcurrentQueue<FixedPawnDef> compQueue = new ConcurrentQueue<FixedPawnDef>();
+
+        private static FixedPawnDef curPawnDef = null;
+
+        public static void SetCompProperties(FixedPawnDef def)
         {
-            if (compProperties.Count > 0)
-                Log.Error("compProperties in FixedPawnHarmony is not null, may be it is been set twice");
+            //if (compProperties.Count > 0)
+            //    Log.Error("compProperties in FixedPawnHarmony is not null, may be it is been set twice");
 
-            compProperties.Clear();
-            compProperties.AddRange(list);
+            //compProperties.Clear();
+            //compProperties.AddRange(list);
+
+            if (curPawnDef == null)
+                curPawnDef = def;
         }
+
+        public static FixedPawnDef GetCompProperties()
+        {
+            FixedPawnDef def = curPawnDef;
+            curPawnDef = null; // Clear after get, to avoid multiple calls
+            return def;
+        }
+
 
         private static bool CallerInBlackList(string caller)
         {
-            foreach(string str in FixedPawnUtility.callerBlackList)
+            foreach (string str in FixedPawnUtility.callerBlackList)
             {
                 if (str == caller)
                     return true;
-                
-                if(caller.Contains(str)) 
+
+                if (caller.Contains(str))
                     return true;
             }
             return false;
         }
 
+        private static void AddComp(ThingWithComps thing, CompProperties compProperties)
+        {
+            ThingComp thingComp = null;
+            try
+            {
+                thingComp = (ThingComp)Activator.CreateInstance(compProperties.compClass);
+                thingComp.parent = thing;
+                thing.AllComps.Add(thingComp);
+                thingComp.Initialize(compProperties);
+            }
+            catch (Exception arg)
+            {
+                Log.Error("Could not instantiate or initialize a ThingComp: " + arg);
+                thing.AllComps.Remove(thingComp);
+            }
+        }
 
-        [HarmonyPatch(typeof(PawnGenerator), "GenerateNewPawnInternal")]
+        //[HarmonyPatch(typeof(PawnGenerator), "GenerateNewPawnInternal")]
+        [HarmonyPatch(typeof(PawnGenerator), "TryGenerateNewPawnInternal")]
         public static class Patch_GenerateNewPawnInternal
         {
             public static bool Prefix(out string __state, ref Pawn __result, ref PawnGenerationRequest request)
@@ -57,10 +92,10 @@ namespace FixedPawnGenerate
                 String caller = FixedPawnUtility.GetCallerMethodName(5);
 
                 //if (FixedPawnUtility.callerBlackList.Contains(caller))
-                if(CallerInBlackList(caller))
+                if (CallerInBlackList(caller))
                 {
 #if DEBUG
-                    Log.Warning($"[Debug]调用者:{caller}, 生成: Skip");
+                    Log.Warning($"[FixedPawnGenerate] 调用者:{caller}, \n生成: Skip");
 #endif
                     return true;
                 }
@@ -100,7 +135,7 @@ namespace FixedPawnGenerate
 
                     __state = def.defName;
 #if DEBUG
-                    Log.Warning($"[Debug]Prefix调用者:{caller}, 生成:{__state}");
+                    Log.Warning($"[FixedPawnGenerate] Prefix 调用者:{caller}, \n生成:{__state}");
 #endif
 
                     __result = FixedPawnUtility.ModifyRequest(ref request, def, !isStarting);
@@ -113,7 +148,7 @@ namespace FixedPawnGenerate
 #if DEBUG
                 else
                 {
-                    Log.Warning($"[Debug]Prefix调用者:{caller}, 生成: No Match");
+                    Log.Warning($"[FixedPawnGenerate] Prefix 调用者:{caller}, \n生成: No Match");
                 }
 #endif
 
@@ -153,7 +188,7 @@ namespace FixedPawnGenerate
 
 #if DEBUG
 
-                Log.Warning($"factionDef:{factionDef?.defName} pawnKindDef:{pawnKindDef.defName}, {race.defName}");
+                //Log.Warning($"[FixedPawnGenerate] Request:\nfactionDef:{factionDef?.defName} \npawnKindDef:{pawnKindDef.defName}, {race.defName}");
 #endif
 
 
@@ -188,50 +223,66 @@ namespace FixedPawnGenerate
         {
             public static void Postfix(ThingWithComps __instance)
             {
-
-                //test
                 if (__instance is Pawn pawn)
                 {
+                    //new Generate
+                    FixedPawnDef fixedPawnDef = GetCompProperties();
 
-                    if (pawn.AllComps.Count > 0)
+                    //Load data
+                    if(fixedPawnDef == null)
                     {
-                        List<CompProperties> list = new List<CompProperties>();
-                        FixedPawnDef fixedPawnDef = FixedPawnUtility.Manager.GetDef(pawn);
-                        if (fixedPawnDef != null)
-                        {
-                            list.AddRange(fixedPawnDef.comps);
-                        }
+                        fixedPawnDef = FixedPawnUtility.Manager.GetDef(pawn);
+                    }
 
-                        //if (FPG_Global.compProperties.Count > 0)
-                        //{
-                        //    list.AddRange(FPG_Global.compProperties);
-                        //    FPG_Global.compProperties.Clear();
-                        //}
-
-                        if (compProperties.Count > 0)
+                    if (fixedPawnDef != null && !fixedPawnDef.comps.NullOrEmpty())
+                    {
+                        foreach (var comp in fixedPawnDef.comps)
                         {
-                            list.AddRange(compProperties);
-                            compProperties.Clear();
-                        }
-
-                        foreach (var item in list)
-                        {
-                            ThingComp thingComp = null;
-                            try
-                            {
-                                thingComp = (ThingComp)Activator.CreateInstance(item.compClass);
-                                thingComp.parent = __instance;
-                                __instance.AllComps.Add(thingComp);
-                                thingComp.Initialize(item);
-                            }
-                            catch (Exception arg)
-                            {
-                                Log.Error("Could not instantiate or initialize a ThingComp: " + arg);
-                                __instance.AllComps.Remove(thingComp);
-                            }
+                            AddComp(__instance, comp);
                         }
                     }
+
                 }
+
+                //if (__instance is Pawn pawn)
+                //{
+
+                //    if (pawn.AllComps.Count > 0)
+                //    {
+                //        List<CompProperties> list = new List<CompProperties>();
+                //        FixedPawnDef fixedPawnDef = FixedPawnUtility.Manager.GetDef(pawn);
+                //        if (fixedPawnDef != null)
+                //        {
+                //            list.AddRange(fixedPawnDef.comps);
+                //        }
+
+                //        if (compProperties.Count > 0)
+                //        {
+                //            list.AddRange(compProperties);
+                //            compProperties.Clear();
+                //        }
+
+                //        foreach (var item in list)
+                //        {
+                //            ThingComp thingComp = null;
+                //            try
+                //            {
+                //                thingComp = (ThingComp)Activator.CreateInstance(item.compClass);
+                //                thingComp.parent = __instance;
+                //                __instance.AllComps.Add(thingComp);
+                //                thingComp.Initialize(item);
+                //            }
+                //            catch (Exception arg)
+                //            {
+                //                Log.Error("Could not instantiate or initialize a ThingComp: " + arg);
+                //                __instance.AllComps.Remove(thingComp);
+                //            }
+                //        }
+                //    }
+                //}
+
+
+
             }
         }
 
@@ -294,20 +345,20 @@ namespace FixedPawnGenerate
             public static void Prefix(Pawn pawn)
             {
 
-                if(pawn == null)
+                if (pawn == null)
                 {
                     Log.Warning("Pawn is null when Duplicating(Prefix) Pawn");
                     return;
                 }
 
                 FixedPawnDef def = pawn.GetFixedPawnDef();
-                if(def != null)
+                if (def != null)
                 {
 #if DEBUG
                     Log.Warning($"[Debug]Pawn复制：{pawn.Name}");
 #endif
 
-                    compProperties.AddRange(def.comps);
+                    //compProperties.AddRange(def.comps);
                 }
             }
 
@@ -317,11 +368,11 @@ namespace FixedPawnGenerate
                 {
                     Log.Warning("Pawn or __result is null when Duplicating(Postfix) Pawn");
 
-                    if (compProperties.Any())
-                    {
-                        Log.Warning("compProperties is not empty when Duplicating Pawn");
-                        compProperties.Clear();
-                    }
+                    //if (compProperties.Any())
+                    //{
+                    //    Log.Warning("compProperties is not empty when Duplicating Pawn");
+                    //    compProperties.Clear();
+                    //}
                     return;
                 }
 

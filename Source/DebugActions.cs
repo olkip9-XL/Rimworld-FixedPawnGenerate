@@ -11,17 +11,15 @@ namespace FixedPawnGenerate
     public static class DebugActions
     {
 
-        [DebugAction("FixedPawnGenerate", "FPG: Log spawned pawns", false, false, false, false, 0, false, allowedGameStates = AllowedGameStates.PlayingOnMap)]
+        [DebugAction("FixedPawnGenerate", "FPG: Log spawned pawns", false, false, false, false, allowedGameStates = AllowedGameStates.Playing)]
         private static void LogSpawnedPawns()
         {
             FixedPawnUtility.Manager.LogPawnDics();
         }
-        [DebugAction("FixedPawnGenerate", "FPG: Log world pawns", false, false, false, false, 0, false, allowedGameStates = AllowedGameStates.Playing)]
+        [DebugAction("FixedPawnGenerate", "FPG: Log world pawns", false, false, false, false, allowedGameStates = AllowedGameStates.Playing)]
         private static void LogWorldPawns()
         {
             Find.WorldPawns.LogWorldPawns();
         }
-
-
     }
 }

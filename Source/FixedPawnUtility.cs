@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 using Verse;
 using static FixedPawnGenerate.FixedPawnDef;
 
@@ -32,10 +33,7 @@ namespace FixedPawnGenerate
             callerBlackList.Add("PawnRelationWorker_Sibling.GenerateParent");
             callerBlackList.Add("FixedPawnUtility.GenerateFixedPawnWithDef");
             callerBlackList.Add("PregnancyUtility.ApplyBirthOutcome_NewTemp");
-            //callerBlackList.Add("DynamicMethodDefinition.RimWorld.GameComponent_PawnDuplicator.Duplicate_Patch4");
-            //callerBlackList.Add("DynamicMethodDefinition.RimWorld.GameComponent_PawnDuplicator.Duplicate_Patch2");
             callerBlackList.Add("GameComponent_PawnDuplicator.Duplicate");
-
 
             //fix relations
             foreach (FixedPawnDef def in DefDatabase<FixedPawnDef>.AllDefs.Where(x => x.isUnique))
@@ -104,11 +102,11 @@ namespace FixedPawnGenerate
             {
                 return PawnRelationDefOf.Grandchild;
             }
-            else if(relation == PawnRelationDefOf.ParentBirth)
+            else if (relation == PawnRelationDefOf.ParentBirth)
             {
                 return PawnRelationDefOf.Child;
             }
-            else if(relation == PawnRelationDefOf.Kin)
+            else if (relation == PawnRelationDefOf.Kin)
             {
                 return null;
             }
@@ -151,7 +149,7 @@ namespace FixedPawnGenerate
 
                 thing.TryGetComp<CompQuality>()?.SetQuality(def.quality, ArtGenerationContext.Colony);
 
-                if(def.color.a != 0f)
+                if (def.color.a != 0f)
                     thing.TryGetComp<CompColorable>()?.SetColor(def.color);
 
                 innercontainer.TryAdd(thing, thing.stackCount);
@@ -239,7 +237,7 @@ namespace FixedPawnGenerate
             if (ModsConfig.RoyaltyActive)
             {
                 if (def.favoriteColor.a != 0f)
-                    pawn.story.favoriteColor = def.favoriteColor;
+                    pawn.story.favoriteColor = new ColorDef() { color = def.favoriteColor };
             }
         }
 
@@ -266,7 +264,6 @@ namespace FixedPawnGenerate
             //apparence
             SetPawnApparence(pawn, def);
 
-
             //skills
             foreach (var skillData in def.skills)
             {
@@ -274,7 +271,7 @@ namespace FixedPawnGenerate
                 if (skill != null)
                 {
                     skill.Level = skillData.level;
-                    if(skillData.replacePassion)
+                    if (skillData.replacePassion)
                         skill.passion = skillData.passion;
                 }
             }
@@ -325,7 +322,7 @@ namespace FixedPawnGenerate
                     pawn.health.AddHediff(hediff);
                 }
             }
-                    
+
 
             //abilities
             foreach (var ability in def.abilities)
@@ -334,20 +331,20 @@ namespace FixedPawnGenerate
             }
 
             //FacialAnimation
-            if (ModLister.HasActiveModWithName("[NL] Facial Animation - WIP") && def.facialAnimationProps!=null)
+            if (ModLister.HasActiveModWithName("[NL] Facial Animation - WIP") && def.facialAnimationProps != null)
             {
                 def.facialAnimationProps.SetPawn(pawn);
             }
 
             //relation
-            Manager.AddPawn(pawn,def);
+            Manager.AddPawn(pawn, def);
 
             if (def.isUnique)
             {
                 GenerateRelations(pawn);
             }
 
-            
+
 
         }
 
@@ -363,19 +360,19 @@ namespace FixedPawnGenerate
             }
             List<FixedPawnDef.RelationData> relations = Manager.GetDef(pawn)?.relations;
 
-            if(relations == null)
+            if (relations == null)
             {
                 return;
             }
-            
+
             foreach (var relationData in relations)
             {
-                if (relationData.fixedPawn.isUnique && relationData.fixedPawn.GetPawn()!=null)
+                if (relationData.fixedPawn.isUnique && relationData.fixedPawn.GetPawn() != null)
                 {
 
                     Pawn relationPawn = relationData.fixedPawn.GetPawn();
 
-                    if(pawn.relations.RelatedPawns.Contains(relationPawn))
+                    if (pawn.relations.RelatedPawns.Contains(relationPawn))
                     {
                         continue;
                     }
@@ -388,7 +385,7 @@ namespace FixedPawnGenerate
                 }
                 else
                 {
-                    Pawn relationPawn = GenerateFixedPawnWithDef(relationData.fixedPawn, addToManager:false);
+                    Pawn relationPawn = GenerateFixedPawnWithDef(relationData.fixedPawn, addToManager: false);
 
                     //pass to world
                     if (relationPawn.GetPawnPositionState() == PawnPositionState.OTHER)
@@ -409,7 +406,7 @@ namespace FixedPawnGenerate
             }
 
         }
-           
+
 
         // Get a random def based on weights
         public static FixedPawnDef GetRandomFixedPawnDefByWeight(List<FixedPawnDef> list, bool ExceptSpawned = true)
@@ -417,7 +414,7 @@ namespace FixedPawnGenerate
             double totalWeight = 0;
 
             //list.RemoveAll(x => x.isUnique && !Manager.uniqePawns.Contains(x));
-            if(ExceptSpawned)
+            if (ExceptSpawned)
                 //list.RemoveAll(x => x.isUnique &&  Manager.GetPawn(x) != null);
                 list.RemoveAll(x => x.IsSpawned);
 
@@ -500,7 +497,14 @@ namespace FixedPawnGenerate
 
             if (def.age > 0)
             {
-                request.FixedBiologicalAge = def.age;
+                if (ModsConfig.BiotechActive)
+                {
+                    request.FixedBiologicalAge = def.age;
+                }
+                else
+                {
+                    request.FixedBiologicalAge = Mathf.Max(def.age, 13f);
+                }
             }
 
             if (def.xenotype != null)
@@ -512,10 +516,10 @@ namespace FixedPawnGenerate
             {
                 CustomXenotype customXenotype = CharacterCardUtility.CustomXenotypesForReading.Find(x => x.name == def.customXenotype);
 #if DEBUG
-                        foreach (var item in CharacterCardUtility.CustomXenotypesForReading)
-                        {
-                            Log.Warning($"customXenotype:{item.name}");
-                        }
+                foreach (var item in CharacterCardUtility.CustomXenotypesForReading)
+                {
+                    Log.Warning($"customXenotype:{item.name}");
+                }
 #endif
                 if (customXenotype != null)
                 {
@@ -530,20 +534,18 @@ namespace FixedPawnGenerate
 
             if (def.gender != Gender.None)
                 request.FixedGender = def.gender;
+
             if (def.firstName != null)
-                //request.SetFixedBirthName(def.firstName);
                 request.FixedBirthName = def.firstName;
+
             if (def.lastName != null)
-                //request.SetFixedLastName(def.lastName);
                 request.FixedLastName = def.lastName;
+
             if (def.bodyType != null)
                 request.ForceBodyType = def.bodyType;
 
             //comps properties
-            //FixedPawnHarmony.FPG_Global.compProperties.Clear();
-            //FixedPawnHarmony.FPG_Global.compProperties.AddRange(def.comps);
-
-            FixedPawnHarmony.SetCompProperties(def.comps);
+            FixedPawnHarmony.SetCompProperties(def);
 
             return null;
         }
@@ -603,6 +605,6 @@ namespace FixedPawnGenerate
 
 
     }
-    
+
 
 }

@@ -83,7 +83,12 @@ namespace FixedPawnGenerate
                     }
                     else
                     {
-                        textureCache = ContentFinder<Texture2D>.Get(Props.texture);
+                        textureCache = ContentFinder<Texture2D>.Get(Props.texture, false);
+                        if(textureCache == null)
+                        {
+                            Log.Error($"Texture {Props.texture} not found.");
+                            textureCache = ContentFinder<Texture2D>.Get("Empty");
+                        }
                     }
                 }
 
