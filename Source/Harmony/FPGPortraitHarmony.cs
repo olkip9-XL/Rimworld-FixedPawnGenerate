@@ -29,7 +29,7 @@ namespace FixedPawnGenerate
                     CompTachie compTachie = ___thing.TryGetComp<CompTachie>();
                     if (compTachie != null)
                     {
-                        compTachie.DrawPortrait(cardRect.x + cardRect.width, cardRect.y, 576f, minWidth: 447f, anchor: CompTachie.PortraitAnchor.TopRight, transparency: 0.5f, applyProps:false);
+                        compTachie.DrawPortrait(cardRect.x + cardRect.width, cardRect.y, 576f, minWidth: 447f, anchor: CompTachie.PortraitAnchor.TopRight, transparency: 0.2f, applyProps:false);
                     }
                 }
             }

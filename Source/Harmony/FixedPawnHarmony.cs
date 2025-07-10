@@ -22,20 +22,10 @@ namespace FixedPawnGenerate
     public static class FixedPawnHarmony
     {
 
-        //private static List<CompProperties> compProperties = new List<CompProperties>();
-
-        //private static ConcurrentQueue<FixedPawnDef> compQueue = new ConcurrentQueue<FixedPawnDef>();
-
         private static FixedPawnDef curPawnDef = null;
 
         public static void SetCompProperties(FixedPawnDef def)
         {
-            //if (compProperties.Count > 0)
-            //    Log.Error("compProperties in FixedPawnHarmony is not null, may be it is been set twice");
-
-            //compProperties.Clear();
-            //compProperties.AddRange(list);
-
             if (curPawnDef == null)
                 curPawnDef = def;
         }
@@ -43,7 +33,7 @@ namespace FixedPawnGenerate
         public static FixedPawnDef GetCompProperties()
         {
             FixedPawnDef def = curPawnDef;
-            curPawnDef = null; // Clear after get, to avoid multiple calls
+            curPawnDef = null; 
             return def;
         }
 
@@ -78,8 +68,8 @@ namespace FixedPawnGenerate
             }
         }
 
-        //[HarmonyPatch(typeof(PawnGenerator), "GenerateNewPawnInternal")]
-        [HarmonyPatch(typeof(PawnGenerator), "TryGenerateNewPawnInternal")]
+        [HarmonyPatch(typeof(PawnGenerator), "GenerateNewPawnInternal")]
+        //[HarmonyPatch(typeof(PawnGenerator), "TryGenerateNewPawnInternal")]
         public static class Patch_GenerateNewPawnInternal
         {
             public static bool Prefix(out string __state, ref Pawn __result, ref PawnGenerationRequest request)
@@ -102,9 +92,6 @@ namespace FixedPawnGenerate
 
                 //Randomly Get Def 
                 float randValue = Rand.Value;
-
-                //bool isStarting = (caller == "StartingPawnUtility.NewGeneratedStartingPawn" ||
-                //                    caller == "DynamicMethodDefinition.Verse.StartingPawnUtility.NewGeneratedStartingPawn_Patch0");
 
                 bool isStarting = caller.Contains("StartingPawnUtility.NewGeneratedStartingPawn");
 
