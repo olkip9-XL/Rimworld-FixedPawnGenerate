@@ -56,6 +56,12 @@ namespace FixedPawnGenerate
             ThingComp thingComp = null;
             try
             {
+                // Avoid duplicate comp
+                if (thing.AllComps.Any(x => x.GetType() == compProperties.compClass))
+                {
+                    return;
+                }
+
                 thingComp = (ThingComp)Activator.CreateInstance(compProperties.compClass);
                 thingComp.parent = thing;
                 thing.AllComps.Add(thingComp);
@@ -175,7 +181,7 @@ namespace FixedPawnGenerate
 
 #if DEBUG
 
-                //Log.Warning($"[FixedPawnGenerate] Request:\nfactionDef:{factionDef?.defName} \npawnKindDef:{pawnKindDef.defName}, {race.defName}");
+                Log.Warning($"[FixedPawnGenerate] Request:\nfactionDef:{factionDef?.defName ?? "null"} \npawnKindDef:{pawnKindDef?.defName ?? "null"}, {race?.defName ?? "null"}");
 #endif
 
 
@@ -229,97 +235,6 @@ namespace FixedPawnGenerate
                         }
                     }
 
-                }
-
-                //if (__instance is Pawn pawn)
-                //{
-
-                //    if (pawn.AllComps.Count > 0)
-                //    {
-                //        List<CompProperties> list = new List<CompProperties>();
-                //        FixedPawnDef fixedPawnDef = FixedPawnUtility.Manager.GetDef(pawn);
-                //        if (fixedPawnDef != null)
-                //        {
-                //            list.AddRange(fixedPawnDef.comps);
-                //        }
-
-                //        if (compProperties.Count > 0)
-                //        {
-                //            list.AddRange(compProperties);
-                //            compProperties.Clear();
-                //        }
-
-                //        foreach (var item in list)
-                //        {
-                //            ThingComp thingComp = null;
-                //            try
-                //            {
-                //                thingComp = (ThingComp)Activator.CreateInstance(item.compClass);
-                //                thingComp.parent = __instance;
-                //                __instance.AllComps.Add(thingComp);
-                //                thingComp.Initialize(item);
-                //            }
-                //            catch (Exception arg)
-                //            {
-                //                Log.Error("Could not instantiate or initialize a ThingComp: " + arg);
-                //                __instance.AllComps.Remove(thingComp);
-                //            }
-                //        }
-                //    }
-                //}
-
-
-
-            }
-        }
-
-        //Todo more Comps needed
-        [HarmonyPatch(typeof(ListerThings), "Add")]
-        public static class Patch_ListerThings_Add
-        {
-            private static bool ContainComp(Thing t, Type CompClass)
-            {
-                if (t is Pawn)
-                {
-                    Pawn pawn = t as Pawn;
-
-                    FixedPawnDef fixedPawnDef = FixedPawnUtility.Manager.GetDef(pawn);
-
-                    if (fixedPawnDef == null)
-                        return false;
-
-                    foreach (var comp in fixedPawnDef.comps)
-                    {
-                        if (comp.compClass == CompClass)
-                        {
-                            return true;
-                        }
-                    }
-                }
-
-                return false;
-            }
-            public static void Postfix(ref ListerThings __instance, ref Thing t)
-            {
-                FieldInfo fieldInfo = typeof(ListerThings).GetField("listsByGroup", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                List<Thing>[] listsByGroup = (List<Thing>[])fieldInfo.GetValue(__instance);
-
-                FieldInfo fieldInfo2 = typeof(ListerThings).GetField("stateHashByGroup", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                int[] stateHashByGroup = (int[])fieldInfo2.GetValue(__instance);
-
-                if (ContainComp(t, typeof(CompProjectileInterceptor)))
-                {
-                    List<Thing> list = listsByGroup[(int)ThingRequestGroup.ProjectileInterceptor];
-                    if (list == null)
-                    {
-                        list = new List<Thing>();
-                        listsByGroup[(int)ThingRequestGroup.ProjectileInterceptor] = list;
-                        stateHashByGroup[(int)ThingRequestGroup.ProjectileInterceptor] = 0;
-                    }
-                    list.Add(t);
-                    stateHashByGroup[(int)ThingRequestGroup.ProjectileInterceptor]++;
                 }
             }
         }

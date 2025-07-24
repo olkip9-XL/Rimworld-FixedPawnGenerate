@@ -32,6 +32,8 @@ namespace FixedPawnGenerate
 
         Sleeping,
 
+        Pregnant,
+
         Drafted
     }
     public class CompTachie : ThingComp
@@ -425,6 +427,11 @@ namespace FixedPawnGenerate
             }
 
             float currentMood = pawn.needs.mood.CurLevelPercentage;
+
+            if(pawn.health.hediffSet.HasHediff(HediffDefOf.PregnantHuman, false))
+            {
+                return PawnPortraitStat.Pregnant;
+            }
 
             if (pawn.CurJobDef == JobDefOf.Lovin)
             {

@@ -79,8 +79,14 @@ namespace FixedPawnGenerate
                 return false;
         }
     
-    
-    
+        public static bool HasFixedPawnTag(this Pawn pawn, string tag)
+        {
+            FixedPawnDef def = pawn.GetFixedPawnDef();
+
+            return def != null && def.tags.Contains(tag);
+        }
+
+
     }
 
 }
