@@ -514,9 +514,9 @@ namespace FixedPawnGenerate
         int ticksBetweenBlinks = 6; //0.1秒
         bool isBlinking = false;
 
-        public override void CompTickInterval(int delta)
+        public override void CompTick()
         {
-            base.CompTickInterval(delta);
+            base.CompTick();
 
             int currentTick = Find.TickManager.TicksGame;
 

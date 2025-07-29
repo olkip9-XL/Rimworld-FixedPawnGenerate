@@ -238,6 +238,7 @@ namespace FixedPawnGenerate
             {
                 if (def.favoriteColor.a != 0f)
                     pawn.story.favoriteColor = new ColorDef() { color = def.favoriteColor };
+                    //pawn.story.favoriteColor = def.favoriteColor;
             }
         }
 

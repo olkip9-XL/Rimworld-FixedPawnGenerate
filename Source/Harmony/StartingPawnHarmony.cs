@@ -95,6 +95,11 @@ namespace FixedPawnGenerate
 
                     StartingPawnUtility.GeneratePossessions(pawn);
 
+                    //set request
+                    PawnGenerationRequest request = StartingPawnUtility.GetGenerationRequest(index);
+                    request.ForcedXenotype = def.xenotype;
+                    StartingPawnUtility.SetGenerationRequest(index, request);
+
                     return pawn;
                 }
                 else
