@@ -17,19 +17,24 @@ namespace FixedPawnGenerate
     {
         public static void Postfix(Thing thing, ThingRequestGroup group, ref bool __result)
         {
-            if (thing is Pawn pawn)
+            if (group == ThingRequestGroup.ProjectileInterceptor)
             {
-                FixedPawnDef fixedPawnDef = FixedPawnUtility.Manager.GetDef(pawn);
-
-                if (fixedPawnDef != null)
-                {
-                    //Todo: more groups check
-                    if (group == ThingRequestGroup.ProjectileInterceptor)
-                    {
-                        __result = __result || fixedPawnDef.comps.Any(x => x is CompProperties_ProjectileInterceptor);
-                    }
-                }
+                __result = __result || thing.HasComp<CompProjectileInterceptor>();
             }
+
+            //if (thing is Pawn pawn)
+            //{
+            //    FixedPawnDef fixedPawnDef = FixedPawnUtility.Manager.GetDef(pawn);
+
+            //    if (fixedPawnDef != null)
+            //    {
+            //        //Todo: more groups check
+            //        if (group == ThingRequestGroup.ProjectileInterceptor)
+            //        {
+            //            __result = __result || fixedPawnDef.comps.Any(x => x is CompProperties_ProjectileInterceptor);
+            //        }
+            //    }
+            //}
         }
     }
 
