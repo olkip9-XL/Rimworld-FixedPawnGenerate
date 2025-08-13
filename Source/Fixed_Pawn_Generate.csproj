@@ -74,6 +74,7 @@
     <Compile Include="Comps\CompProperties_HediffAura.cs" />
     <Compile Include="Extensions\PawnExtension.cs" />
     <Compile Include="Harmony\FixedPawnCompsHarmony.cs" />
+    <Compile Include="Harmony\ModExtensionHarmony\ModExtHarmony_UniqueWeaponExt.cs" />
     <Compile Include="ModCompatible\FPG_Alienrace.cs" />
     <Compile Include="Harmony\FPGPortraitHarmony.cs" />
     <Compile Include="Comps\CompProperties_Tachie.cs" />
@@ -88,9 +89,14 @@
     <Compile Include="GameComponent_FixedPawn.cs" />
     <Compile Include="Extensions\Listing_StandardExtentison.cs" />
     <Compile Include="Harmony\StartingPawnHarmony.cs" />
+    <Compile Include="ModExtensions\ModExtension_PawnThoughtSocial.cs" />
+    <Compile Include="ModExtensions\ModExtension_PawnThoughtSocialGroup.cs" />
+    <Compile Include="ModExtensions\ModExtension_UniqueWeaponExt.cs" />
     <Compile Include="ModSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScenPart_ConfigPage_ConfigureStartingFixedPawns.cs" />
+    <Compile Include="ThoughtWorker\ThoughtWorker_PawnThoughtSocial.cs" />
+    <Compile Include="ThoughtWorker\ThoughtWorker_PawnThoughtSocialGroup.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

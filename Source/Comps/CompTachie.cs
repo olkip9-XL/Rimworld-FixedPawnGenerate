@@ -173,7 +173,10 @@ namespace FixedPawnGenerate
         public void DrawPortrait(float x, float y, float height, float minWidth = 0f, float maxWidth = 1E+09f, PortraitAnchor anchor = PortraitAnchor.TopLeft, float transparency = 1.0f, float scale = 1, bool applyProps = true)
         {
             Rect rect = new Rect(x, y, minWidth, height);
-            float textureAspect = (float)this.textureBase.width / (float)this.textureBase.height;
+
+            Texture2D currentTexture = GetCurrentTexture();
+
+            float textureAspect = (float)currentTexture.width / (float)currentTexture.height;
             float textureWidth = textureAspect * height;
 
             rect.width = Mathf.Clamp(textureWidth, minWidth, maxWidth);
@@ -233,7 +236,7 @@ namespace FixedPawnGenerate
             Material mat = new Material(ShaderDatabase.WorldOverlayTransparent);
             mat.color = new Color(1, 1, 1, transparency);
 
-            Graphics.DrawTexture(targetRect, GetCurrentTexture(), uvRect, 0, 0, 0, 0, mat: mat);
+            Graphics.DrawTexture(targetRect, currentTexture, uvRect, 0, 0, 0, 0, mat: mat);
         }
 
         //从绝对路径读取Texture2D

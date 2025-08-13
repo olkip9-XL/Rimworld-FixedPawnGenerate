@@ -103,7 +103,6 @@ namespace FixedPawnGenerate
 
                 float maxRate = (isStarting ? FixedPawnUtility.Settings.maxGenerateRate_Starting : FixedPawnUtility.Settings.maxGenerateRate_Global);
 
-
                 List<FixedPawnDef> list = GetFixedPawnDefsByRequest(ref request).FindAll(x => randValue < x.generateRate && randValue < maxRate);
 
                 if (isStarting)
@@ -119,7 +118,12 @@ namespace FixedPawnGenerate
                     }
                 }
 
-                if (list.Count > 0)
+                if (caller.Contains("Faction.TryGenerateNewLeader"))
+                {
+                    list.RemoveAll(x => x.isUnique);
+                }
+
+                if (list.Any())
                 {
                     FixedPawnDef def = FixedPawnUtility.GetRandomFixedPawnDefByWeight(list);
 

@@ -27,7 +27,7 @@ namespace FixedPawnGenerate
         static FixedPawnUtility()
         {
             //add Black List
-            callerBlackList.Add("Faction.TryGenerateNewLeader");
+            //callerBlackList.Add("Faction.TryGenerateNewLeader");
             callerBlackList.Add("<PlayerStartingThings>d__17.MoveNext");
             callerBlackList.Add("GenStep_Monolith.GenerateMonolith");
             callerBlackList.Add("PawnRelationWorker_Sibling.GenerateParent");
@@ -138,6 +138,11 @@ namespace FixedPawnGenerate
 
                 ThingDef stuff = def.stuff == null ? GenStuff.DefaultStuffFor(def.thing) : def.stuff;
 
+                if (def.thing.HasComp<CompUniqueWeapon>() && Faction.OfPlayerSilentFail == null)
+                {
+                    continue; //skip unique weapon if player faction is null
+                }
+
                 Thing thing = ThingMaker.MakeThing(def.thing, stuff);
 
                 if (thing == null)
@@ -238,7 +243,7 @@ namespace FixedPawnGenerate
             {
                 if (def.favoriteColor.a != 0f)
                     pawn.story.favoriteColor = new ColorDef() { color = def.favoriteColor };
-                    //pawn.story.favoriteColor = def.favoriteColor;
+                //pawn.story.favoriteColor = def.favoriteColor;
             }
         }
 
@@ -299,6 +304,20 @@ namespace FixedPawnGenerate
                         {
                             Log.Warning($"Trait {traitData.trait.defName} does not have degree {traitData.degree}, use First defined degree");
                             traitDegree = traitData.trait.degreeDatas[0].degree;
+                        }
+                    }
+
+                    //traits skill gain
+                    TraitDegreeData traitDegreeData = traitData.trait.degreeDatas.Find(x => x.degree == traitDegree);
+                    if (traitDegreeData != null && !traitDegreeData.skillGains.NullOrEmpty())
+                    {
+                        foreach (var skillGain in traitDegreeData.skillGains)
+                        {
+                            SkillRecord skill = pawn.skills.GetSkill(skillGain.skill);
+                            if (skill != null)
+                            {
+                                skill.Level = skill.levelInt + skillGain.amount;
+                            }
                         }
                     }
 

@@ -21,20 +21,7 @@ namespace FixedPawnGenerate
             {
                 __result = __result || thing.HasComp<CompProjectileInterceptor>();
             }
-
-            //if (thing is Pawn pawn)
-            //{
-            //    FixedPawnDef fixedPawnDef = FixedPawnUtility.Manager.GetDef(pawn);
-
-            //    if (fixedPawnDef != null)
-            //    {
-            //        //Todo: more groups check
-            //        if (group == ThingRequestGroup.ProjectileInterceptor)
-            //        {
-            //            __result = __result || fixedPawnDef.comps.Any(x => x is CompProperties_ProjectileInterceptor);
-            //        }
-            //    }
-            //}
+        
         }
     }
 
