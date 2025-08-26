@@ -138,11 +138,6 @@ namespace FixedPawnGenerate
 
                 ThingDef stuff = def.stuff == null ? GenStuff.DefaultStuffFor(def.thing) : def.stuff;
 
-                if (def.thing.HasComp<CompUniqueWeapon>() && Faction.OfPlayerSilentFail == null)
-                {
-                    continue; //skip unique weapon if player faction is null
-                }
-
                 Thing thing = ThingMaker.MakeThing(def.thing, stuff);
 
                 if (thing == null)
@@ -242,8 +237,7 @@ namespace FixedPawnGenerate
             if (ModsConfig.RoyaltyActive)
             {
                 if (def.favoriteColor.a != 0f)
-                    pawn.story.favoriteColor = new ColorDef() { color = def.favoriteColor };
-                //pawn.story.favoriteColor = def.favoriteColor;
+                    pawn.story.favoriteColor = def.favoriteColor;
             }
         }
 
