@@ -436,7 +436,7 @@ namespace FixedPawnGenerate
                 return PawnPortraitStat.Pregnant;
             }
 
-            if (pawn.CurJobDef == JobDefOf.Lovin)
+            if (pawn.CurJobDef == JobDefOf.Lovin || Unclothed())
             {
                 return PawnPortraitStat.Roaming;
             }
@@ -475,6 +475,24 @@ namespace FixedPawnGenerate
             else
             {
                 return PawnPortraitStat.Happy;
+            }
+
+            bool Unclothed()
+            {
+                if (pawn.apparel == null)
+                {
+                    return true;
+                }
+
+                foreach (Apparel item in pawn.apparel.WornApparel)
+                {
+                    if (item.def.apparel.countsAsClothingForNudity)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
             }
 
         }

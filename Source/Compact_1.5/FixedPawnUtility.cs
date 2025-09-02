@@ -248,123 +248,128 @@ namespace FixedPawnGenerate
                 return;
             }
 
-            //Personal info
-            SetPawnPersonalInfo(pawn, def);
-
-            //inventory
-            ReplaceInnercontainer(pawn.equipment.GetDirectlyHeldThings(), def.equipment);
-
-            ReplaceInnercontainer(pawn.inventory.GetDirectlyHeldThings(), def.inventory);
-
-            ReplaceInnercontainer(pawn.apparel.GetDirectlyHeldThings(), def.apparel);
-
-            //story
-            SetPawnStory(pawn, def);
-
-            //apparence
-            SetPawnApparence(pawn, def);
-
-            //skills
-            foreach (var skillData in def.skills)
+            try
             {
-                SkillRecord skill = pawn.skills.GetSkill(skillData.skill);
-                if (skill != null)
-                {
-                    skill.Level = skillData.level;
-                    if (skillData.replacePassion)
-                        skill.passion = skillData.passion;
-                }
-            }
+                //Personal info
+                SetPawnPersonalInfo(pawn, def);
 
-            //traits
-            if (def.traits.Count > 0)
-            {
-                pawn.story.traits.allTraits.RemoveAll(x => x.sourceGene == null);
-                foreach (var traitData in def.traits)
-                {
-                    int traitDegree;
+                //inventory
+                ReplaceInnercontainer(pawn.equipment.GetDirectlyHeldThings(), def.equipment);
 
-                    if (traitData.trait.degreeDatas.Count == 1)
+                ReplaceInnercontainer(pawn.inventory.GetDirectlyHeldThings(), def.inventory);
+
+                ReplaceInnercontainer(pawn.apparel.GetDirectlyHeldThings(), def.apparel);
+
+                //story
+                SetPawnStory(pawn, def);
+
+                //apparence
+                SetPawnApparence(pawn, def);
+
+                //skills
+                foreach (var skillData in def.skills)
+                {
+                    SkillRecord skill = pawn.skills.GetSkill(skillData.skill);
+                    if (skill != null)
                     {
-                        traitDegree = 0;
+                        skill.Level = skillData.level;
+                        if (skillData.replacePassion)
+                            skill.passion = skillData.passion;
                     }
-                    else
+                }
+
+                //traits
+                if (def.traits.Count > 0)
+                {
+                    pawn.story.traits.allTraits.RemoveAll(x => x.sourceGene == null);
+                    foreach (var traitData in def.traits)
                     {
-                        if (traitData.trait.degreeDatas.Find(x => x.degree == traitData.degree) != null)
+                        int traitDegree;
+
+                        if (traitData.trait.degreeDatas.Count == 1)
                         {
-                            traitDegree = traitData.degree;
+                            traitDegree = 0;
                         }
                         else
                         {
-                            Log.Warning($"Trait {traitData.trait.defName} does not have degree {traitData.degree}, use First defined degree");
-                            traitDegree = traitData.trait.degreeDatas[0].degree;
-                        }
-                    }
-
-                    //traits skill gain
-                    TraitDegreeData traitDegreeData = traitData.trait.degreeDatas.Find(x => x.degree == traitDegree);
-                    if (traitDegreeData != null && !traitDegreeData.skillGains.NullOrEmpty())
-                    {
-                        foreach (var skillGain in traitDegreeData.skillGains)
-                        {
-                            SkillRecord skill = pawn.skills.GetSkill(skillGain.skill);
-                            if (skill != null)
+                            if (traitData.trait.degreeDatas.Find(x => x.degree == traitData.degree) != null)
                             {
-                                skill.Level = skill.levelInt + skillGain.amount;
+                                traitDegree = traitData.degree;
+                            }
+                            else
+                            {
+                                Log.Warning($"Trait {traitData.trait.defName} does not have degree {traitData.degree}, use First defined degree");
+                                traitDegree = traitData.trait.degreeDatas[0].degree;
                             }
                         }
-                    }
 
-                    pawn.story.traits.GainTrait(new Trait(traitData.trait, degree: traitDegree));
-                }
-            }
-
-            //health
-            if (def.hediffs.Count > 0)
-            {
-                pawn.health.Reset();
-                foreach (var hediffData in def.hediffs)
-                {
-                    BodyPartRecord pawnBodyPart = null;
-                    if (hediffData.bodyPart != null)
-                    {
-                        List<BodyPartRecord> parts = pawn.RaceProps.body.AllParts.FindAll(x => x.def == hediffData.bodyPart);
-
-                        if (hediffData.index < parts.Count)
+                        //traits skill gain
+                        TraitDegreeData traitDegreeData = traitData.trait.degreeDatas.Find(x => x.degree == traitDegree);
+                        if (traitDegreeData != null && !traitDegreeData.skillGains.NullOrEmpty())
                         {
-                            pawnBodyPart = parts[hediffData.index];
+                            foreach (var skillGain in traitDegreeData.skillGains)
+                            {
+                                SkillRecord skill = pawn.skills.GetSkill(skillGain.skill);
+                                if (skill != null)
+                                {
+                                    skill.Level = skill.levelInt + skillGain.amount;
+                                }
+                            }
                         }
+
+                        pawn.story.traits.GainTrait(new Trait(traitData.trait, degree: traitDegree));
                     }
-
-                    Hediff hediff = HediffMaker.MakeHediff(hediffData.hediff, pawn, pawnBodyPart);
-                    hediff.Severity = hediffData.severity;
-                    pawn.health.AddHediff(hediff);
                 }
+
+                //health
+                if (def.hediffs.Count > 0)
+                {
+                    pawn.health.Reset();
+                    foreach (var hediffData in def.hediffs)
+                    {
+                        BodyPartRecord pawnBodyPart = null;
+                        if (hediffData.bodyPart != null)
+                        {
+                            List<BodyPartRecord> parts = pawn.RaceProps.body.AllParts.FindAll(x => x.def == hediffData.bodyPart);
+
+                            if (hediffData.index < parts.Count)
+                            {
+                                pawnBodyPart = parts[hediffData.index];
+                            }
+                        }
+
+                        Hediff hediff = HediffMaker.MakeHediff(hediffData.hediff, pawn, pawnBodyPart);
+                        hediff.Severity = hediffData.severity;
+                        pawn.health.AddHediff(hediff);
+                    }
+                }
+
+
+                //abilities
+                foreach (var ability in def.abilities)
+                {
+                    pawn.abilities.GainAbility(ability);
+                }
+
+                //FacialAnimation
+                if (ModLister.HasActiveModWithName("[NL] Facial Animation - WIP") && def.facialAnimationProps != null)
+                {
+                    def.facialAnimationProps.SetPawn(pawn);
+                }
+
+                //relation
+                Manager.AddPawn(pawn, def);
+
+                if (def.isUnique)
+                {
+                    GenerateRelations(pawn);
+                }
+
             }
-
-
-            //abilities
-            foreach (var ability in def.abilities)
+            catch (Exception e)
             {
-                pawn.abilities.GainAbility(ability);
+                Log.Error($"[Fixed Pawn Generate] ModifyPawn {def?.defName ?? "null"} Error: {e.Message}");
             }
-
-            //FacialAnimation
-            if (ModLister.HasActiveModWithName("[NL] Facial Animation - WIP") && def.facialAnimationProps != null)
-            {
-                def.facialAnimationProps.SetPawn(pawn);
-            }
-
-            //relation
-            Manager.AddPawn(pawn, def);
-
-            if (def.isUnique)
-            {
-                GenerateRelations(pawn);
-            }
-
-
-
         }
 
         private static void GenerateRelations(Pawn pawn)
