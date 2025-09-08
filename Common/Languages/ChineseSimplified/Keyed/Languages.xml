@@ -30,4 +30,11 @@
   <FPG_globalPortraitScale>立绘放大</FPG_globalPortraitScale>
   <FPG_globalPortraitScale_description>立绘的放大或缩小</FPG_globalPortraitScale_description>
   
+  <!--voice-->
+  <FPG_enablePawnVoice>启用角色语音</FPG_enablePawnVoice>
+  <FPG_enablePawnVoice_description>角色在某些情况下会发出角色语音</FPG_enablePawnVoice_description>
+
+  <FPG_voiceVolumeFactor>语音音量：{0}</FPG_voiceVolumeFactor>
+  <FPG_voiceVolumeFactor_description>语音的音量，范围是0~1</FPG_voiceVolumeFactor_description>
+  
 </LanguageData>

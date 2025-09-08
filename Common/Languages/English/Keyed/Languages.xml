@@ -29,5 +29,12 @@
 
   <FPG_globalPortraitScale>Portrait Scale</FPG_globalPortraitScale>
   <FPG_globalPortraitScale_description>Scale of the portrait</FPG_globalPortraitScale_description>
-  
+
+  <!--voice-->
+  <FPG_enablePawnVoice>Enable character voice</FPG_enablePawnVoice>
+  <FPG_enablePawnVoice_description>The character will play voice in certain situations.</FPG_enablePawnVoice_description>
+
+  <FPG_voiceVolumeFactor>Voice volume: {0}</FPG_voiceVolumeFactor>
+  <FPG_voiceVolumeFactor_description>Range is 0~1</FPG_voiceVolumeFactor_description>
+
 </LanguageData>

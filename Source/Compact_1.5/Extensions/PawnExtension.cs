@@ -86,6 +86,30 @@ namespace FixedPawnGenerate
             return def != null && def.tags.Contains(tag);
         }
 
+        public static void PlayVoice(this Pawn pawn, PawnVoiceType type)
+        {
+            if (pawn == null)
+                return;
+
+            CompPawnVoice comp = pawn.GetComp<CompPawnVoice>();
+            if (comp != null)
+            {
+                comp.PlayOneShot(type);
+            }
+        }
+
+        public static void QueueVoice(this Pawn pawn, PawnVoiceType type)
+        {
+            if (pawn == null)
+                return;
+
+            CompPawnVoice comp = pawn.GetComp<CompPawnVoice>();
+            if (comp != null)
+            {
+                comp.QueueOneShot(type);
+            }
+        }
+
 
     }
 

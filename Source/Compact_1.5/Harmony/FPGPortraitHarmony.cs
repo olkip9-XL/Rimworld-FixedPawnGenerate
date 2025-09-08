@@ -73,5 +73,30 @@ namespace FixedPawnGenerate
             }
         }
 
+        [HarmonyPatch(typeof(MapInterface), "HandleLowPriorityInput")]
+        public static class Patch_PortaritClick
+        {
+            private static void Prefix()
+            {
+                ModSetting_FixedPawnGenerate settings = FixedPawnUtility.Settings;
+                if (!settings.allowMainPortrait)
+                    return;
+
+                MainTabWindow_Inspect mainTabWindow_Inspect = Find.WindowStack.WindowOfType<MainTabWindow_Inspect>();
+                if (mainTabWindow_Inspect == null)
+                    return;
+
+                ThingWithComps FirstDrawThing = Find.Selector.SelectedPawns.Find(x => x.HasComp<CompTachie>());
+
+                CompTachie compTachie = FirstDrawThing.TryGetComp<CompTachie>();
+                if (compTachie != null)
+                {
+                    compTachie.HandlePortraitClick();
+                }
+            }
+        }
+
+
+
     }
 }

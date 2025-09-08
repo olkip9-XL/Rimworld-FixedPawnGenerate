@@ -77,8 +77,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbilityComps\PawnVoice\CompAbilityEffect_PawnVoice.cs" />
+    <Compile Include="AbilityComps\PawnVoice\CompProperties_AbilityPawnVoice.cs" />
     <Compile Include="Comps\CompHediffAura.cs" />
+    <Compile Include="Comps\CompPawnVoice.cs" />
     <Compile Include="Comps\CompProperties_HediffAura.cs" />
+    <Compile Include="Comps\CompProperties_PawnVoice.cs" />
     <Compile Include="Comps\CompProperties_Tachie.cs" />
     <Compile Include="Comps\CompTachie.cs" />
     <Compile Include="DebugActions.cs" />
@@ -87,12 +91,14 @@
     <Compile Include="FixedPawnDef.cs" />
     <Compile Include="FixedPawnDefOf.cs" />
     <Compile Include="FixedPawnUtility.cs" />
-    <Compile Include="GameComponent_FixedPawn.cs" />
+    <Compile Include="GameComponent\GameComponent_FixedPawn.cs" />
+    <Compile Include="GameComponent\GameComponent_PawnVoice.cs" />
     <Compile Include="Harmony\FixedPawnCompsHarmony.cs" />
     <Compile Include="Harmony\FixedPawnHarmony.cs" />
     <Compile Include="Harmony\FixedPawnHarmonyStartup.cs" />
     <Compile Include="Harmony\FPGPortraitHarmony.cs" />
     <Compile Include="Harmony\HarmonyStartup.cs" />
+    <Compile Include="Harmony\PawnVoiceHarmony.cs" />
     <Compile Include="Harmony\StartingPawnHarmony.cs" />
     <Compile Include="ModCompatible\FPG_Alienrace.cs" />
     <Compile Include="ModCompatible\FPG_FacialAnimationProps.cs" />

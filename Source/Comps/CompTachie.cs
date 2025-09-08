@@ -46,6 +46,10 @@ namespace FixedPawnGenerate
             BottomRight,
         }
 
+        private float clickEventOffset = 0f;
+        private float clickEventOffsetDelta = 0f;
+        public Rect currentDrawingRect { get; private set; }
+
         private PawnPortraitStat curPawnStatInt = PawnPortraitStat.Normal;
         private PawnPortraitStat curPawnStat
         {
@@ -94,7 +98,7 @@ namespace FixedPawnGenerate
 
         public CompProperties_Tachie Props => (CompProperties_Tachie)this.props;
 
-        private Pawn pawn => base.parent as Pawn;
+        private Pawn Pawn => base.parent as Pawn;
 
         //Texture caches
         private Texture2D textureCacheWithStat = null;
@@ -215,6 +219,9 @@ namespace FixedPawnGenerate
                 rect.height *= scale;
             }
 
+            //click event
+            rect.y += clickEventOffset;
+
             //Draw on CPU
             //Color originalColor = GUI.color;
             //GUI.color = new Color(originalColor.r, originalColor.g, originalColor.b, transparency);
@@ -237,6 +244,24 @@ namespace FixedPawnGenerate
             mat.color = new Color(1, 1, 1, transparency);
 
             Graphics.DrawTexture(targetRect, currentTexture, uvRect, 0, 0, 0, 0, mat: mat);
+            if (applyProps)
+                currentDrawingRect = targetRect;
+        }
+
+        public void HandlePortraitClick()
+        {
+            Event e = Event.current;
+            if (e.type == EventType.MouseDown && e.button == 0 && currentDrawingRect.Contains(e.mousePosition))
+            {
+                PortraitClicked();
+                e.Use();
+            }
+        }
+
+        private void PortraitClicked()
+        {
+            clickEventOffsetDelta = -1f;
+            Pawn.PlayVoice(PawnVoiceType.Lobby);
         }
 
         //从绝对路径读取Texture2D
@@ -424,47 +449,46 @@ namespace FixedPawnGenerate
 
         private PawnPortraitStat GetCurrentPawnStat()
         {
-            if (pawn == null || pawn.Dead || pawn.Destroyed)
+            if (Pawn == null || Pawn.Dead || Pawn.Destroyed)
             {
                 return PawnPortraitStat.Normal;
             }
 
-            float currentMood = pawn.needs.mood.CurLevelPercentage;
+            float currentMood = Pawn.needs.mood.CurLevelPercentage;
 
-            if (pawn.health.hediffSet.HasHediff(HediffDefOf.PregnantHuman, false))
+            if (Pawn.health.hediffSet.HasHediff(HediffDefOf.PregnantHuman, false))
             {
                 return PawnPortraitStat.Pregnant;
             }
 
-            if (pawn.CurJobDef == JobDefOf.Lovin || Unclothed())
+            if (Pawn.CurJobDef == JobDefOf.Lovin || Unclothed())
             {
                 return PawnPortraitStat.Roaming;
             }
-            else if (pawn.Drafted)
+            else if (Pawn.Drafted)
             {
                 return PawnPortraitStat.Drafted;
             }
-            else if (pawn.MentalStateDef?.category == MentalStateCategory.Aggro)
+            else if (Pawn.MentalStateDef?.category == MentalStateCategory.Aggro)
             {
                 return PawnPortraitStat.Break;
             }
-            else if (pawn.health.summaryHealth.SummaryHealthPercent < 0.5f)
+            else if (Pawn.health.summaryHealth.SummaryHealthPercent < 0.5f)
             //else if (pawn.Downed)
             {
-                Log.Warning("return dying");
                 return PawnPortraitStat.Dying;
             }
-            else if (pawn.CurJobDef == JobDefOf.LayDown || pawn.CurJobDef == JobDefOf.LayDownResting)
+            else if (Pawn.CurJobDef == JobDefOf.LayDown || Pawn.CurJobDef == JobDefOf.LayDownResting)
             {
                 return PawnPortraitStat.Sleeping;
             }
 
             //mood
-            else if (currentMood < pawn.mindState.mentalBreaker.BreakThresholdExtreme)
+            else if (currentMood < Pawn.mindState.mentalBreaker.BreakThresholdExtreme)
             {
                 return PawnPortraitStat.AboutToBreak;
             }
-            else if (currentMood < pawn.mindState.mentalBreaker.BreakThresholdMajor)
+            else if (currentMood < Pawn.mindState.mentalBreaker.BreakThresholdMajor)
             {
                 return PawnPortraitStat.Stress;
             }
@@ -479,12 +503,12 @@ namespace FixedPawnGenerate
 
             bool Unclothed()
             {
-                if (pawn.apparel == null)
+                if (Pawn.apparel == null)
                 {
                     return true;
                 }
 
-                foreach (Apparel item in pawn.apparel.WornApparel)
+                foreach (Apparel item in Pawn.apparel.WornApparel)
                 {
                     if (item.def.apparel.countsAsClothingForNudity)
                     {
@@ -539,6 +563,7 @@ namespace FixedPawnGenerate
         {
             base.CompTick();
 
+            //blinking
             int currentTick = Find.TickManager.TicksGame;
 
             if (currentTick >= nextBlinkTick)
@@ -555,8 +580,21 @@ namespace FixedPawnGenerate
                     nextBlinkTick = currentTick + nextTicks;
                 }
             }
-        }
 
+            //click event
+            clickEventOffset += clickEventOffsetDelta;
+
+            if (clickEventOffset <= -10f)
+            {
+                clickEventOffsetDelta = -clickEventOffsetDelta;
+            }
+
+            if (clickEventOffset >= 0f)
+            {
+                clickEventOffset = 0f;
+                clickEventOffsetDelta = 0f;
+            }
+        }
 
     }
 }

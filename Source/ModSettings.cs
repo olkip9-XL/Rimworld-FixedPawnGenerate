@@ -28,6 +28,9 @@ namespace FixedPawnGenerate
         public int globalPortraitOffsetX = 0;
         public float globalPortraitScale = 1;
 
+        //角色语音
+        public bool enablePawnVoice = true;
+        public float voiceVolumeFactor = 1f;
 
         public void Reset()
         {
@@ -43,6 +46,8 @@ namespace FixedPawnGenerate
             globalPortraitOffsetX = 0;
             globalPortraitScale = 1f;
 
+            enablePawnVoice = true;
+            voiceVolumeFactor = 1f;
         }
 
         //ExposeData
@@ -62,6 +67,8 @@ namespace FixedPawnGenerate
             Scribe_Values.Look(ref globalPortraitOffsetX, "globalPortraitOffsetX", 0);
             Scribe_Values.Look(ref globalPortraitScale, "globalPortraitScale", 1f);
 
+            Scribe_Values.Look(ref enablePawnVoice, "enablePawnVoice", true);
+            Scribe_Values.Look(ref voiceVolumeFactor, "voiceVolumeFactor", 1f);
         }
     }
 
@@ -123,6 +130,11 @@ namespace FixedPawnGenerate
             listingStandard.Gap(6f);
             listingStandard.TextFieldNumericLabeled<float>("FPG_globalPortraitScale".Translate(), ref settings.globalPortraitScale, ref globalPortraitScaleBuffer, 0.7f, "FPG_globalPortraitScale_description".Translate());
 
+            //Voice
+            listingStandard.Gap(6f);
+            listingStandard.CheckboxLabeled("FPG_enablePawnVoice".Translate(), ref settings.enablePawnVoice, "FPG_enablePawnVoice_description".Translate());
+            listingStandard.Gap(6f);
+            settings.voiceVolumeFactor = listingStandard.SliderLabeled("FPG_voiceVolumeFactor".Translate(settings.voiceVolumeFactor.ToStringPercent("F2")), settings.voiceVolumeFactor, 0f, 1f, tooltip: "FPG_voiceVolumeFactor_description".Translate());
 
             listingStandard.GapLine(6f);
             if (listingStandard.ButtonTextCenter("Reset".Translate(), widthPct: 0.1f))
