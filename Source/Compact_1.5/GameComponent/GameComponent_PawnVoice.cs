@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 using Verse;
+using Verse.Noise;
 using Verse.Sound;
 
 namespace FixedPawnGenerate
@@ -13,7 +15,7 @@ namespace FixedPawnGenerate
     {
         const int coolDownTicks = 120;
 
-        long coolDownEndTick = 0;
+        float soundCoolDown = 0f;
 
         Queue<Pair<Pawn, SoundDef>> queuedSound = new Queue<Pair<Pawn, SoundDef>>();
 
@@ -26,7 +28,7 @@ namespace FixedPawnGenerate
                     return false;
                 }
 
-                if (Find.TickManager.TicksGame >= coolDownEndTick)
+                if (soundCoolDown <= 0f)
                 {
                     return true;
                 }
@@ -50,6 +52,11 @@ namespace FixedPawnGenerate
                 var pair = queuedSound.Dequeue();
                 PlayVoice(pair.First, pair.Second);
             }
+
+            if (soundCoolDown > 0f)
+            {
+                soundCoolDown -= 1f / Find.TickManager.TickRateMultiplier;
+            }
         }
 
         public void PlayVoice(Pawn pawn, SoundDef soundDef)
@@ -63,7 +70,7 @@ namespace FixedPawnGenerate
 
                 soundDef.PlayOneShot(sinfo);
 
-                coolDownEndTick = Find.TickManager.TicksGame + coolDownTicks + (int)(soundDef.Duration.max * 60);
+                soundCoolDown = coolDownTicks + (soundDef.Duration.max * 60f);
             }
         }
 

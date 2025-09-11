@@ -581,32 +581,26 @@ namespace FixedPawnGenerate
 
         public static Pawn GenerateFixedPawnWithDef(FixedPawnDef def, bool addToManager = true)
         {
-            if (def == null || def.pawnKind == null)
+            if (def == null)
             {
                 return null;
             }
-
-            //Pawn result = null;
-            //if (def.isUnique)
-            //{
-            //    if (removeUnique)
-            //    {
-            //        Manager.uniqePawns.Remove(def);
-            //    }
-
-            //    result = Manager.GetPawn(def);
-
-            //    if(result != null)
-            //    {
-            //       return result;
-            //    }
-            //}
 
             Faction faction = null;
             if (def.faction != null)
                 faction = Find.FactionManager.FirstFactionOfDef(def.faction);
 
-            PawnGenerationRequest request = new PawnGenerationRequest(def.pawnKind, faction);
+            PawnKindDef pawnKind = def.pawnKind;
+            if (pawnKind == null && faction != null)
+                pawnKind = faction.RandomPawnKind();
+
+            if(pawnKind == null)
+            {
+                Log.Error($"[Fixed Pawn Generate] {def.defName} has no pawnKind or faction");
+                return null;
+            }
+
+            PawnGenerationRequest request = new PawnGenerationRequest(pawnKind, faction);
 
             Pawn result = null;
             if ((result = ModifyRequest(ref request, def, addToManager)) != null)

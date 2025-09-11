@@ -217,10 +217,10 @@ namespace FixedPawnGenerate
 
                 rect.width *= scale;
                 rect.height *= scale;
-            }
 
-            //click event
-            rect.y += clickEventOffset;
+                //click event
+                rect.y += clickEventOffset;
+            }
 
             //Draw on CPU
             //Color originalColor = GUI.color;
@@ -555,38 +555,43 @@ namespace FixedPawnGenerate
             return result;
         }
 
-        int nextBlinkTick = 0;
         int ticksBetweenBlinks = 6; //0.1秒
         bool isBlinking = false;
+
+        float blinkCountDown = 0;
 
         public override void CompTick()
         {
             base.CompTick();
 
-            //blinking
-            int currentTick = Find.TickManager.TicksGame;
+            float multiplier = Find.TickManager.TickRateMultiplier;
 
-            if (currentTick >= nextBlinkTick)
+            //blinking
+            if (blinkCountDown <= 0)
             {
                 if (!isBlinking)
                 {
                     isBlinking = true;
-                    nextBlinkTick = currentTick + ticksBetweenBlinks;
+                    blinkCountDown = ticksBetweenBlinks;
                 }
                 else
                 {
                     isBlinking = false;
-                    int nextTicks = Rand.Range(180, 240); //随机3-4秒后眨一次
-                    nextBlinkTick = currentTick + nextTicks;
+                    blinkCountDown = Rand.Range(180, 240); //随机3-4秒后眨一次
                 }
             }
-
+            else
+            {
+                blinkCountDown -= 1f / multiplier;
+            }
             //click event
-            clickEventOffset += clickEventOffsetDelta;
+
+            clickEventOffset += clickEventOffsetDelta / multiplier;
 
             if (clickEventOffset <= -10f)
             {
-                clickEventOffsetDelta = -clickEventOffsetDelta;
+                if (clickEventOffsetDelta < 0f)
+                    clickEventOffsetDelta = -clickEventOffsetDelta;
             }
 
             if (clickEventOffset >= 0f)
