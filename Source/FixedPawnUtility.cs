@@ -524,6 +524,11 @@ namespace FixedPawnGenerate
 
             request.CanGeneratePawnRelations = false;
 
+            if (request.Faction != null && request.Faction.ideos != null && request.Faction.ideos.PrimaryIdeo != null)
+            {
+                request.FixedIdeo = request.Faction.ideos.PrimaryIdeo;
+            }
+
             if (def.age > 0)
             {
                 if (ModsConfig.BiotechActive)
@@ -594,7 +599,7 @@ namespace FixedPawnGenerate
             if (pawnKind == null && faction != null)
                 pawnKind = faction.RandomPawnKind();
 
-            if(pawnKind == null)
+            if (pawnKind == null)
             {
                 Log.Error($"[Fixed Pawn Generate] {def.defName} has no pawnKind or faction");
                 return null;
