@@ -14,6 +14,24 @@ namespace FixedPawnGenerate
 {
     public class FixedPawnDef : Def
     {
+        public enum FactionType
+        {
+            None,
+
+            Player,
+            Mechanoids,
+            Insects,
+            Ancients,
+            AncientsHostile,
+            Empire,
+            Pirates,
+            HoraxCult,
+            Entities,
+            TradersGuild,
+            Salvagers
+        }
+
+
         public override IEnumerable<string> ConfigErrors()
         {
             foreach (string s in base.ConfigErrors())
@@ -23,6 +41,8 @@ namespace FixedPawnGenerate
             }
             yield break;
         }
+
+        public FactionType factionType = FactionType.None;
 
         public double generateWeight = 0.0;
 

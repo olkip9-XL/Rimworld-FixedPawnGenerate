@@ -85,6 +85,7 @@
     <Compile Include="Harmony\FixedPawnCompsHarmony.cs" />
     <Compile Include="Harmony\ModExtensionHarmony\ModExtHarmony_UniqueWeaponExt.cs" />
     <Compile Include="Harmony\PawnVoiceHarmony.cs" />
+    <Compile Include="Misc\FPGPawnTextureUtility.cs" />
     <Compile Include="ModCompatible\FPG_Alienrace.cs" />
     <Compile Include="Harmony\FPGPortraitHarmony.cs" />
     <Compile Include="Comps\CompProperties_Tachie.cs" />
@@ -92,7 +93,7 @@
     <Compile Include="DebugActions.cs" />
     <Compile Include="ModCompatible\FPG_FacialAnimationProps.cs" />
     <Compile Include="FixedPawnDef.cs" />
-    <Compile Include="FixedPawnDefOf.cs" />
+    <Compile Include="DefOf\FixedPawnDefOf.cs" />
     <Compile Include="Harmony\FixedPawnHarmony.cs" />
     <Compile Include="Harmony\FixedPawnHarmonyStartup.cs" />
     <Compile Include="FixedPawnUtility.cs" />

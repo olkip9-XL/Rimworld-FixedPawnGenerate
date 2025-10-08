@@ -581,36 +581,70 @@ namespace FixedPawnGenerate
 
         public static Pawn GenerateFixedPawnWithDef(FixedPawnDef def, bool addToManager = true)
         {
-            if (def == null || def.pawnKind == null)
+            if (def == null)
             {
                 return null;
             }
-
-            //Pawn result = null;
-            //if (def.isUnique)
-            //{
-            //    if (removeUnique)
-            //    {
-            //        Manager.uniqePawns.Remove(def);
-            //    }
-
-            //    result = Manager.GetPawn(def);
-
-            //    if(result != null)
-            //    {
-            //       return result;
-            //    }
-            //}
 
             Faction faction = null;
             if (def.faction != null)
                 faction = Find.FactionManager.FirstFactionOfDef(def.faction);
 
-            PawnGenerationRequest request = new PawnGenerationRequest(def.pawnKind, faction);
+            if (def.factionType != FactionType.None)
+            {
+                switch (def.factionType)
+                {
+                    case FactionType.Player:
+                        faction = Faction.OfPlayer;
+                        break;
+                    case FactionType.Mechanoids:
+                        faction = Faction.OfMechanoids;
+                        break;
+                    case FactionType.Insects:
+                        faction = Faction.OfInsects;
+                        break;
+                    case FactionType.Ancients:
+                        faction = Faction.OfAncients;
+                        break;
+                    case FactionType.AncientsHostile:
+                        faction = Faction.OfAncientsHostile;
+                        break;
+                    case FactionType.Empire:
+                        faction = Faction.OfEmpire;
+                        break;
+                    case FactionType.Pirates:
+                        faction = Faction.OfPirates;
+                        break;
+                    case FactionType.HoraxCult:
+                        faction = Faction.OfHoraxCult;
+                        break;
+                    case FactionType.Entities:
+                        faction = Faction.OfEntities;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            PawnKindDef pawnKind = def.pawnKind;
+            if (pawnKind == null && faction != null)
+                pawnKind = faction.RandomPawnKind();
+
+            if (pawnKind == null)
+            {
+                Log.Error($"[Fixed Pawn Generate] {def.defName} has no pawnKind or faction");
+                return null;
+            }
+
+            PawnGenerationRequest request = new PawnGenerationRequest(pawnKind, faction);
 
             Pawn result = null;
             if ((result = ModifyRequest(ref request, def, addToManager)) != null)
             {
+                if (result.Faction != faction)
+                {
+                    result.SetFaction(faction);
+                }
                 return result;
             }
 
@@ -618,6 +652,10 @@ namespace FixedPawnGenerate
 
             ModifyPawn(result, def);
 
+            if (result.Faction != faction)
+            {
+                result.SetFaction(faction);
+            }
             return result;
         }
 
