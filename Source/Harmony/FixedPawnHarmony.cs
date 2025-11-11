@@ -33,7 +33,7 @@ namespace FixedPawnGenerate
         public static FixedPawnDef GetCompProperties()
         {
             FixedPawnDef def = curPawnDef;
-            curPawnDef = null; 
+            curPawnDef = null;
             return def;
         }
 
@@ -148,7 +148,6 @@ namespace FixedPawnGenerate
                     Log.Warning($"[FixedPawnGenerate] Prefix 调用者:{caller}, \n生成: No Match");
                 }
 #endif
-
                 return true;
             }
             public static void Postfix(ref Pawn __result, ref PawnGenerationRequest request, string __state)
@@ -226,7 +225,7 @@ namespace FixedPawnGenerate
                     FixedPawnDef fixedPawnDef = GetCompProperties();
 
                     //Load data
-                    if(fixedPawnDef == null)
+                    if (fixedPawnDef == null)
                     {
                         fixedPawnDef = FixedPawnUtility.Manager.GetDef(pawn);
                     }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <!--Empty-->
+  <HediffDef>
+    <defName>FPG_EmptyHediff</defName>
+    <hediffClass>HediffWithComps</hediffClass>
+    <label>Empty Hediff</label>
+    <description>Remove all other hediffs when generate pawn</description>
+    <stages>
+      <li>
+        <becomeVisible>false</becomeVisible>
+      </li>
+    </stages>
+  </HediffDef>
+
+</Defs>

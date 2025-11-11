@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  
+  <PawnRenderTreeDef>
+    <defName>SimplePawn</defName>
+    <root Class="PawnRenderNodeProperties_Parent">
+      <debugLabel>Root</debugLabel>
+      <tagDef>Root</tagDef>
+      <children>
+        <li>
+          <debugLabel>Body</debugLabel>
+          <tagDef>Body</tagDef>
+          <nodeClass>FixedPawnGenerate.PawnRenderNode_SimplePawn</nodeClass>
+          <useRottenColor>true</useRottenColor>
+          <children>
+            <li>
+              <debugLabel>Wounds</debugLabel>
+              <nodeClass>FixedPawnGenerate.PawnRenderNode_SimplePawn</nodeClass>
+              <workerClass>PawnRenderNodeWorker_OverlayWounds</workerClass>
+              <overlayLayer>Body</overlayLayer>
+              <useGraphic>false</useGraphic>
+              <baseLayer>3</baseLayer>
+            </li>
+            <li>
+              <debugLabel>Firefoam</debugLabel>
+              <nodeClass>FixedPawnGenerate.PawnRenderNode_SimplePawn</nodeClass>
+              <workerClass>PawnRenderNodeWorker_OverlayFirefoam</workerClass>
+              <overlayLayer>Body</overlayLayer>
+              <useGraphic>false</useGraphic>
+              <baseLayer>5</baseLayer>
+            </li>
+          </children>
+        </li>
+        <li Class="PawnRenderNodeProperties_Carried">
+          <debugLabel>Weapon/carried thing</debugLabel>
+          <workerClass>PawnRenderNodeWorker_Carried</workerClass>
+        </li>
+      </children>
+    </root>
+  </PawnRenderTreeDef>
+
+</Defs>

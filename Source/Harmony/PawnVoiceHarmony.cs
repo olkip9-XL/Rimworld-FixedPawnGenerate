@@ -42,20 +42,6 @@ namespace FixedPawnGenerate
             }
         }
 
-        [HarmonyPatch(typeof(Verb_Shoot), "WarmupComplete")]
-        internal static class Patch_Shout
-        {
-            private static void Postfix(Verb_Shoot __instance)
-            {
-                Pawn pawn = __instance.CasterPawn;
-
-                //lower the chance to shout
-                if (UnityEngine.Random.Range(0f, 1f) > 0.5f)
-                    pawn.PlayVoice(PawnVoiceType.Shout);
-
-            }
-        }
-
         [HarmonyPatch(typeof(FloatMenuOptionProvider_DraftedAttack), "GetRangedAttackAction")]
         private static class Patch_Attack
         {
