@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <!--仿照原版 wanderer join 制作的一个例子，生成蓝色档案标签的角色。-->
+  <!--An example modified from the vanilla wanderer join, generating a character with the Blue Archive tag.-->
+  <IncidentDef>
+    <defName>FPG_WandererJoin_Example</defName>
+    <label>wanderer join</label>
+    <category>Misc</category>
+    <targetTags>
+      <li>Map_PlayerHome</li>
+    </targetTags>
+    <workerClass>IncidentWorker_GiveQuest</workerClass>
+    <!--此处questScriptDef改为自定义脚本-->
+    <!--The questScriptDef here is replaced with a custom script-->
+    <questScriptDef>FPG_WandererJoins</questScriptDef>
+    <baseChance>0.4</baseChance>
+    <pawnKind>Villager</pawnKind>
+    <populationEffect>IncreaseEasy</populationEffect>
+  </IncidentDef>
+
+ <!--自定义脚本-->
+ <!--Custom script-->
+  <QuestScriptDef>
+    <defName>FPG_WandererJoins</defName>
+    <autoAccept>true</autoAccept>
+    <defaultHidden>true</defaultHidden>
+    <isRootSpecial>true</isRootSpecial>
+    <successHistoryEvent MayRequire="Ludeon.RimWorld.Ideology">CharityFulfilled_WandererJoins</successHistoryEvent>
+    <failedOrExpiredHistoryEvent MayRequire="Ludeon.RimWorld.Ideology">CharityRefused_WandererJoins</failedOrExpiredHistoryEvent>
+    <questNameRules>
+      <rulesStrings>
+        <li>questName->Wanderer joins</li>
+      </rulesStrings>
+    </questNameRules>
+    <questDescriptionRules>
+      <rulesStrings>
+        <li>questDescription-></li>
+      </rulesStrings>
+    </questDescriptionRules>
+    <!--此处改为指定的root节点-->
+    <!--Specify the root node here-->
+    <root Class="FixedPawnGenerate.QuestNode_Root_FixedPawnJoin_WalkIn">
+      <!--通过tags过滤FixedPawnDef-->
+      <!--Filter FixedPawnDef through tags-->
+      <pawnTags>
+        <!--<li>BlueArchive</li>-->
+        <li>BlueArchiveSensei</li>
+      </pawnTags>
+      <!--是否只允许生成特殊角色，默认false-->
+      <!--Whether to allow only unique characters to be generated, default is false-->
+      <uniqueOnly>true</uniqueOnly>
+      <!--重载原版的描述信息-->
+      <!--Override the original letter message-->
+      <overrideLetterMessage>true</overrideLetterMessage>
+      <!--{0}会被替换成生成的角色名字-->
+      <!--{0} will be replaced with the name of the generated character-->
+      <letterTitleFormat>Test title {0}</letterTitleFormat>
+      <letterTextFormat>This is a test formated text, arrived pawn is {0}\n\narriver is {0}</letterTextFormat>
+    </root>
+  </QuestScriptDef>
+
+</Defs>

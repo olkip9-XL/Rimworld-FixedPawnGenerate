@@ -86,6 +86,7 @@
     <Compile Include="Harmony\ModExtensionHarmony\ModExtHarmony_UniqueWeaponExt.cs" />
     <Compile Include="Harmony\PawnVoiceHarmony.cs" />
     <Compile Include="Harmony\SimplePawnHarmony.cs" />
+    <Compile Include="Incident\QuestNode\QuestNode_Root_FixedPawn_Arrival.cs" />
     <Compile Include="Misc\FPGPawnTextureUtility.cs" />
     <Compile Include="ModCompatible\FPG_Alienrace.cs" />
     <Compile Include="Harmony\FPGPortraitHarmony.cs" />
@@ -112,5 +113,6 @@
     <Compile Include="ThoughtWorker\ThoughtWorker_PawnThoughtSocial.cs" />
     <Compile Include="ThoughtWorker\ThoughtWorker_PawnThoughtSocialGroup.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
