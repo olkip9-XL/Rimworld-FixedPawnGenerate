@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-
   <!--仿照原版 wanderer join 制作的一个例子，生成蓝色档案标签的角色。-->
   <!--An example modified from the vanilla wanderer join, generating a character with the Blue Archive tag.-->
   <IncidentDef>
@@ -10,17 +9,31 @@
     <targetTags>
       <li>Map_PlayerHome</li>
     </targetTags>
-    <workerClass>IncidentWorker_GiveQuest</workerClass>
+    <!--此处改为指定的root节点-->
+    <!--Specify the root node here-->
+    <workerClass>FixedPawnGenerate.IncidentWorker_GiveQuest_FPG</workerClass>
     <!--此处questScriptDef改为自定义脚本-->
     <!--The questScriptDef here is replaced with a custom script-->
     <questScriptDef>FPG_WandererJoins</questScriptDef>
-    <baseChance>0.4</baseChance>
-    <pawnKind>Villager</pawnKind>
-    <populationEffect>IncreaseEasy</populationEffect>
+    <baseChance>4</baseChance>
+    <pointsScaleable>true</pointsScaleable>
+    <requireColonistsPresent>True</requireColonistsPresent>
+    <!--需要添加这个modExtension-->
+    <!--Need to add this modExtension-->
+    <modExtensions>
+      <li Class="FixedPawnGenerate.ModExtension_FixedPawnIncident">
+        <!--通过tags过滤FixedPawnDef-->
+        <!--Filter FixedPawnDef through tags-->
+        <pawnTags>
+          <li>BlueArchive</li>
+        </pawnTags>
+        <!--是否只允许生成特殊角色，默认false-->
+        <!--Whether to allow only unique characters to be generated, default is false-->
+        <uniqueOnly>true</uniqueOnly>
+      </li>
+    </modExtensions>
   </IncidentDef>
 
- <!--自定义脚本-->
- <!--Custom script-->
   <QuestScriptDef>
     <defName>FPG_WandererJoins</defName>
     <autoAccept>true</autoAccept>
@@ -41,15 +54,7 @@
     <!--此处改为指定的root节点-->
     <!--Specify the root node here-->
     <root Class="FixedPawnGenerate.QuestNode_Root_FixedPawnJoin_WalkIn">
-      <!--通过tags过滤FixedPawnDef-->
-      <!--Filter FixedPawnDef through tags-->
-      <pawnTags>
-        <!--<li>BlueArchive</li>-->
-        <li>BlueArchiveSensei</li>
-      </pawnTags>
-      <!--是否只允许生成特殊角色，默认false-->
-      <!--Whether to allow only unique characters to be generated, default is false-->
-      <uniqueOnly>true</uniqueOnly>
+      <sourceIncident>FPG_WandererJoin_Example</sourceIncident>
       <!--重载原版的描述信息-->
       <!--Override the original letter message-->
       <overrideLetterMessage>true</overrideLetterMessage>
@@ -59,5 +64,4 @@
       <letterTextFormat>This is a test formated text, arrived pawn is {0}\n\narriver is {0}</letterTextFormat>
     </root>
   </QuestScriptDef>
-
 </Defs>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+  <Operation Class="PatchOperationSequence">
+    <operations>
+
+      <li Class="PatchOperationAdd">
+        <xpath>Defs/PawnRenderTreeDef[defName="Humanlike"]//li[debugLabel="Head"]/children</xpath>
+        <value>
+          <li>
+            <debugLabel>Hair Ext</debugLabel>
+            <nodeClass>FixedPawnGenerate.PawnRenderNode_HairExt</nodeClass>
+            <workerClass>PawnRenderNodeWorker_FlipWhenCrawling</workerClass>
+            <rotDrawMode>Fresh, Rotting</rotDrawMode>
+            <colorType>Hair</colorType>
+            <skipFlag>Hair</skipFlag>
+            <baseLayer>-2</baseLayer>
+          </li>
+        </value>
+      </li>
+
+      <li Class="PatchOperationAdd">
+        <xpath>Defs/PawnRenderTreeDef[defName="Humanlike"]/root/children/li[debugLabel = "Body"]/children</xpath>
+        <value>
+          <li Class="PawnRenderNodeProperties_Overlay">
+            <debugLabel>Apparel Ext</debugLabel>
+            <nodeClass>FixedPawnGenerate.PawnRenderNode_ApparelExt</nodeClass>
+            <workerClass>PawnRenderNodeWorker_Apparel_Body</workerClass>
+            <overlayLayer>Body</overlayLayer>
+            <baseLayer>-1</baseLayer>
+          </li>
+        </value>
+      </li>
+
+    </operations>
+  </Operation>
+
+</Patch>

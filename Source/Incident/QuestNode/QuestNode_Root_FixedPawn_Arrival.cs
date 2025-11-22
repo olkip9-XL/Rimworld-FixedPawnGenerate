@@ -13,49 +13,26 @@ namespace FixedPawnGenerate
 {
     internal class QuestNode_Root_FixedPawnJoin_WalkIn : QuestNode_Root_WandererJoin_WalkIn
     {
-        public List<string> pawnTags;
-        public bool uniqueOnly = false;
-        public bool overrideLetterMessage = false;
+        public IncidentDef sourceIncident;
 
+        public bool overrideLetterMessage = false;
         public string letterTitleFormat = "";
         public string letterTextFormat = "";
 
-        private List<FixedPawnDef> satisfiedPawnsInt = null;
+        public ModExtension_FixedPawnIncident ModExt => sourceIncident?.GetModExtension<ModExtension_FixedPawnIncident>();
 
-        public List<FixedPawnDef> SatisfiedPawns
-        {
 
-            get
-            {
-                if (satisfiedPawnsInt == null)
-                {
-                    satisfiedPawnsInt = new List<FixedPawnDef>();
-                    foreach (var def in DefDatabase<FixedPawnDef>.AllDefs)
-                    {
-                        if (uniqueOnly && !def.isUnique)
-                            continue;
-
-                        if (def.tags.Intersect(pawnTags).Any())
-                        {
-                            satisfiedPawnsInt.Add(def);
-                        }
-                    }
-                }
-
-                return satisfiedPawnsInt;
-            }
-        }
         public override Pawn GeneratePawn()
         {
-            if (SatisfiedPawns.NullOrEmpty())
+            if (ModExt?.SatisfiedPawns == null || ModExt.SatisfiedPawns.Count == 0)
                 return base.GeneratePawn();
 
-            FixedPawnDef def = SatisfiedPawns.RandomElement();
+            FixedPawnDef def = ModExt.SatisfiedPawns.RandomElement();
 
             try
             {
                 Pawn pawn = FixedPawnUtility.GenerateFixedPawnWithDef(def);
-                satisfiedPawnsInt.Remove(def);
+                ModExt.SatisfiedPawns.Remove(def);
                 return pawn;
             }
             catch (Exception e)
