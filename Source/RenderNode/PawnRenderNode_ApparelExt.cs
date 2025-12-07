@@ -33,6 +33,11 @@ namespace FixedPawnGenerate
         {
             ApparelGraphicRecord apparelGraphicRecord;
 
+            if(pawn==null || pawn.apparel==null)
+            {
+                yield break;
+            }
+
             foreach (Apparel apparel in pawn.apparel.WornApparel)
             {
                 if (TryGetGraphicApparelExt(apparel, pawn.story.bodyType, out apparelGraphicRecord))

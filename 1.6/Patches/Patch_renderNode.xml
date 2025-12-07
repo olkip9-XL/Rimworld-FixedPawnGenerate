@@ -4,7 +4,7 @@
   <Operation Class="PatchOperationSequence">
     <operations>
 
-      <li Class="PatchOperationAdd">
+      <!--<li Class="PatchOperationAdd">
         <xpath>Defs/PawnRenderTreeDef[defName="Humanlike"]//li[debugLabel="Head"]/children</xpath>
         <value>
           <li>
@@ -30,7 +30,7 @@
             <baseLayer>-1</baseLayer>
           </li>
         </value>
-      </li>
+      </li>-->
 
     </operations>
   </Operation>

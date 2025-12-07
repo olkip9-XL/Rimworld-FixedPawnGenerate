@@ -10,10 +10,6 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Windows;
 using Verse;
-using Verse.Noise;
-using static AlienRace.CachedData;
-using static RimWorld.MechClusterSketch;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace FixedPawnGenerate
 {
@@ -36,6 +32,188 @@ namespace FixedPawnGenerate
 
         Drafted
     }
+
+    internal class PawnTachieCacher
+    {
+        private string texturePath;
+        private List<PortraitDiffData> statData;
+
+
+        private Dictionary<PawnPortraitStat, Texture2D> statTextureCache = new Dictionary<PawnPortraitStat, Texture2D>();
+
+        public PawnTachieCacher(AlterTachieData data)
+        {
+            this.texturePath = data.texturePath;
+            this.statData = data.stats;
+        }
+
+        public Texture2D Sleeping
+        {
+            get
+            {
+                return GetTexture(PawnPortraitStat.Sleeping);
+            }
+        }
+
+        //从绝对路径读取Texture2D
+        Texture2D LoadTexture(string path)
+        {
+            if (File.Exists(path))
+            {
+                Texture2D texture = new Texture2D(1, 1);
+
+                byte[] fileData = File.ReadAllBytes(path);
+
+                texture.LoadImage(fileData);
+
+                return texture;
+            }
+
+            Log.Error($"File {path} doesn't exsit!!");
+            return ContentFinder<Texture2D>.Get("Empty");
+        }
+        Texture2D MergeTextures(Texture2D topTex, Texture2D bottomTex, Vector2Int offset)
+        {
+            if (offset.x == 0 && offset.y == 0)
+            {
+                return topTex;
+            }
+
+            Texture2D result = null;
+
+            result = MergeTextures_CommandBuffer(topTex, bottomTex, offset);
+
+            return result;
+        }
+        Texture2D MergeTextures_CommandBuffer(Texture2D topTex, Texture2D bottomTex, Vector2Int offset)
+        {
+            int width = bottomTex.width;
+            int height = bottomTex.height;
+
+            RenderTexture rt = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.ARGB32);
+
+            //底图
+            CommandBuffer cb = new CommandBuffer();
+            cb.name = "Merge texture";
+            cb.Blit(bottomTex, rt);
+            cb.SetRenderTarget(rt);
+
+            //顶图
+            cb.SetViewport(new Rect(offset.x, offset.y, topTex.width, topTex.height));
+
+            Material mat = new Material(ShaderDatabase.WorldOverlayTransparent);
+            mat.mainTexture = topTex;
+            cb.Blit(topTex, BuiltinRenderTextureType.CurrentActive, mat);
+
+            Graphics.ExecuteCommandBuffer(cb);
+
+            //读取
+            Texture2D result = new Texture2D(width, height, TextureFormat.RGBA32, true);
+            result.filterMode = FilterMode.Bilinear;
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture.active = rt;
+            result.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+            result.Apply();
+            RenderTexture.active = previous;
+
+            // 释放资源
+            cb.Release();
+            RenderTexture.ReleaseTemporary(rt);
+
+            return result;
+        }
+
+        Vector2Int GetDiffOffset(PawnPortraitStat stat)
+        {
+            if (statData.NullOrEmpty())
+            {
+                return new Vector2Int(0, 0);
+            }
+
+            PortraitDiffData diff = statData.FirstOrDefault(x => x.stat == stat);
+            if (diff != null)
+            {
+                return new Vector2Int((int)diff.offsetX, (int)diff.offsetY);
+            }
+            else
+            {
+                return new Vector2Int(0, 0);
+            }
+        }
+
+        Texture2D baseCache = null;
+        public Texture2D Base
+        {
+            get
+            {
+                if (baseCache == null)
+                {
+                    string path = texturePath;
+
+                    if (path != "" && (path.Contains(":") || path[0] == '\\'))
+                    {
+                        baseCache = this.LoadTexture(path);
+                    }
+                    else
+                    {
+                        baseCache = ContentFinder<Texture2D>.Get(path + "/Base", false);
+                        if (baseCache != null)
+                        {
+                            return baseCache;
+                        }
+
+                        baseCache = ContentFinder<Texture2D>.Get(path, false);
+                        if (baseCache == null)
+                        {
+                            Log.Error($"Texture {path} not found.");
+                            baseCache = ContentFinder<Texture2D>.Get("Empty");
+                        }
+                    }
+                }
+
+                return baseCache;
+            }
+        }
+
+        public Texture2D GetTexture(PawnPortraitStat stat)
+        {
+            if (statTextureCache == null)
+            {
+                statTextureCache = new Dictionary<PawnPortraitStat, Texture2D>();
+            }
+
+            if (!statTextureCache.ContainsKey(stat))
+            {
+                Texture2D result = null;
+
+                Texture2D stamp = ContentFinder<Texture2D>.Get(texturePath + "/" + stat.ToString(), false);
+                Vector2Int stampOffset = GetDiffOffset(stat);
+
+                if (stamp != null)
+                {
+                    result = MergeTextures(stamp, this.Base, stampOffset) ?? this.Base;
+                }
+                else if (stat == PawnPortraitStat.AboutToBreak)
+                {
+                    //Replacement of AboutToBreak
+                    result = GetTexture(PawnPortraitStat.Stress);
+                }
+                else if (stat == PawnPortraitStat.Break)
+                {
+                    //Replacement of Break
+                    result = GetTexture(PawnPortraitStat.Drafted);
+                }
+                else
+                {
+                    result = this.Base;
+                }
+
+                statTextureCache[stat] = result;
+            }
+            return statTextureCache[stat];
+        }
+    }
+
     public class CompTachie : ThingComp
     {
         public enum PortraitAnchor
@@ -48,130 +226,45 @@ namespace FixedPawnGenerate
 
         private float clickEventOffset = 0f;
         private float clickEventOffsetDelta = 0f;
+
+        public int alterTachieID = -1;
         public Rect currentDrawingRect { get; private set; }
 
-        private PawnPortraitStat curPawnStatInt = PawnPortraitStat.Normal;
-        private PawnPortraitStat curPawnStat
-        {
-            get
-            {
-                return curPawnStatInt;
-            }
-            set
-            {
-                if (value != curPawnStatInt &&
-                    value != PawnPortraitStat.Normal &&
-                    value != PawnPortraitStat.Sleeping)
-                {
-                    //update
-                    string texturePath = Props.texture + "/" + value.ToString();
-                    Texture2D stampTexture = ContentFinder<Texture2D>.Get(texturePath, false);
-
-                    Vector2Int stampOffset = Props.GetDiffOffset(value);
-
-                    //Replacement of Break
-                    if (value == PawnPortraitStat.Break && stampTexture == null)
-                    {
-                        stampTexture = ContentFinder<Texture2D>.Get(Props.texture + "/Drafted", false);
-                        stampOffset = Props.GetDiffOffset(PawnPortraitStat.Drafted);
-                    }
-
-                    //Replacement of AboutToBreak
-                    if (value == PawnPortraitStat.AboutToBreak && stampTexture == null)
-                    {
-                        stampTexture = ContentFinder<Texture2D>.Get(Props.texture + "/Stress", false);
-                        stampOffset = Props.GetDiffOffset(PawnPortraitStat.Stress);
-                    }
-
-                    if (stampTexture != null)
-                    {
-                        textureCacheWithStat = MergeTextures(stampTexture, this.textureBase, stampOffset) ?? this.textureBase;
-                    }
-                    else
-                    {
-                        textureCacheWithStat = this.textureBase;
-                    }
-                }
-                curPawnStatInt = value;
-            }
-        }
+        public PawnPortraitStat curPawnStat { get; private set; } = PawnPortraitStat.Normal;
 
         public CompProperties_Tachie Props => (CompProperties_Tachie)this.props;
 
         private Pawn Pawn => base.parent as Pawn;
 
         //Texture caches
-        private Texture2D textureCacheWithStat = null;
-        private Texture2D textureBase
+        PawnTachieCacher cacher = null;
+
+        public override void PostSpawnSetup(bool respawningAfterLoad)
         {
-            get
+            base.PostSpawnSetup(respawningAfterLoad);
+
+            if (!respawningAfterLoad)
             {
-                if (textureBaseCache == null)
+                if (Props.useRandomTachie)
                 {
-                    string path = Props.texture;
-
-                    if (path != "" && (Props.texture.Contains(":") || Props.texture[0] == '\\'))
-                    {
-                        textureBaseCache = this.LoadTexture(Props.texture);
-                    }
-                    else
-                    {
-                        textureBaseCache = ContentFinder<Texture2D>.Get(Props.texture + "/Base", false);
-                        if (textureBaseCache != null)
-                        {
-                            return textureBaseCache;
-                        }
-
-                        textureBaseCache = ContentFinder<Texture2D>.Get(Props.texture, false);
-                        if (textureBaseCache == null)
-                        {
-                            Log.Error($"Texture {Props.texture} not found.");
-                            textureBaseCache = ContentFinder<Texture2D>.Get("Empty");
-                        }
-                    }
+                    this.alterTachieID = Props.alterTachies.RandomElement().alterTachieID;
                 }
-
-                return textureBaseCache;
             }
+
+            cacher = new PawnTachieCacher(Props.alterTachies.FirstOrDefault(x => x.alterTachieID == alterTachieID) ?? Props.DefaultData);
         }
-        private Texture2D textureBaseCache = null;
 
-        private Texture2D textureSleeping
+        public override void PostExposeData()
         {
-            get
-            {
-                if (textureSleepingCache == null)
-                {
-                    Texture2D tex = ContentFinder<Texture2D>.Get(Props.texture + "/Sleeping", false);
-                    if (tex != null)
-                    {
-                        textureSleepingCache = MergeTextures(tex, this.textureBase, Props.GetDiffOffset(PawnPortraitStat.Sleeping));
-                    }
-                    else
-                    {
-                        return this.textureBase;
-                    }
-                }
-                return textureSleepingCache;
-            }
+            base.PostExposeData();
+            Scribe_Values.Look(ref alterTachieID, "alterTachieID", -1);
         }
-        private Texture2D textureSleepingCache = null;
 
-        private Texture2D textureDying
+        public void SetAlterTachie(int _alterTachieID)
         {
-            get
-            {
-                Texture2D texture = ContentFinder<Texture2D>.Get(Props.texture + "/Dying", false);
+            this.alterTachieID = _alterTachieID;
 
-                if (texture != null)
-                {
-                    return texture;
-                }
-                else
-                {
-                    return this.textureBase;
-                }
-            }
+            this.cacher = new PawnTachieCacher(Props.alterTachies.FirstOrDefault(x => x.alterTachieID == alterTachieID) ?? Props.DefaultData);
         }
 
         public void DrawPortrait(float x, float y, float height, float minWidth = 0f, float maxWidth = 1E+09f, PortraitAnchor anchor = PortraitAnchor.TopLeft, float transparency = 1.0f, float scale = 1, bool applyProps = true)
@@ -264,188 +357,107 @@ namespace FixedPawnGenerate
             Pawn.PlayVoice(PawnVoiceType.Lobby);
         }
 
-        //从绝对路径读取Texture2D
-        Texture2D LoadTexture(string path)
-        {
-            if (File.Exists(path))
-            {
-                Texture2D texture = new Texture2D(1, 1);
+        //Texture2D MergeTextures_GPU(Texture2D topTex, Texture2D bottomTex, Vector2Int offset)
+        //{
+        //    int width = bottomTex.width;
+        //    int height = bottomTex.height;
 
-                byte[] fileData = File.ReadAllBytes(path);
+        //    // 1. 创建 RenderTexture
+        //    RenderTexture rt = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.ARGB32);
 
-                texture.LoadImage(fileData);
+        //    // 2. 先把 bottomTex 全屏 Blit 到 rt
+        //    Graphics.Blit(bottomTex, rt);
 
-                return texture;
-            }
+        //    // 3. 设置目标为 rt，然后用 DrawTexture 绘制 topTex 到指定位置
+        //    RenderTexture previous = RenderTexture.active;
+        //    RenderTexture.active = rt;
+        //    GL.PushMatrix();
+        //    GL.LoadPixelMatrix(0, width, height, 0);  // 左上为(0,0)
 
-            Log.Error($"File {path} doesn't exsit!!");
-            return ContentFinder<Texture2D>.Get("Empty");
-        }
+        //    Graphics.DrawTexture(
+        //        new Rect(offset.x, height - offset.y - topTex.height, topTex.width, topTex.height), // Unity纹理左下为原点
+        //        topTex
+        //    );
+        //    GL.PopMatrix();
+        //    RenderTexture.active = previous;
 
-        Texture2D MergeTextures_GPU(Texture2D topTex, Texture2D bottomTex, Vector2Int offset)
-        {
-            int width = bottomTex.width;
-            int height = bottomTex.height;
+        //    // 4. 从 rt 读取回 Texture2D
+        //    Texture2D result = new Texture2D(width, height, TextureFormat.RGBA32, true);
+        //    result.filterMode = FilterMode.Bilinear;
 
-            // 1. 创建 RenderTexture
-            RenderTexture rt = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.ARGB32);
+        //    RenderTexture.active = rt;
+        //    result.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+        //    result.Apply();
+        //    RenderTexture.active = previous;
+        //    RenderTexture.ReleaseTemporary(rt);
 
-            // 2. 先把 bottomTex 全屏 Blit 到 rt
-            Graphics.Blit(bottomTex, rt);
+        //    return result;
+        //}
 
-            // 3. 设置目标为 rt，然后用 DrawTexture 绘制 topTex 到指定位置
-            RenderTexture previous = RenderTexture.active;
-            RenderTexture.active = rt;
-            GL.PushMatrix();
-            GL.LoadPixelMatrix(0, width, height, 0);  // 左上为(0,0)
+        //Texture2D MergeTextures_GPU2(Texture2D topTex, Texture2D bottomTex, Vector2Int offset)
+        //{
+        //    int width = bottomTex.width;
+        //    int height = bottomTex.height;
+        //    RenderTexture rt = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.ARGB32);
 
-            Graphics.DrawTexture(
-                new Rect(offset.x, height - offset.y - topTex.height, topTex.width, topTex.height), // Unity纹理左下为原点
-                topTex
-            );
-            GL.PopMatrix();
-            RenderTexture.active = previous;
+        //    Graphics.Blit(bottomTex, rt);
 
-            // 4. 从 rt 读取回 Texture2D
-            Texture2D result = new Texture2D(width, height, TextureFormat.RGBA32, true);
-            result.filterMode = FilterMode.Bilinear;
+        //    RenderTexture previous = RenderTexture.active;
+        //    try
+        //    {
+        //        RenderTexture.active = rt;
+        //        GL.PushMatrix();
+        //        GL.LoadPixelMatrix(0, width, height, 0);
+        //        Graphics.DrawTexture(new Rect(offset.x, height - offset.y - topTex.height, topTex.width, topTex.height), topTex);
+        //        GL.PopMatrix();
 
-            RenderTexture.active = rt;
-            result.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-            result.Apply();
-            RenderTexture.active = previous;
-            RenderTexture.ReleaseTemporary(rt);
+        //        Texture2D result = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        //        result.filterMode = FilterMode.Bilinear;
+        //        result.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+        //        result.Apply();
+        //        return result;
+        //    }
+        //    finally
+        //    {
+        //        RenderTexture.active = previous;
+        //        RenderTexture.ReleaseTemporary(rt);
+        //    }
+        //}
 
-            return result;
-        }
+        //Texture2D MergeTextures_CPU(Texture2D topTex, Texture2D bottomTex, Vector2Int offset)
+        //{
+        //    Texture2D result = new Texture2D(bottomTex.width, bottomTex.height, TextureFormat.RGBA32, false);
+        //    result.SetPixels(bottomTex.GetPixels());
 
-        Texture2D MergeTextures_GPU2(Texture2D topTex, Texture2D bottomTex, Vector2Int offset)
-        {
-            int width = bottomTex.width;
-            int height = bottomTex.height;
-            RenderTexture rt = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.ARGB32);
+        //    // 取得表情图像素
+        //    Color[] overlayPixels = topTex.GetPixels();
+        //    int width = topTex.width;
+        //    int height = topTex.height;
 
-            Graphics.Blit(bottomTex, rt);
+        //    // 将表情图贴上去
+        //    for (int y = 0; y < height; y++)
+        //    {
+        //        for (int x = 0; x < width; x++)
+        //        {
+        //            int destX = offset.x + x;
+        //            int destY = offset.y + y;
 
-            RenderTexture previous = RenderTexture.active;
-            try
-            {
-                RenderTexture.active = rt;
-                GL.PushMatrix();
-                GL.LoadPixelMatrix(0, width, height, 0);
-                Graphics.DrawTexture(new Rect(offset.x, height - offset.y - topTex.height, topTex.width, topTex.height), topTex);
-                GL.PopMatrix();
+        //            // 确保不越界
+        //            if (destX >= 0 && destX < result.width && destY >= 0 && destY < result.height)
+        //            {
+        //                Color srcColor = overlayPixels[y * width + x];
+        //                Color baseColor = result.GetPixel(destX, destY);
 
-                Texture2D result = new Texture2D(width, height, TextureFormat.RGBA32, false);
-                result.filterMode = FilterMode.Bilinear;
-                result.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-                result.Apply();
-                return result;
-            }
-            finally
-            {
-                RenderTexture.active = previous;
-                RenderTexture.ReleaseTemporary(rt);
-            }
-        }
+        //                // 简单 alpha 混合
+        //                Color blended = Color.Lerp(baseColor, srcColor, srcColor.a);
+        //                result.SetPixel(destX, destY, blended);
+        //            }
+        //        }
+        //    }
 
-        Texture2D MergeTextures_CPU(Texture2D topTex, Texture2D bottomTex, Vector2Int offset)
-        {
-            Texture2D result = new Texture2D(bottomTex.width, bottomTex.height, TextureFormat.RGBA32, false);
-            result.SetPixels(bottomTex.GetPixels());
-
-            // 取得表情图像素
-            Color[] overlayPixels = topTex.GetPixels();
-            int width = topTex.width;
-            int height = topTex.height;
-
-            // 将表情图贴上去
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    int destX = offset.x + x;
-                    int destY = offset.y + y;
-
-                    // 确保不越界
-                    if (destX >= 0 && destX < result.width && destY >= 0 && destY < result.height)
-                    {
-                        Color srcColor = overlayPixels[y * width + x];
-                        Color baseColor = result.GetPixel(destX, destY);
-
-                        // 简单 alpha 混合
-                        Color blended = Color.Lerp(baseColor, srcColor, srcColor.a);
-                        result.SetPixel(destX, destY, blended);
-                    }
-                }
-            }
-
-            result.Apply(); // 应用更改
-            return result;
-        }
-
-        Texture2D MergeTextures_CommandBuffer(Texture2D topTex, Texture2D bottomTex, Vector2Int offset)
-        {
-            int width = bottomTex.width;
-            int height = bottomTex.height;
-
-            RenderTexture rt = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.ARGB32);
-
-            //底图
-            CommandBuffer cb = new CommandBuffer();
-            cb.name = "Merge texture";
-            cb.Blit(bottomTex, rt);
-            cb.SetRenderTarget(rt);
-
-            //顶图
-            cb.SetViewport(new Rect(offset.x, offset.y, topTex.width, topTex.height));
-
-            Material mat = new Material(ShaderDatabase.WorldOverlayTransparent);
-            mat.mainTexture = topTex;
-            cb.Blit(topTex, BuiltinRenderTextureType.CurrentActive, mat);
-
-            Graphics.ExecuteCommandBuffer(cb);
-
-            //读取
-            Texture2D result = new Texture2D(width, height, TextureFormat.RGBA32, true);
-            result.filterMode = FilterMode.Bilinear;
-            RenderTexture previous = RenderTexture.active;
-            RenderTexture.active = rt;
-            result.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-            result.Apply();
-            RenderTexture.active = previous;
-
-            // 释放资源
-            cb.Release();
-            RenderTexture.ReleaseTemporary(rt);
-
-            return result;
-        }
-
-        Texture2D MergeTextures(Texture2D topTex, Texture2D bottomTex, Vector2Int offset)
-        {
-            if (offset.x == 0 && offset.y == 0)
-            {
-                return topTex;
-            }
-
-            //Stopwatch sw = Stopwatch.StartNew();
-            Texture2D result = null;
-
-            //CPU
-            //result = MergeTextures_CPU(topTex, bottomTex, offset);
-
-            //GPU
-            //result = MergeTextures_GPU2(topTex, bottomTex, offset);
-
-            //CommandBuffer(GPU)
-            result = MergeTextures_CommandBuffer(topTex, bottomTex, offset);
-
-            //sw.Stop();
-            //Log.Warning($"MergeTextures took {sw.ElapsedMilliseconds} ms");
-
-            return result;
-        }
+        //    result.Apply(); // 应用更改
+        //    return result;
+        //}
 
         private PawnPortraitStat GetCurrentPawnStat()
         {
@@ -530,29 +542,17 @@ namespace FixedPawnGenerate
             catch (Exception e)
             {
                 Log.Error("Error in GetCurrentPawnStat, returning Normal stat. e:" + e.Message);
-                return this.textureBase;
+                return cacher.Base;
             }
 
-            //Log.Warning($"curStat : {stat.ToString()}");
-            Texture2D result = this.textureBase;
-
-            switch (curPawnStat)
+            if (curPawnStat == PawnPortraitStat.Normal && this.isBlinking)
             {
-                case PawnPortraitStat.Normal:
-                    if (this.isBlinking)
-                    {
-                        result = textureSleeping;
-                    }
-                    break;
-                case PawnPortraitStat.Sleeping:
-                    result = textureSleeping;
-                    break;
-                default:
-                    result = textureCacheWithStat;
-                    break;
+                return cacher.Sleeping;
             }
-
-            return result;
+            else
+            {
+                return cacher.GetTexture(curPawnStat);
+            }
         }
 
         int ticksBetweenBlinks = 6; //0.1秒

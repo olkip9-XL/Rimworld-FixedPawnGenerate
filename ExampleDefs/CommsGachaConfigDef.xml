@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <FixedPawnGenerate.CommsGachaConfigDef>
+    <defName>FPG_TestGacha</defName>
+    <label>Test gacha</label>
+    <workerClass>FixedPawnGenerate.CommsGachaConfigWorker</workerClass>
+    <gachaCost>
+      <Silver>500</Silver>
+    </gachaCost>
+    <gachaFailItems>
+      <Steel>20</Steel>
+    </gachaFailItems>
+    <gachaTags>
+      <li>BlueArchive</li>
+    </gachaTags>
+    <baseGachaChance>1</baseGachaChance>
+    <setPawnToPlayerFaction>true</setPawnToPlayerFaction>
+    <successMessage>Success msg</successMessage>
+    <failMessage>Fail msg</failMessage>
+    <successLetterLabel>Arrival</successLetterLabel>
+    <successLetterText>{0} arrived</successLetterText>
+    <noMorePawnsMessage>No more pawns msg</noMorePawnsMessage>
+    <notEnoughResourcesMessage>No enough resources</notEnoughResourcesMessage>
+    <disableIfNoMorePawns>false</disableIfNoMorePawns>
+    <openCommsJobDef>FPG_TestGachaJob</openCommsJobDef>
+  </FixedPawnGenerate.CommsGachaConfigDef>
+
+  <JobDef>
+    <defName>FPG_TestGachaJob</defName>
+    <driverClass>FixedPawnGenerate.JobDriver_OpenGachaComms</driverClass>
+    <reportString>using comms console.</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+
+</Defs>

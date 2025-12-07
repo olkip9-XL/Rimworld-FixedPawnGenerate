@@ -9,6 +9,8 @@ using Verse;
 
 namespace FixedPawnGenerate
 {
+    
+
     public class CompProperties_Tachie : CompProperties
     {
         public CompProperties_Tachie()
@@ -16,7 +18,8 @@ namespace FixedPawnGenerate
             this.compClass = typeof(CompTachie);
         }
 
-        public String texture;
+        //props
+        public string texture;
 
         public float offsetX = 0f;
 
@@ -26,25 +29,46 @@ namespace FixedPawnGenerate
 
         public List<PortraitDiffData> stats = new List<PortraitDiffData>();
 
-        public Vector2Int GetDiffOffset(PawnPortraitStat stat)
-        {
-            if (stats == null || stats.Count == 0)
-            {
-                return new Vector2Int(0,0);
-            }
+        internal List<AlterTachieData> alterTachies = new List<AlterTachieData>();
 
-            PortraitDiffData diff = stats.FirstOrDefault(x => x.stat == stat);
-            if (diff != null)
+        public bool useRandomTachie = false;
+
+        // private
+        private AlterTachieData defaultDataInt = null;
+        internal AlterTachieData DefaultData
+        {
+            get
             {
-                return new Vector2Int((int)diff.offsetX, (int)diff.offsetY);
-            }
-            else
-            {
-                return new Vector2Int(0,0);
+                if (defaultDataInt == null)
+                {
+                    defaultDataInt = new AlterTachieData();
+                    defaultDataInt.alterTachieID = -1;
+                    defaultDataInt.texturePath = texture;
+                    defaultDataInt.stats = stats;
+
+                    if (!alterTachies.Any(x => x.alterTachieID == -1))
+                    {
+                        alterTachies.Add(defaultDataInt);
+                    }
+                }
+                return defaultDataInt;
             }
         }
+        public override IEnumerable<string> ConfigErrors(ThingDef parentDef)
+        {
+            foreach (string error in base.ConfigErrors(parentDef))
+            {
+                yield return error;
+            }
 
-
+            foreach (var alter in alterTachies)
+            {
+                if (alter.alterTachieID < 0)
+                {
+                    yield return "AlterTachieData has invalid alterTachieID: " + alter.alterTachieID + ", it must be non-negative.";
+                }
+            }
+        }
     }
 
     public class PortraitDiffData
@@ -96,5 +120,12 @@ namespace FixedPawnGenerate
             }
 
         }
+    }
+
+    class AlterTachieData
+    {
+        public int alterTachieID = -1;
+        public string texturePath;
+        public List<PortraitDiffData> stats = new List<PortraitDiffData>();
     }
 }

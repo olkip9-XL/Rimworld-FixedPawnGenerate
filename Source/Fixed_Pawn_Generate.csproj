@@ -18,6 +18,7 @@
     <Optimize>true</Optimize>
     <OutputPath>..\1.6\Assemblies\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
+    <LangVersion>latest</LangVersion>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -25,7 +26,7 @@
     <OutputPath>..\1.6\Assemblies\</OutputPath>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>latest</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
@@ -76,6 +77,8 @@
   <ItemGroup>
     <Compile Include="AbilityComps\PawnVoice\CompAbilityEffect_PawnVoice.cs" />
     <Compile Include="AbilityComps\PawnVoice\CompProperties_AbilityPawnVoice.cs" />
+    <Compile Include="CommsGachaConfigDef.cs" />
+    <Compile Include="CommsGachaConfigWorker.cs" />
     <Compile Include="Comps\CompHediffAura.cs" />
     <Compile Include="Comps\CompPawnVoice.cs" />
     <Compile Include="Comps\CompProperties_HediffAura.cs" />
@@ -83,6 +86,7 @@
     <Compile Include="Extensions\PawnExtension.cs" />
     <Compile Include="GameComponent\GameComponent_PawnVoice.cs" />
     <Compile Include="Harmony\FixedPawnCompsHarmony.cs" />
+    <Compile Include="Harmony\Harmony_CommsMenu.cs" />
     <Compile Include="Harmony\Harmony_HairGraphic.cs" />
     <Compile Include="Harmony\ModExtensionHarmony\ModExtHarmony_UniqueWeaponExt.cs" />
     <Compile Include="Harmony\PawnVoiceHarmony.cs" />
@@ -90,6 +94,7 @@
     <Compile Include="Incident\IncidentWorker\IncidentWorker_FixedPawnJoin.cs" />
     <Compile Include="Incident\IncidentWorker\IncidentWorker_GiveQuest_FPG.cs" />
     <Compile Include="Incident\QuestNode\QuestNode_Root_FixedPawn_Arrival.cs" />
+    <Compile Include="JobDriver_OpenGachaComms.cs" />
     <Compile Include="Misc\FPGPawnTextureUtility.cs" />
     <Compile Include="ModCompatible\FPG_Alienrace.cs" />
     <Compile Include="Harmony\FPGPortraitHarmony.cs" />
@@ -112,6 +117,7 @@
     <Compile Include="ModExtensions\ModExtension_PawnThoughtSocialGroup.cs" />
     <Compile Include="ModExtensions\ModExtension_UniqueWeaponExt.cs" />
     <Compile Include="ModExtensions\ModExtension_SimplePawnData.cs" />
+    <Compile Include="ModExtension_OpenCommsJob.cs" />
     <Compile Include="ModSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderNode\PawnRenderNode_ApparelExt.cs" />
