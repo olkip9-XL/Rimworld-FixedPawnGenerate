@@ -237,7 +237,18 @@ namespace FixedPawnGenerate
         private Pawn Pawn => base.parent as Pawn;
 
         //Texture caches
-        PawnTachieCacher cacher = null;
+        private PawnTachieCacher cacherInt = null;
+
+        private PawnTachieCacher Cacher {
+            get
+            {
+                if(cacherInt == null)
+                {
+                    cacherInt = new PawnTachieCacher(Props.alterTachies.FirstOrDefault(x => x.alterTachieID == alterTachieID) ?? Props.DefaultData);
+                }
+                return cacherInt;
+            }
+        }
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
@@ -251,7 +262,7 @@ namespace FixedPawnGenerate
                 }
             }
 
-            cacher = new PawnTachieCacher(Props.alterTachies.FirstOrDefault(x => x.alterTachieID == alterTachieID) ?? Props.DefaultData);
+            cacherInt = new PawnTachieCacher(Props.alterTachies.FirstOrDefault(x => x.alterTachieID == alterTachieID) ?? Props.DefaultData);
         }
 
         public override void PostExposeData()
@@ -264,7 +275,7 @@ namespace FixedPawnGenerate
         {
             this.alterTachieID = _alterTachieID;
 
-            this.cacher = new PawnTachieCacher(Props.alterTachies.FirstOrDefault(x => x.alterTachieID == alterTachieID) ?? Props.DefaultData);
+            this.cacherInt = new PawnTachieCacher(Props.alterTachies.FirstOrDefault(x => x.alterTachieID == alterTachieID) ?? Props.DefaultData);
         }
 
         public void DrawPortrait(float x, float y, float height, float minWidth = 0f, float maxWidth = 1E+09f, PortraitAnchor anchor = PortraitAnchor.TopLeft, float transparency = 1.0f, float scale = 1, bool applyProps = true)
@@ -461,7 +472,7 @@ namespace FixedPawnGenerate
 
         private PawnPortraitStat GetCurrentPawnStat()
         {
-            if (Pawn == null || Pawn.Dead || Pawn.Destroyed)
+            if (Pawn == null || Pawn.Dead || Pawn.Destroyed || Pawn.Map == null)
             {
                 return PawnPortraitStat.Normal;
             }
@@ -542,16 +553,16 @@ namespace FixedPawnGenerate
             catch (Exception e)
             {
                 Log.Error("Error in GetCurrentPawnStat, returning Normal stat. e:" + e.Message);
-                return cacher.Base;
+                return Cacher.Base;
             }
 
             if (curPawnStat == PawnPortraitStat.Normal && this.isBlinking)
             {
-                return cacher.Sleeping;
+                return Cacher.Sleeping;
             }
             else
             {
-                return cacher.GetTexture(curPawnStat);
+                return Cacher.GetTexture(curPawnStat);
             }
         }
 

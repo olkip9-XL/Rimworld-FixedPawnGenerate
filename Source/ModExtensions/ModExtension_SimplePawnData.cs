@@ -7,6 +7,8 @@ using Verse;
 
 namespace FixedPawnGenerate
 {
+   
+
     internal class ModExtension_SimplePawnData : DefModExtension
     {
         public GraphicData graphicData;
