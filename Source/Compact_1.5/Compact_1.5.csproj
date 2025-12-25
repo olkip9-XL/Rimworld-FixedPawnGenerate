@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\..\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\workshop\content\294100\2009463077\1.5\Assemblies\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AlienRace">
@@ -40,7 +40,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>D:\GAMES and App\RimWorld_1.5\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>D:\GAMES and App\Games\RimWorld_1.5\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="FacialAnimation">
@@ -81,10 +81,12 @@
     <Compile Include="AbilityComps\PawnVoice\CompProperties_AbilityPawnVoice.cs" />
     <Compile Include="Comps\CompHediffAura.cs" />
     <Compile Include="Comps\CompPawnVoice.cs" />
-    <Compile Include="Comps\CompProperties_HediffAura.cs" />
-    <Compile Include="Comps\CompProperties_PawnVoice.cs" />
-    <Compile Include="Comps\CompProperties_Tachie.cs" />
+    <Compile Include="Comps\Props\CompProperties_HediffAura.cs" />
+    <Compile Include="Comps\Props\CompProperties_PawnVoice.cs" />
+    <Compile Include="Comps\Props\CompProperties_SimplePawn.cs" />
+    <Compile Include="Comps\Props\CompProperties_Tachie.cs" />
     <Compile Include="Comps\CompTachie.cs" />
+    <Compile Include="Comps\Comp_SimplePawn.cs" />
     <Compile Include="DebugActions.cs" />
     <Compile Include="Extensions\Listing_StandardExtentison.cs" />
     <Compile Include="Extensions\PawnExtension.cs" />
