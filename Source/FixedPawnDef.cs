@@ -37,7 +37,11 @@ namespace FixedPawnGenerate
             foreach (string s in base.ConfigErrors())
             {
                 yield return s;
-                //s = null;
+            }
+
+            if (race == null && pawnKind == null)
+            {
+                yield return "Either race or pawnKind must be set.";
             }
             yield break;
         }
@@ -150,7 +154,6 @@ namespace FixedPawnGenerate
                 }
 
                 DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, "thing", xmlRoot.Name, null, null, null);
-
 
                 foreach (XmlAttribute xmlAttribute in xmlRoot.Attributes)
                 {
@@ -397,6 +400,9 @@ namespace FixedPawnGenerate
         }
 
         public List<RelationData> relations = new List<RelationData>();
+
+        [MayRequire("erdelf.HumanoidAlienRaces")]
+        public List<FPG_AlienraceAddonProps> alienraceAddonProps = null;
 
         /**********************************/
         public bool IsSpawned => this.isUnique && FixedPawnUtility.Manager.IsSpawned(this);

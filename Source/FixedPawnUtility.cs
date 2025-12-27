@@ -23,7 +23,9 @@ namespace FixedPawnGenerate
         public static ModSetting_FixedPawnGenerate Settings => LoadedModManager.GetMod<Mod_FixedPawnGenerate>().GetSettings<ModSetting_FixedPawnGenerate>();
 
         //private
-        private static bool isAlienRaceActive;
+        private static bool IsAlienRaceActive => ModLister.HasActiveModWithName("Humanoid Alien Races 2.0") ||
+                                                    ModLister.HasActiveModWithName("Humanoid Alien Races") ||
+                                                    ModLister.HasActiveModWithName("Humanoid Alien Races ~ Dev");
         static FixedPawnUtility()
         {
             //add Black List
@@ -58,9 +60,6 @@ namespace FixedPawnGenerate
                     Log.Warning($"[Debug]Add relation {GetOppositeRelation(relationData.relation)}({def.defName}) to {targetDef.defName}");
 #endif
                 }
-
-                //alienrace
-                isAlienRaceActive = ModLister.HasActiveModWithName("Humanoid Alien Races 2.0") || ModLister.HasActiveModWithName("Humanoid Alien Races") || ModLister.HasActiveModWithName("Humanoid Alien Races ~ Dev");
             }
         }
 
@@ -215,13 +214,13 @@ namespace FixedPawnGenerate
                 pawn.story.SkinColorBase = def.skinColor;
 
                 //alien race compatible
-                if (!isAlienRaceActive)
+                if (!IsAlienRaceActive)
                 {
                     pawn.story.skinColorOverride = def.skinColor;
                 }
                 else
                 {
-                    FPG_Alienrace.SetPawnSkinColor(pawn, def.skinColor);
+                    AlienraceUtility.SetPawnSkinColor(pawn, def.skinColor);
                 }
             }
 
@@ -361,6 +360,15 @@ namespace FixedPawnGenerate
                 if (ModLister.HasActiveModWithName("[NL] Facial Animation - WIP") && def.facialAnimationProps != null)
                 {
                     def.facialAnimationProps.SetPawn(pawn);
+                }
+
+                //alienrace addons
+                if (IsAlienRaceActive && !def.alienraceAddonProps.NullOrEmpty())
+                {
+                    foreach (var addon in def.alienraceAddonProps)
+                    {
+                        addon.ApplyToPawn(pawn);
+                    }
                 }
 
                 //relation

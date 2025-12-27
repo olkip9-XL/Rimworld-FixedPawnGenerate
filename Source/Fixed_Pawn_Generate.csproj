@@ -35,10 +35,6 @@
       <HintPath>..\..\..\..\..\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="AlienRace">
-      <HintPath>..\..\..\..\..\workshop\content\294100\839005762\1.5\Assemblies\AlienRace.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
@@ -98,11 +94,12 @@
     <Compile Include="Incident\QuestNode\QuestNode_Root_FixedPawn_Arrival.cs" />
     <Compile Include="JobDriver_OpenGachaComms.cs" />
     <Compile Include="Misc\FPGPawnTextureUtility.cs" />
-    <Compile Include="ModCompatible\FPG_Alienrace.cs" />
+    <Compile Include="ModCompatible\Alienrace\AlienraceUtility.cs" />
     <Compile Include="Harmony\FPGPortraitHarmony.cs" />
     <Compile Include="Comps\Props\CompProperties_Tachie.cs" />
     <Compile Include="Comps\CompTachie.cs" />
     <Compile Include="DebugActions.cs" />
+    <Compile Include="ModCompatible\Alienrace\FPG_AlienraceAddonProps.cs" />
     <Compile Include="ModCompatible\FPG_FacialAnimationProps.cs" />
     <Compile Include="FixedPawnDef.cs" />
     <Compile Include="DefOf\FixedPawnDefOf.cs" />
